@@ -74,6 +74,7 @@ this.sparkart = {};
 		var fanclub = this;
 		fanclub.key = key;
 		fanclub.parameters = parameters = parameters || {};
+		fanclub.parameters.api_url = parameters.api_url || API_URL;
 		var templates = fanclub.templates = {
 			subscriptions: '<ul class="subscriptions">{{#subscriptions}}<li>{{name}}</li>{{/subscriptions}}</ul>',
 			subscription: '<div class="subscription">{{name}}</div>',
@@ -365,7 +366,7 @@ this.sparkart = {};
 			this.get( 'account', function( err, response ){
 				if( err ) response = {};
 				var data = { user: response.customer };
-				if( widget === 'register' ) response.terms_url = API_URL +'/terms?key='+ fanclub.key;
+				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 				data.parameters = config;
 				var html = fanclub.templates[widget]( data );
 				return callback( null, html );
@@ -425,12 +426,13 @@ this.sparkart = {};
 			parameters = null;
 		}
 		
+		var fanclub = this;
 		parameters = parameters || {};
 		if( endpoint === 'event' ) endpoint +='s';	
 		
 		var url = ( parameters.id )
-			? API_URL +'/'+ endpoint +'/'+ parameters.id +'.json'
-			: API_URL +'/'+ endpoint +'.json';
+			? fanclub.parameters.api_url +'/'+ endpoint +'/'+ parameters.id +'.json'
+			: fanclub.parameters.api_url +'/'+ endpoint +'.json';
 		
 		return this.request( url, 'GET', parameters, callback );
 		
@@ -443,7 +445,8 @@ this.sparkart = {};
 			callback = parameters;
 			parameters = null;
 		}
-		var url = API_URL +'/'+ endpoint +'.json';
+		var fanclub = this;
+		var url = fanclub.parameters.api_url +'/'+ endpoint +'.json';
 		
 		return this.request( url, 'POST', parameters, callback );
 		
@@ -517,7 +520,7 @@ this.sparkart = {};
 			
 			fanclub.logout( function( err ){
 				
-				if( err ) return console.log( 'test', err );
+				if( err ) return console.log( err );
 			
 				location.reload();
 				
