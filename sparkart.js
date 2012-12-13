@@ -6,9 +6,7 @@ this.sparkart = {};
 	
 	var API_URL = 'http://lvh.me:7000/api/v1/consumer';
 	var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-	var MONTHS_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 	var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-	var DAYS_ABBR = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 	
 	// Create a date object that's usable in templates
 	var convertDate = function( date_string ){
@@ -33,12 +31,12 @@ this.sparkart = {};
 			month: {
 				number: month,
 				text: MONTHS[month-1],
-				abbr: MONTHS_ABBR[month-1]
+				abbr: MONTHS[month-1].substr( 0, 3 )
 			},
 			day: {
 				number: day,
 				text: DAYS[day_of_week],
-				abbr: DAYS_ABBR[day_of_week]
+				abbr: DAYS[day_of_week].substr( 0, 3 )
 			},
 			hour: {
 				half: hour % 12 || 12,
@@ -69,6 +67,7 @@ this.sparkart = {};
 		
 	};
 	
+	// Fanclub constructor
 	var Fanclub = sparkart.Fanclub = function( key, parameters ){
 		
 		var fanclub = this;
@@ -156,61 +155,89 @@ this.sparkart = {};
 			'	</ul>'+
 			'</div>'+
 			'{{/event}}',
-			account: '<div class="account"><h3>{{name}}</h3><a href="mailto:{{email}}">{{email}}</a></div>',
+			account: '{{#customer}}'+
+			'{{#registered}}'+
+			'<form class="account">'+
+			'	<div class="success" style="display: none;">'+
+			'		<p>Account Successfully Updated!</p>'+
+			'	</div>'+
+			'	<div class="errors" style="display: none;"></div>'+
+			'	<fieldset>'+
+			'		<legend>Your Account</legend>'+
+			'		<label>First Name<br />'+
+			'		<input name="first_name" type="text" value="{{first_name}}" /></label><br />'+
+			'		<label>Last Name<br />'+
+			'		<input name="last_name" type="text" value="{{last_name}}" /></label><br />'+
+			'		<label>Email Address<br />'+
+			'		<input name="email" type="text" value="{{email}}" /></label><br />'+
+			'		<div class="password">'+
+			'			<label>Current Password<br />'+
+			'			<input name="current_password" type="password" /></label>'+
+			'			<hr />'+
+			'			<label>New Password<br />'+
+			'			<input name="password" type="password" /></label><br />'+
+			'			<label>Repeat New Password<br />'+
+			'			<input name="password_confirmation" type="password" /></label>'+
+			'		</div>'+
+			'	</fieldset>'+
+			'	<button type="submit">Update Account</button>'+
+			'</form>'+
+			'{{/registered}}'+
+			'{{/customer}}',
 			login: '{{^user}}'+
-			'<div class="login">'+
-			'	<form class="login">'+
-			'		<fieldset>'+
-			'			<legend>Log In</legend>'+
-			'			<label>Email<br />'+
-			'			<input name="email" type="text" /></label>'+
-			'			<label>Password<br />'+
-			'			<input name="password" type="password" /></label>'+
-			'			<a href="#forgot">Forgot Password?</a>'+
-			'		</fieldset>'+
-			'		<button type="submit">Log In</button>'+
-			'	</form>'+
-			'	<form class="forgot" style="display:none">'+
-			'		<a href="#close">Close</a>'+
-			'		<fieldset>'+
-			'			<legend>Forgot Password</legend>'+
-			'			<p>Please enter the email address you used for your fanclub account:</p>'+
-			'			<label>Email<br />'+
-			'			<input type="text" name="email"></input>'+
-			'		</fieldset>'+
-			'		<button type="submit">Submit</button>'+
-			'	</form>'+
-			'</div>'+
+			'<form class="login">'+
+			'	<div class="success" style="display: none;">'+
+			'		<p>You have successfully logged in.</p>'+
+			'	</div>'+
+			'	<div class="errors" style="display: none;"></div>'+
+			'	<fieldset>'+
+			'		<legend>Log In</legend>'+
+			'		<label>Email<br />'+
+			'		<input name="email" type="text" /></label>'+
+			'		<label>Password<br />'+
+			'		<input name="password" type="password" /></label>'+
+			'		<a href="#forgot">Forgot Password?</a>'+
+			'	</fieldset>'+
+			'	<button type="submit">Log In</button>'+
+			'</form>'+
+			'<form class="forgot" style="display:none">'+
+			'	<a href="#close">Close</a>'+
+			'	<fieldset>'+
+			'		<legend>Forgot Password</legend>'+
+			'		<p>Please enter the email address you used for your fanclub account:</p>'+
+			'		<label>Email<br />'+
+			'		<input type="text" name="email"></input>'+
+			'	</fieldset>'+
+			'	<button type="submit">Submit</button>'+
+			'</form>'+
 			'{{/user}}',
-			login_success: '<div class="success">'+
-			'	<h2>Login Successful</h2>'+
-			'	<p>You have successfully logged in.</p>'+
-			'</div>',
 			logout: '{{#user}}<a href="#logout">Log Out</a>{{/user}}',
 			register: '{{#user}}'+
 			'{{^registered}}'+
 			'<form class="register" method="PUT">'+
+			'	<div class="success" style="display: none;">'+
+			'		<p>You have successfully completed the registration of your fanclub account.</p>'+
+			'	</div>'+
+			'	<div class="errors" style="display: none;"></div>'+
 			'	<fieldset>'+
 			'		<legend>Register your Account</legend>'+
 			'		<p>Set a password for your new fanclub account</p>'+
+			'		<label>Date of Birth<br />'+
+			'		<input name="birthdate" type="text" /></label>'+
 			'		<label>Password<br />'+
 			'		<input name="password" type="password" /></label>'+
 			'		<label>Password Confirm<br />'+
 			'		<input name="password_confirmation" type="password" /></label>'+
-			'		<label><input type="checkbox" /> I agree to the fanclub <a href="{{terms_url}}" target="_blank">Terms and Conditions</a></label>'+
+			'		<label><input name="accept_terms" type="checkbox" /> I agree to the fanclub <a href="{{terms_url}}" target="_blank">Terms and Conditions</a></label>'+
 			'	</fieldset>'+
 			'	<button type="submit">Register</button>'+
 			'</form>'+
 			'{{/registered}}'+
 			'{{/user}}',
-			register_success: '<div class="success">'+
-			'	<h2>Registration Successful</h2>'+
-			'	<p>You have successfully completed the registration of your fanclub account.</p>'+
-			'</div>',
 			receipt: '<ul class="receipt">{{#items}}<li>{{name}}</li>{{/items}}</ul>',
 			orders: '<ul class="orders">{{#orders}}<li>{{contents}}</li>{{/orders}}</ul>',
 			order: '<div class="order">{{contents}}</div>',
-			errors: '<ul class="errors">{{#errors}}<li>{{message}}</li>{{/errors}}</ul>'
+			errors: '<ul class="errors">{{#errors}}<li>{{.}}</li>{{/errors}}</ul>'
 		};
 		var preprocessors = fanclub.preprocessors = {
 			event: [ function( data ){
@@ -259,7 +286,7 @@ this.sparkart = {};
 		
 		var fanclub = this;	
 		
-		this.post( 'account', data, function( err, response ){
+		this.post( 'account/register', data, function( err, response ){
 
 			if( err ){
 				if( callback ) callback( err );
@@ -359,7 +386,7 @@ this.sparkart = {};
 	
 	// generate a widget's markup
 	Fanclub.prototype.renderWidget = function( widget, config, callback ){
-		
+
 		var fanclub = this;	
 
 		if( widget === 'login' || widget === 'logout' || widget === 'register' ){
@@ -382,7 +409,7 @@ this.sparkart = {};
 					response = preprocessors[i]( response );
 				}
 			}
-			response.parameters = config;console.log(response);
+			response.parameters = config;console.log(widget, response);
 			callback( null, fanclub.templates[widget]( response ) );
 		});
 		
@@ -394,7 +421,7 @@ this.sparkart = {};
 		parameters = $.extend( {}, parameters );
 		parameters.key = this.key;
 		if( parameters.id ) delete parameters.id;
-		console.log( method );
+
 		var request = $.ajax({
 			url: url,
 			type: method,
@@ -410,8 +437,15 @@ this.sparkart = {};
 			.done( function( data ){
 				if( callback ) callback( null, data );
 			})
-			.fail( function( request, error_name, err ){
-				if( callback ) callback( err );
+			.fail( function( request ){
+				try {
+					var responseObj = JSON.parse( request.responseText );
+				}
+				catch( err ){
+					console.error( err );
+				}
+				var errors = responseObj.messages || [];
+				if( callback ) callback( errors );
 			});
 		
 		return request;
@@ -468,21 +502,20 @@ this.sparkart = {};
 				password: $this.find('input[name="password"]').val()
 			};
 			
-			fanclub.login( data, function( err, response ){
+			fanclub.login( data, function( errors, response ){
 	
 				// remove old error message
-				var $previous_errors = $this.data('sparkart_$errors');
-				if( $previous_errors ) $previous_errors.remove();
+				var $errors = $this.find('div.errors');
+				$errors.empty().hide();
 				
-				if( err ){
-					var $err = $( fanclub.templates.errors({ errors: [err] }) );
-					$this.prepend( $err );
-					$this.data( 'sparkart_$errors', $err );
+				if( errors ){
+					var $err = $( fanclub.templates.errors({ errors: errors }) );
+					$errors.html( $err ).show();
 					return;
 				}
 				
-				var success_html = fanclub.templates.login_success();
-				$this.html( success_html );
+				var $success = $this.find('div.success');
+				$success.show();
 				location.reload();
 				
 			});	
@@ -535,26 +568,61 @@ this.sparkart = {};
 			
 			var $this = $(this);
 			var data = {
+				birthdate: $this.find('input[name="birthdate"]').val(),
 				password: $this.find('input[name="password"]').val(),
 				password_confirmation: $this.find('input[name="password_confirmation"]').val(),
-				terms: $this.find('input[name="terms"]').val()
+				accept_terms: $this.find('input[name="accept_terms"]').prop('checked')
 			};
 			
-			fanclub.register( data, function( err, response ){
+			fanclub.register( data, function( errors, response ){
 				
 				// remove old error message
-				var $previous_errors = $this.data('sparkart_$errors');
-				if( $previous_errors ) $previous_errors.remove();
+				var $errors = $this.find('div.errors');
+				$errors.empty().hide();
 				
-				if( err ){
-					var $err = $( fanclub.templates.errors({ errors: [err] }) );
-					$this.prepend( $err );
-					$this.data( 'sparkart_$errors', $err );
+				if( errors ){
+					var $err = $( fanclub.templates.errors({ errors: errors }) );
+					$errors.html( $err ).show();
 					return;
 				}
 				
-				var success_html = fanclub.templates.register_success();
-				$this.html( success_html );
+				var $success = $this.find('div.success');
+				$success.show();	
+				location.reload();	
+				
+			});
+			
+		});
+		
+		// bind all account widgets
+		$('.sparkart.fanclub.account').on( 'submit.sparkart', function( e ){
+			
+			e.preventDefault();
+			
+			var $this = $(this);
+			var data = {
+				first_name: $this.find('input[name="first_name"]').val(),
+				last_name: $this.find('input[name="last_name"]').val(),
+				email: $this.find('input[name="email"]').val(),
+				current_password: $this.find('input[name="current_password"]').val(),
+				password: $this.find('input[name="password"]').val(),
+				password_confirmation: $this.find('input[name="password_confirmation"]').val()
+			};
+			
+			fanclub.post( 'account', data, function( errors ){
+				
+				// remove old error message
+				var $errors = $this.find('div.errors');
+				$errors.empty().hide();
+				
+				if( errors ){
+					var $err = $( fanclub.templates.errors({ errors: errors }) );
+					$errors.html( $err ).show();
+					return;
+				}
+				
+				var $success = $this.find('div.success');
+				$success.show();
 				
 			});
 			

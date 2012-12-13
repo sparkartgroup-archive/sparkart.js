@@ -27,12 +27,25 @@ bonjovi.get( 'plans', function( err, plans ){
 	if( err ) console.log( err ); // err is null if nothing goes wrong
 	else console.log( plans );
 });
-bonjovi.is( 'logged in', function( err, logged_in ){
-	if( err ) console.log( err ); // err is null if nothing goes wrong
-	else console.log( logged_in );
-});
 bonjovi.draw();
 ```
+
+#### Fanclub Configuration
+
+Fanclubs can be configured, too! If you need to change something, just pass a configuration object as the second argument when instantiating your fan club.
+
+```javascript
+var bonjovi = new sparkart.Fanclub( API_KEY, {
+	templates: {
+		logout: '<div><a href="#logout">Logout</a></div>'
+	}
+});
+```
+
+The following options are available:
+
+* **templates** - *(object of strings)* - An object containing a list of template names and template contents as strings. See [Custom Templates](https://github.com/SparkartGroupInc/sparkart.js/wiki/Custom-Templates) for more information.
+* **preprocessors** - *(object of functions or array)* - An object containing a list of widget names and preprocessor functions. See [Preprocessors](https://github.com/SparkartGroupInc/sparkart.js/wiki/Preprocessors) for more information.
 
 #### Fanclub Widgets
 
