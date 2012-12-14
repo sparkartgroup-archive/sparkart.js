@@ -71,6 +71,7 @@ this.sparkart = {};
 	var Fanclub = sparkart.Fanclub = function( key, parameters ){
 		
 		var fanclub = this;
+		fanclub._listeners = {};
 		fanclub.key = key;
 		fanclub.parameters = parameters = parameters || {};
 		fanclub.parameters.api_url = parameters.api_url || API_URL;
@@ -271,13 +272,17 @@ this.sparkart = {};
 			templates[name] = Handlebars.compile( templates[name] );
 		}
 		
-		// need to know the... fanclub key
-		// comb the markup for areas we need to replace	
-		// assign new templates if necessary
-		
-		// draw all widgets
-		fanclub.draw();
-		fanclub.bindEvents();
+		fanclub.get( 'account', function( err, response ){
+			fanclub.get( 'fanclub', function( fc_err, fc_response ){
+				fanclub.customer = response.customer;
+				fanclub.authentications = fc_response.fanclub.authentications;
+				fanclub.name = fc_response.fanclub.name;
+				fanclub.trigger('load');
+				// draw all widgets
+				fanclub.draw();
+				fanclub.bindEvents();
+			});
+		});
 		
 	};
 	
@@ -627,6 +632,49 @@ this.sparkart = {};
 			});
 			
 		});
+		
+	};
+	
+	// Event Methods
+	Fanclub.prototype.on = function( type, listener ){
+	
+		if( typeof this._listeners[type] == 'undefined' ){
+			this._listeners[type] = [];
+		}
+		
+		this._listeners[type].push(listener);
+		
+	};
+		
+	Fanclub.prototype.trigger = function( event ){
+	
+		var event_args = Array.prototype.splice.call( arguments, 1 );
+		
+		if( this._listeners[event] instanceof Array ){
+			var listeners = this._listeners[event];
+			for( var i in listeners ){
+				listeners[i].apply( this, event_args );
+			}
+		}
+		
+	};
+		
+	Fanclub.prototype.off = function( type, listener ){
+	
+		if( this._listeners[type] instanceof Array ){
+			var listeners = this._listeners[type];
+			if( listener ){
+				for( var i in listeners ){
+					if( listeners[i] === listener ){
+						listeners.splice( i, 1 );
+						break;
+					}
+				}
+			}
+			else {
+				listeners.splice( 0, listeners.length );
+			}
+		}
 		
 	};
 	
