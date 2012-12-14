@@ -46,6 +46,7 @@ The following options are available:
 
 * **templates** - *(object of strings)* - An object containing a list of template names and template contents as strings. See [Custom Templates](https://github.com/SparkartGroupInc/sparkart.js/wiki/Custom-Templates) for more information.
 * **preprocessors** - *(object of functions or array)* - An object containing a list of widget names and preprocessor functions. See [Preprocessors](https://github.com/SparkartGroupInc/sparkart.js/wiki/Preprocessors) for more information.
+* **reload** - *(boolean or object of booleans)* - Determines whether the page reloads after a method or not. Specify a single boolean to set all reload settings at once, or set each reload individually. Things that reload: `login`, `register`, `logout`. Reload is on by default.
 
 #### Fanclub Widgets
 
@@ -159,3 +160,43 @@ Destroy all markup and bindings created by the fanclub.
 ```javascript
 bonjovi.destroy(); // all markup reverts to pre-fanclub state
 ```
+
+##### .on( event, callback )
+
+Binds a callback function to an event.
+
+```javascript
+bonjovi.on( 'login', function(){ console.log('logged in!'); });
+```
+
+##### .off( event, callback )
+
+Unbinds event callbacks. Can unbind a single function, or every function for an event.
+
+```javascript
+bonjovi.off('login'); // unbinds all
+bonjovi.off( 'login', myMethod ); // unbinds "myMethod"
+```
+
+##### .trigger( event, argument, argument2, argument3... )
+
+Manually trigger an event with the specified arguments.
+
+```javascript
+bonjovi.trigger( 'custom', 1, 2, 3 ); // executes the event "custom" with the arguments 1, 2, 3
+```
+
+
+#### Fanclub Events
+
+##### login
+
+Triggered when a customer logs in
+
+##### logout
+
+Triggered when a customer logs out
+
+##### register
+
+Triggered when a customer registers

@@ -73,7 +73,22 @@ this.sparkart = {};
 		var fanclub = this;
 		fanclub._listeners = {};
 		fanclub.key = key;
-		fanclub.parameters = parameters = parameters || {};
+		parameters = parameters || {};
+		if( parameters.reload === true || parameters.reload === false ){
+			parameters.reload = {
+				login: parameters.reload,
+				logout: parameters.reload,
+				register: parameters.reload
+			};
+		}
+		var default_parameters = {
+			reload: {
+				login: true,
+				logout: true,
+				register: true
+			}
+		};
+		fanclub.parameters = $.extend( default_parameters, parameters );
 		fanclub.parameters.api_url = parameters.api_url || API_URL;
 		var templates = fanclub.templates = {
 			subscriptions: '<ul class="subscriptions">{{#subscriptions}}<li>{{name}}</li>{{/subscriptions}}</ul>',
@@ -185,7 +200,7 @@ this.sparkart = {};
 			'</form>'+
 			'{{/registered}}'+
 			'{{/customer}}',
-			login: '{{^user}}'+
+			login: '{{^customer}}'+
 			'<form class="login">'+
 			'	<div class="success" style="display: none;">'+
 			'		<p>You have successfully logged in.</p>'+
@@ -211,9 +226,9 @@ this.sparkart = {};
 			'	</fieldset>'+
 			'	<button type="submit">Submit</button>'+
 			'</form>'+
-			'{{/user}}',
-			logout: '{{#user}}<a href="#logout">Log Out</a>{{/user}}',
-			register: '{{#user}}'+
+			'{{/customer}}',
+			logout: '{{#customer}}<a href="#logout">Log Out</a>{{/customer}}',
+			register: '{{#customer}}'+
 			'{{^registered}}'+
 			'<form class="register" method="PUT">'+
 			'	<div class="success" style="display: none;">'+
@@ -234,7 +249,7 @@ this.sparkart = {};
 			'	<button type="submit">Register</button>'+
 			'</form>'+
 			'{{/registered}}'+
-			'{{/user}}',
+			'{{/customer}}',
 			receipt: '<ul class="receipt">{{#items}}<li>{{name}}</li>{{/items}}</ul>',
 			orders: '<ul class="orders">{{#orders}}<li>{{contents}}</li>{{/orders}}</ul>',
 			order: '<div class="order">{{contents}}</div>',
@@ -274,9 +289,9 @@ this.sparkart = {};
 		
 		fanclub.get( 'account', function( err, response ){
 			fanclub.get( 'fanclub', function( fc_err, fc_response ){
-				fanclub.customer = response.customer;
-				fanclub.authentications = fc_response.fanclub.authentications;
-				fanclub.name = fc_response.fanclub.name;
+				fanclub.customer = ( response )? response.customer: null;
+				fanclub.authentications = ( fc_response )? fc_response.fanclub.authentications: null;
+				fanclub.name = ( fc_response )? fc_response.fanclub.name: null;
 				fanclub.trigger('load');
 				// draw all widgets
 				fanclub.draw();
@@ -300,6 +315,9 @@ this.sparkart = {};
 
 			if( callback ) callback( null, response );
 			
+			fanclub.trigger( 'register', response.customer );
+			if( fanclub.parameters.reload.register ) location.reload();
+			
 		});
 		
 	};
@@ -318,6 +336,10 @@ this.sparkart = {};
 			
 			if( callback ) callback( null, response );
 			
+			fanclub.trigger( 'login', response.customer );
+			if( fanclub.parameters.reload.login ) location.reload();
+			fanclub.draw();
+			
 		});
 		
 	};
@@ -335,6 +357,11 @@ this.sparkart = {};
 			}
 			
 			if( callback ) callback( null, response );
+			
+			fanclub.trigger('logout');
+			delete fanclub.customer;
+			if( fanclub.parameters.reload.logout ) location.reload();
+			fanclub.draw();
 			
 		});
 		
@@ -394,10 +421,10 @@ this.sparkart = {};
 
 		var fanclub = this;	
 
-		if( widget === 'login' || widget === 'logout' || widget === 'register' ){
+		if( widget === 'login' || widget === 'logout' || widget === 'register' || widget === 'account' ){
 			this.get( 'account', function( err, response ){
 				if( err ) response = {};
-				var data = { user: response.customer };
+				var data = { customer: response.customer };
 				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 				data.parameters = config;
 				var html = fanclub.templates[widget]( data );
@@ -414,7 +441,7 @@ this.sparkart = {};
 					response = preprocessors[i]( response );
 				}
 			}
-			response.parameters = config;console.log(widget, response);
+			response.parameters = config;
 			callback( null, fanclub.templates[widget]( response ) );
 		});
 		
@@ -521,7 +548,6 @@ this.sparkart = {};
 				
 				var $success = $this.find('div.success');
 				$success.show();
-				location.reload();
 				
 			});	
 			
@@ -559,8 +585,6 @@ this.sparkart = {};
 			fanclub.logout( function( err ){
 				
 				if( err ) return console.log( err );
-			
-				location.reload();
 				
 			});
 			
@@ -593,7 +617,6 @@ this.sparkart = {};
 				
 				var $success = $this.find('div.success');
 				$success.show();	
-				location.reload();	
 				
 			});
 			
