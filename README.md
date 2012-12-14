@@ -202,6 +202,16 @@ bonjovi.trigger( 'custom', 1, 2, 3 ); // executes the event "custom" with the ar
 
 #### Fanclub Events
 
+##### load
+
+Triggered after the fanclub has finished loading its initial set of data. Properties like **customer** are only available at this point.
+
+```javascript
+bonjovi.on( 'load', function(){
+	console.log( 'The customer\'s name is:', bonjovi.customer.first_name, bonjovi.customer.last_name );
+});
+```
+
 ##### login
 
 Triggered when a customer logs in
