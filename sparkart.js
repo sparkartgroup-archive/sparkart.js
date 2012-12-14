@@ -316,6 +316,7 @@ this.sparkart = {};
 			if( callback ) callback( null, response );
 			
 			fanclub.trigger( 'register', response.customer );
+			fanclub.customer = response.customer;
 			if( fanclub.parameters.reload.register ) location.reload();
 			
 		});
@@ -337,6 +338,7 @@ this.sparkart = {};
 			if( callback ) callback( null, response );
 			
 			fanclub.trigger( 'login', response.customer );
+			fanclub.customer = response.customer;
 			if( fanclub.parameters.reload.login ) location.reload();
 			fanclub.draw();
 			
