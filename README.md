@@ -48,6 +48,19 @@ The following options are available:
 * **preprocessors** - *(object of functions or array)* - An object containing a list of widget names and preprocessor functions. See [Preprocessors](https://github.com/SparkartGroupInc/sparkart.js/wiki/Preprocessors) for more information.
 * **reload** - *(boolean or object of booleans)* - Determines whether the page reloads after a method or not. Specify a single boolean to set all reload settings at once, or set each reload individually. Things that reload: `login`, `register`, `logout`. Reload is on by default.
 
+#### Fanclub Properties
+
+After a fanclub is instantiated, some properties are set by default. The following properties are made available:
+
+* **authentications** - Type of third party authentications the site supports, such as Facebook or Twitter.
+* **customer** - The current customer's account information. Is `null` if there is no user session (the user isn't logged in).
+* **name** - The fanclub's name.
+* **key** - The fanclub's API key.
+* **preprocessors** - An object of processsing functions used to be run before data is passed to widget templates. This is used internally to normalize dates, add navigation links, and other things. Custom preprocessors should be added using the **preprocessors** option, rather than being set manually.
+* **templates** - An object of strings to be used as templates for widgets. Custom templates should be set with the **templates** option, rather than being set manually.
+
+Most of these properties are not set until after the fanclub finishes loading. In order to wait for that, use the "load" event.
+
 #### Fanclub Widgets
 
 In order to make generating fanclub markup easier, sparkart.js has a widget system which automatically renders fanclub html. The following widgets are available by default:
