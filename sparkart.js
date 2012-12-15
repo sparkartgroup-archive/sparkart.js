@@ -97,6 +97,7 @@ this.sparkart = {};
 			'	{{#plans}}'+
 			'	<li>'+
 			'		<h2>{{name}}</h2>'+
+			'		<h3>{{price}}</h3>'+
 			'		<div class="description">{{description}}</div>'+
 			'		{{#package}}'+
 			'			<h3>{{name}}</h3>'+
@@ -109,11 +110,33 @@ this.sparkart = {};
 			'				{{/items}}'+
 			'			</ul>'+
 			'		{{/package}}'+
+			'		<ul class="actions">'+
+			'			<li class="join"><a href="{{checkout}}">Join Now</a></li>'+
+			'		</ul>'+
 			'		{{#annotations}}<sub class="annotations">{{.}}</sub>{{/annotations}}'+
 			'	</li>'+
 			'	{{/plans}}'+
 			'</ul>',
-			plan: '<div class="plan">{{name}}</div>',
+			plan: '<div class="plan">'+
+			'	<h2>{{name}}</h2>'+
+			'	<h3>{{price}}</h3>'+
+			'	<div class="description">{{description}}</div>'+
+			'	{{#package}}'+
+			'		<h3>{{name}}</h3>'+
+			'		<ul class="items">'+
+			'			{{#items}}'+
+			'			<li>'+
+			'				<img src="{{thumbnail}}" />'+
+			'				<strong>{{name}}</strong>'+
+			'			</li>'+
+			'			{{/items}}'+
+			'		</ul>'+
+			'	{{/package}}'+
+			'	<ul class="actions">'+
+			'		<li class="join"><a href="{{checkout}}">Join Now</a></li>'+
+			'	</ul>'+
+			'	{{#annotations}}<sub class="annotations">{{.}}</sub>{{/annotations}}'+	
+			'</div>',
 			events: '<ul class="events">'+
 			'	{{#events}}'+
 			'	<li>'+
@@ -238,8 +261,8 @@ this.sparkart = {};
 			'	<fieldset>'+
 			'		<legend>Register your Account</legend>'+
 			'		<p>Set a password for your new fanclub account</p>'+
-			'		<label>Date of Birth<br />'+
-			'		<input name="birthdate" type="text" /></label>'+
+			'		<label>Date of Birth</label>'+
+			'		<input name="birthdate" type="text" placeholder="MM-DD-YYYY" />'+
 			'		<label>Password<br />'+
 			'		<input name="password" type="password" /></label>'+
 			'		<label>Password Confirm<br />'+
@@ -496,7 +519,7 @@ this.sparkart = {};
 		
 		var fanclub = this;
 		parameters = parameters || {};
-		if( endpoint === 'event' ) endpoint +='s';	
+		if( endpoint === 'event' || endpoint === 'plan' ) endpoint +='s';	
 		
 		var url = ( parameters.id )
 			? fanclub.parameters.api_url +'/'+ endpoint +'/'+ parameters.id +'.json'
@@ -598,8 +621,11 @@ this.sparkart = {};
 			e.preventDefault();
 			
 			var $this = $(this);
+			var birthdate = $this.find('input[name="birthdate"]').val();
+			var birthdate_bits = birthdate.split(/[-\/]/ig);
+			birthdate = birthdate_bits[2] +'-'+ birthdate_bits[0] +'-'+ birthdate_bits[1];console.log(birthdate)
 			var data = {
-				birthdate: $this.find('input[name="birthdate"]').val(),
+				birthdate: birthdate,
 				password: $this.find('input[name="password"]').val(),
 				password_confirmation: $this.find('input[name="password_confirmation"]').val(),
 				accept_terms: $this.find('input[name="accept_terms"]').prop('checked')
