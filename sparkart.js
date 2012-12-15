@@ -260,9 +260,21 @@ this.sparkart = {};
 			'	<div class="errors" style="display: none;"></div>'+
 			'	<fieldset>'+
 			'		<legend>Register your Account</legend>'+
-			'		<p>Set a password for your new fanclub account</p>'+
-			'		<label>Date of Birth</label>'+
-			'		<input name="birthdate" type="text" placeholder="MM-DD-YYYY" />'+
+			'		<p>Complete your fanclub account registration.</p>'+
+			'		{{^email}}'+
+			'		<label>Email<br />'+
+			'		<input name="email" type="text" /></label>'+
+			'		{{/email}}'+
+			'		{{^first_name}}'+
+			'		<label>First Name<br />'+
+			'		<input name="first_name" type="text" /></label>'+
+			'		{{/first_name}}'+
+			'		{{^last_name}}'+
+			'		<label>Last Name<br />'+
+			'		<input name="last_name" type="text" /></label>'+
+			'		{{/last_name}}'+
+			'		<label>Date of Birth<br />'+
+			'		<input name="birthdate" type="text" placeholder="MM-DD-YYYY" /></label>'+
 			'		<label>Password<br />'+
 			'		<input name="password" type="password" /></label>'+
 			'		<label>Password Confirm<br />'+
@@ -623,8 +635,11 @@ this.sparkart = {};
 			var $this = $(this);
 			var birthdate = $this.find('input[name="birthdate"]').val();
 			var birthdate_bits = birthdate.split(/[-\/]/ig);
-			birthdate = birthdate_bits[2] +'-'+ birthdate_bits[0] +'-'+ birthdate_bits[1];console.log(birthdate)
+			birthdate = birthdate_bits[2] +'-'+ birthdate_bits[0] +'-'+ birthdate_bits[1];
 			var data = {
+				first_name: $this.find('input[name="first_name"]').val(),
+				last_name: $this.find('input[name="last_name"]').val(),
+				email: $this.find('input[name="email"]').val(),
 				birthdate: birthdate,
 				password: $this.find('input[name="password"]').val(),
 				password_confirmation: $this.find('input[name="password_confirmation"]').val(),
