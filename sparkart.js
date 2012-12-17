@@ -513,7 +513,7 @@ this.sparkart = {};
 				catch( err ){
 					console.error( err );
 				}
-				var errors = responseObj.messages || [];
+				var errors = ( responseObj )? responseObj.messages: [];
 				if( callback ) callback( errors );
 			});
 		
@@ -707,6 +707,8 @@ this.sparkart = {};
 		if( typeof this._listeners[type] == 'undefined' ){
 			this._listeners[type] = [];
 		}
+		
+		if( typeof listener !== 'function' ) return;	
 		
 		this._listeners[type].push(listener);
 		
