@@ -202,7 +202,6 @@ this.sparkart = {};
 			'	</div>'+
 			'	<div class="errors" style="display: none;"></div>'+
 			'	<fieldset>'+
-			'		<legend>Your Account</legend>'+
 			'		<label>First Name<br />'+
 			'		<input name="first_name" type="text" value="{{first_name}}" /></label><br />'+
 			'		<label>Last Name<br />'+
@@ -230,7 +229,6 @@ this.sparkart = {};
 			'	</div>'+
 			'	<div class="errors" style="display: none;"></div>'+
 			'	<fieldset>'+
-			'		<legend>Log In</legend>'+
 			'		<label>Email<br />'+
 			'		<input name="email" type="text" /></label>'+
 			'		<label>Password<br />'+
@@ -242,7 +240,6 @@ this.sparkart = {};
 			'<form class="forgot" style="display:none">'+
 			'	<a href="#close">Close</a>'+
 			'	<fieldset>'+
-			'		<legend>Forgot Password</legend>'+
 			'		<p>Please enter the email address you used for your fanclub account:</p>'+
 			'		<label>Email<br />'+
 			'		<input type="text" name="email"></input>'+
@@ -259,7 +256,6 @@ this.sparkart = {};
 			'	</div>'+
 			'	<div class="errors" style="display: none;"></div>'+
 			'	<fieldset>'+
-			'		<legend>Register your Account</legend>'+
 			'		<p>Complete your fanclub account registration.</p>'+
 			'		{{^email}}'+
 			'		<label>Email<br />'+
