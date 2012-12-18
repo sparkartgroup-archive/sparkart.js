@@ -295,13 +295,12 @@ this.sparkart = {};
 				return data;
 			} ],
 			events: [ function( data ){
-				for( var i in data.events ){
-					var event = data.events[i];
+				$( data.events ).each( function( i, event ){
 					event.date = convertDate( event.date );
 					event.doors_open = convertDate( event.doors_open );
 					event.start = convertDate( event.start );
 					event.venue = convertAddress( event.venue );
-				}
+				});
 				return data;
 			} ]
 		};
@@ -471,9 +470,9 @@ this.sparkart = {};
 			if( err ) return callback( err );
 			var preprocessors = fanclub.preprocessors[widget];
 			if( preprocessors ){
-				for( var i in preprocessors ){
-					response = preprocessors[i]( response );
-				}
+				$( preprocessors ).each( function( i, preprocessor ){
+					response = preprocessor( response );
+				});
 			}
 			response.parameters = config;
 			callback( null, fanclub.templates[widget]( response ) );
@@ -721,20 +720,22 @@ this.sparkart = {};
 		
 		if( this._listeners[event] instanceof Array ){
 			var listeners = this._listeners[event];
-			for( var i in listeners ){
-				listeners[i].apply( this, event_args );
-			}
+			$( listeners ).each( function( i, listener ){
+				console.log(listener);
+				listener.apply( this, event_args );
+			});
 		}
 		
 	};
 		
-	Fanclub.prototype.off = function( type, listener ){
+	Fanclub.prototype.off = function( type, removed_listener ){
 	
 		if( this._listeners[type] instanceof Array ){
 			var listeners = this._listeners[type];
-			if( listener ){
-				for( var i in listeners ){
-					if( listeners[i] === listener ){
+			if( removed_listener ){
+				for( var i = 0; i < listeners.length; i++ ){
+					var listener = listeners[i];
+					if( listener === removed_listener ){
 						listeners.splice( i, 1 );
 						break;
 					}
