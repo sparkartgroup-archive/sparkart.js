@@ -323,10 +323,10 @@ this.sparkart = {};
 				fanclub.customer = ( response )? response.customer: null;
 				fanclub.authentications = ( fc_response )? fc_response.fanclub.authentications: null;
 				fanclub.name = ( fc_response )? fc_response.fanclub.name: null;
-				fanclub.trigger('load');
 				// draw all widgets
 				fanclub.draw();
 				fanclub.bindEvents();
+				fanclub.trigger('load');
 			});
 		});
 		
