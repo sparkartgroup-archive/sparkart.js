@@ -454,7 +454,7 @@ this.sparkart = {};
 
 		var fanclub = this;	
 
-		if( widget === 'login' || widget === 'logout' || widget === 'register' || widget === 'account' ){
+		if( widget === 'login' || widget === 'logout' || widget === 'register' ){
 			this.get( 'account', function( err, response ){
 				if( err ) response = {};
 				var data = { customer: response.customer };
