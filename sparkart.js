@@ -327,6 +327,7 @@ this.sparkart = {};
 				fanclub.draw();
 				fanclub.bindEvents();
 				fanclub.trigger('load');
+				fanclub.loaded = true;
 			});
 		});
 		
@@ -699,14 +700,18 @@ this.sparkart = {};
 	
 	// Event Methods
 	Fanclub.prototype.on = function( type, listener ){
-	
+		
+		var fanclub = this;	
+		
 		if( typeof this._listeners[type] == 'undefined' ){
 			this._listeners[type] = [];
 		}
 		
-		if( typeof listener !== 'function' ) return;	
+		if( typeof listener !== 'function' ) return;		
 		
 		this._listeners[type].push(listener);
+		
+		if( type === 'load' && fanclub.loaded === true ) listener();
 		
 	};
 		
