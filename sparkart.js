@@ -202,6 +202,8 @@ this.sparkart = {};
 			'	</div>'+
 			'	<div class="errors" style="display: none;"></div>'+
 			'	<fieldset>'+
+			'		<label>Username<br />'+
+			'		<input name="username" type="text" value="{{username}}" /></label><br />'+
 			'		<label>First Name<br />'+
 			'		<input name="first_name" type="text" value="{{first_name}}" /></label><br />'+
 			'		<label>Last Name<br />'+
@@ -260,6 +262,10 @@ this.sparkart = {};
 			'		{{^email}}'+
 			'		<label>Email<br />'+
 			'		<input name="email" type="text" /></label>'+
+			'		{{^username}}'+
+			'		<label>Username<br />'+
+			'		<input name="username" type="text" value="{{username}}" /></label><br />'+
+			'		{{/username}}'+
 			'		{{/email}}'+
 			'		{{^first_name}}'+
 			'		<label>First Name<br />'+
@@ -656,6 +662,7 @@ this.sparkart = {};
 				var birthdate_bits = birthdate.split(/[-\/]/ig);
 				birthdate = birthdate_bits[2] +'-'+ birthdate_bits[0] +'-'+ birthdate_bits[1];
 				var data = {
+					username: $this.find('input[name="username"]').val(),
 					first_name: $this.find('input[name="first_name"]').val(),
 					last_name: $this.find('input[name="last_name"]').val(),
 					email: $this.find('input[name="email"]').val(),
@@ -694,6 +701,7 @@ this.sparkart = {};
 				
 				var $this = $(this);
 				var data = {
+					username: $this.find('input[name="username"]').val(),
 					first_name: $this.find('input[name="first_name"]').val(),
 					last_name: $this.find('input[name="last_name"]').val(),
 					email: $this.find('input[name="email"]').val(),
