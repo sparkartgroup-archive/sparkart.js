@@ -275,6 +275,10 @@ this.sparkart = {};
 			'		<label>Last Name<br />'+
 			'		<input name="last_name" type="text" /></label>'+
 			'		{{/last_name}}'+
+			'		{{^username}}'+
+			'		<label>Username<br />'+
+			'		<input name="username" type="text" /></label>'+
+			'		{{/^username}}'+
 			'		<label>Date of Birth<br />'+
 			'		<input name="birthdate" type="text" placeholder="MM-DD-YYYY" /></label>'+
 			'		<label>Password<br />'+
@@ -665,6 +669,7 @@ this.sparkart = {};
 					username: $this.find('input[name="username"]').val(),
 					first_name: $this.find('input[name="first_name"]').val(),
 					last_name: $this.find('input[name="last_name"]').val(),
+					username: $this.find('input[name="username"]').val(),
 					email: $this.find('input[name="email"]').val(),
 					birthdate: birthdate,
 					password: $this.find('input[name="password"]').val(),
