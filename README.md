@@ -119,10 +119,11 @@ bonjovi.logout( function( err ){
 });
 ```
 
-##### .draw( widget, config )
+##### .draw( widget, config, callback )
 
 - **widget** - A jQuery selector (as a string) or a jQuery selection of a specific widget to draw. If nothing is specified, it draws all widgets on the page.
 - **config** - An object of options to pass when rendering the widget. These options are listed on the endpoints for the [Sparkart Fanclubs API](http://fanclubs.sparkart.com/developers).
+- **callback** - A function to execute after the widget renders. It gets 2 arguments: `err, $widget`. `err` is an array of errors if something went wrong, or `null`. `$widget` is the jQuery selection of the widget that was just rendered.
 
 Draws a single widget, collection of widgets, or every widget on the page.
 

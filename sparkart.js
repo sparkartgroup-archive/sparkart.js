@@ -402,7 +402,12 @@ this.sparkart = {};
 	
 	// redraw widgets
 	// used when authorization status changes
-	Fanclub.prototype.draw = function( $widget, config ){
+	Fanclub.prototype.draw = function( $widget, config, callback ){
+		
+		if( typeof callback === 'undefined' && typeof config === 'function' ){
+			callback = config;
+			config = null;
+		}
 		
 		var fanclub = this;	
 		
@@ -440,11 +445,13 @@ this.sparkart = {};
 				$widget
 					.removeClass('loading')
 					.addClass('error');
+				if( callback ) callback( err );
 				return;
 			}
 			$widget
 				.html( html )
 				.removeClass('loading');
+			if( callback ) callback( null, $widget );
 		});
 		
 	};
