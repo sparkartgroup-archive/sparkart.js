@@ -324,7 +324,6 @@ this.sparkart = {};
 				fanclub.name = ( fc_response )? fc_response.fanclub.name: null;
 				// draw all widgets
 				fanclub.draw();
-				fanclub.bindEvents();
 				fanclub.trigger('load');
 				fanclub.loaded = true;
 			});
@@ -439,7 +438,10 @@ this.sparkart = {};
 		$widget
 			.removeClass('error')
 			.addClass('loading');	
-
+		
+		// bind events
+		this.bindWidget( widget, $widget );
+		
 		this.renderWidget( widget, config, function( err, html ){
 			if( err ){
 				$widget
@@ -463,17 +465,21 @@ this.sparkart = {};
 
 		if( widget === 'login' || widget === 'logout' || widget === 'register' ){
 			this.get( 'account', function( err, response ){
+			
 				if( err ) response = {};
 				var data = { customer: response.customer };
 				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 				data.parameters = config;
-				var html = fanclub.templates[widget]( data );
-				return callback( null, html );
+				var html = fanclub.templates[widget]( data );	
+				
+				if( callback ) callback( null, html );
+				
 			});
 			return;
 		}
 	
 		this.get( widget, config, function( err, response ){
+		
 			if( err ) return callback( err );
 			var preprocessors = fanclub.preprocessors[widget];
 			if( preprocessors ){
@@ -482,7 +488,9 @@ this.sparkart = {};
 				});
 			}
 			response.parameters = config;
-			callback( null, fanclub.templates[widget]( response ) );
+			
+			if( callback ) callback( null, fanclub.templates[widget]( response ) );
+			
 		});
 		
 	};
@@ -559,148 +567,161 @@ this.sparkart = {};
 	};
 	
 	// bind DOM events to widgets
-	Fanclub.prototype.bindEvents = function( $widgets ){
+	Fanclub.prototype.bindWidget = function( widget, $widget ){
 		
 		var fanclub = this;	
 		
 		// bind all login widgets
-		$('.sparkart.fanclub.login').on( 'submit.sparkart', function( e ){
-			
-			e.preventDefault();
-			
-			var $this = $(this);
-			var data = {
-				email: $this.find('input[name="email"]').val(),
-				password: $this.find('input[name="password"]').val()
-			};
-			
-			fanclub.login( data, function( errors, response ){
-	
-				// remove old error message
-				var $errors = $this.find('div.errors');
-				$errors.empty().hide();
-				
-				if( errors ){
-					var $err = $( fanclub.templates.errors({ errors: errors }) );
-					$errors.html( $err ).show();
-					return;
-				}
-				
-				var $success = $this.find('div.success');
-				$success.show();
-				
-			});	
-			
-		});
+		if( widget === 'login' ){
 		
-		// bind forgot password widget
-		$('.sparkart.fanclub.login')
-			.on( 'click.sparkart', 'a[href="#forgot"]', function( e ){
+			$widget.on( 'submit.sparkart', function( e ){
 				
 				e.preventDefault();
 				
 				var $this = $(this);
-				var $login = $this.closest('.sparkart.fanclub.login');
-				var $forgot = $login.find('form.forgot');
+				var data = {
+					email: $this.find('input[name="email"]').val(),
+					password: $this.find('input[name="password"]').val()
+				};
 				
-				$forgot.show();
+				fanclub.login( data, function( errors, response ){
+		
+					// remove old error message
+					var $errors = $this.find('div.errors');
+					$errors.empty().hide();
+					
+					if( errors ){
+						var $err = $( fanclub.templates.errors({ errors: errors }) );
+						$errors.html( $err ).show();
+						return;
+					}
+					
+					var $success = $this.find('div.success');
+					$success.show();
+					
+				});	
 				
-			})
-			.on( 'click.sparkart', 'a[href="#close"]', function( e ){
+			});
+		
+			// bind forgot password widget
+			$widget
+				.on( 'click.sparkart', 'a[href="#forgot"]', function( e ){
+					
+					e.preventDefault();
+					
+					var $this = $(this);
+					var $login = $this.closest('.sparkart.fanclub.login');
+					var $forgot = $login.find('form.forgot');
+					
+					$forgot.show();
+					
+				})
+				.on( 'click.sparkart', 'a[href="#close"]', function( e ){
+					
+					e.preventDefault();
+					
+					var $this = $(this);
+					var $forgot = $this.closest('form.forgot');
+					
+					$forgot.hide();
+					
+				});
+				
+		}
+		else if( widget === 'logout' ){
+			
+			// bind all logout widgets
+			$widget.on( 'click.sparkart', 'a[href="#logout"]', function( e ){
+				
+				e.preventDefault();
+				
+				fanclub.logout( function( err ){
+					
+					if( err ) return console.log( err );
+					
+				});
+				
+			});
+		
+		}
+		else if( widget === 'register' ){
+		
+			// bind all register widgets
+			$widget.on( 'submit.sparkart', function( e ){
 				
 				e.preventDefault();
 				
 				var $this = $(this);
-				var $forgot = $this.closest('form.forgot');
+				var birthdate = $this.find('input[name="birthdate"]').val();
+				var birthdate_bits = birthdate.split(/[-\/]/ig);
+				birthdate = birthdate_bits[2] +'-'+ birthdate_bits[0] +'-'+ birthdate_bits[1];
+				var data = {
+					first_name: $this.find('input[name="first_name"]').val(),
+					last_name: $this.find('input[name="last_name"]').val(),
+					email: $this.find('input[name="email"]').val(),
+					birthdate: birthdate,
+					password: $this.find('input[name="password"]').val(),
+					password_confirmation: $this.find('input[name="password_confirmation"]').val(),
+					accept_terms: $this.find('input[name="accept_terms"]').prop('checked')
+				};
 				
-				$forgot.hide();
+				fanclub.register( data, function( errors, response ){
+					
+					// remove old error message
+					var $errors = $this.find('div.errors');
+					$errors.empty().hide();
+					
+					if( errors ){
+						var $err = $( fanclub.templates.errors({ errors: errors }) );
+						$errors.html( $err ).show();
+						return;
+					}
+					
+					var $success = $this.find('div.success');
+					$success.show();	
+					
+				});
 				
 			});
 		
-		// bind all logout widgets
-		$('.sparkart.fanclub.logout').on( 'click.sparkart', 'a[href="#logout"]', function( e ){
-			
-			e.preventDefault();
-			
-			fanclub.logout( function( err ){
-				
-				if( err ) return console.log( err );
-				
-			});
-			
-		});
+		}
+		else if( widget === 'account' ){
 		
-		// bind all register widgets
-		$('.sparkart.fanclub.register').on( 'submit.sparkart', function( e ){
-			
-			e.preventDefault();
-			
-			var $this = $(this);
-			var birthdate = $this.find('input[name="birthdate"]').val();
-			var birthdate_bits = birthdate.split(/[-\/]/ig);
-			birthdate = birthdate_bits[2] +'-'+ birthdate_bits[0] +'-'+ birthdate_bits[1];
-			var data = {
-				first_name: $this.find('input[name="first_name"]').val(),
-				last_name: $this.find('input[name="last_name"]').val(),
-				email: $this.find('input[name="email"]').val(),
-				birthdate: birthdate,
-				password: $this.find('input[name="password"]').val(),
-				password_confirmation: $this.find('input[name="password_confirmation"]').val(),
-				accept_terms: $this.find('input[name="accept_terms"]').prop('checked')
-			};
-			
-			fanclub.register( data, function( errors, response ){
+			// bind all account widgets
+			$widget.on( 'submit.sparkart', function( e ){
 				
-				// remove old error message
-				var $errors = $this.find('div.errors');
-				$errors.empty().hide();
+				e.preventDefault();
 				
-				if( errors ){
-					var $err = $( fanclub.templates.errors({ errors: errors }) );
-					$errors.html( $err ).show();
-					return;
-				}
+				var $this = $(this);
+				var data = {
+					first_name: $this.find('input[name="first_name"]').val(),
+					last_name: $this.find('input[name="last_name"]').val(),
+					email: $this.find('input[name="email"]').val(),
+					current_password: $this.find('input[name="current_password"]').val(),
+					password: $this.find('input[name="password"]').val(),
+					password_confirmation: $this.find('input[name="password_confirmation"]').val()
+				};
 				
-				var $success = $this.find('div.success');
-				$success.show();	
+				fanclub.post( 'account', data, function( errors ){
+					
+					// remove old error message
+					var $errors = $this.find('div.errors');
+					$errors.empty().hide();
+					
+					if( errors ){
+						var $err = $( fanclub.templates.errors({ errors: errors }) );
+						$errors.html( $err ).show();
+						return;
+					}
+					
+					var $success = $this.find('div.success');
+					$success.show();
+					
+				});
 				
 			});
 			
-		});
-		
-		// bind all account widgets
-		$('.sparkart.fanclub.account').on( 'submit.sparkart', function( e ){
-			
-			e.preventDefault();
-			
-			var $this = $(this);
-			var data = {
-				first_name: $this.find('input[name="first_name"]').val(),
-				last_name: $this.find('input[name="last_name"]').val(),
-				email: $this.find('input[name="email"]').val(),
-				current_password: $this.find('input[name="current_password"]').val(),
-				password: $this.find('input[name="password"]').val(),
-				password_confirmation: $this.find('input[name="password_confirmation"]').val()
-			};
-			
-			fanclub.post( 'account', data, function( errors ){
-				
-				// remove old error message
-				var $errors = $this.find('div.errors');
-				$errors.empty().hide();
-				
-				if( errors ){
-					var $err = $( fanclub.templates.errors({ errors: errors }) );
-					$errors.html( $err ).show();
-					return;
-				}
-				
-				var $success = $this.find('div.success');
-				$success.show();
-				
-			});
-			
-		});
+		}
 		
 	};
 	
@@ -728,7 +749,6 @@ this.sparkart = {};
 		if( this._listeners[event] instanceof Array ){
 			var listeners = this._listeners[event];
 			$( listeners ).each( function( i, listener ){
-				console.log(listener);
 				listener.apply( this, event_args );
 			});
 		}
