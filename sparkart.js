@@ -1,10 +1,19 @@
+// Add sparkart to the global namespace
 this.sparkart = {};
 
-// needs to be an API wrapper...
-
+// Execute code inside a closure 
 (function( $, Handlebars ){
 	
+/*
+PRIVATE VARIABLES AND METHODS
+////////////////////////////////////////////////////////////////////////////////
+*/
+
+	// The API url we will look to by default
+	// NOTE: This will need to be updated once we have a final URL...
 	var API_URL = 'http://lvh.me:7000/api/v1/consumer';
+
+	// Constants for use inside convertDate()
 	var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 	var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 	
@@ -67,13 +76,21 @@ this.sparkart = {};
 		
 	};
 	
-	// Fanclub constructor
+
+/*
+FANCLUB CONSTRUCTOR
+////////////////////////////////////////////////////////////////////////////////
+Builds the fanclub and returns the new fanclub object
+*/
+
 	var Fanclub = sparkart.Fanclub = function( key, parameters ){
 		
 		var fanclub = this;
 		fanclub._listeners = {};
 		fanclub.key = key;
 		parameters = parameters || {};
+
+		// Set the reload options
 		if( parameters.reload === true || parameters.reload === false ){
 			parameters.reload = {
 				login: parameters.reload,
@@ -86,10 +103,13 @@ this.sparkart = {};
 				login: true,
 				logout: true,
 				register: true
-			}
+			},
+			api_url: API_URL
 		};
 		fanclub.parameters = $.extend( default_parameters, parameters );
-		fanclub.parameters.api_url = parameters.api_url || API_URL;
+
+		// Define ALL of our templates. Ideally we'd have these in external files
+		// Then compile the single JS script
 		var templates = fanclub.templates = {
 			subscriptions: '<ul class="subscriptions">{{#subscriptions}}<li>{{name}}</li>{{/subscriptions}}</ul>',
 			subscription: '<div class="subscription">{{name}}</div>',
@@ -296,6 +316,8 @@ this.sparkart = {};
 			order: '<div class="order">{{contents}}</div>',
 			errors: '<ul class="errors">{{#errors}}<li>{{.}}</li>{{/errors}}</ul>'
 		};
+
+		// Define default preprocessors
 		var preprocessors = fanclub.preprocessors = {
 			event: [ function( data ){
 				data.event.date = convertDate( data.event.date );
@@ -327,6 +349,10 @@ this.sparkart = {};
 			templates[name] = Handlebars.compile( templates[name] );
 		}
 		
+		// Fetch initial data from the API
+		// Draw all widgets
+		// Trigger load event
+		// NOTE: get this down to a single request instead of 2
 		fanclub.get( 'account', function( err, response ){
 			fanclub.get( 'fanclub', function( fc_err, fc_response ){
 				fanclub.customer = ( response )? response.customer: null;
@@ -340,7 +366,14 @@ this.sparkart = {};
 		});
 		
 	};
-	
+
+/*
+PUBLIC METHODS
+////////////////////////////////////////////////////////////////////////////////
+Any and all methods available publicly
+Many methods rely on and use each other
+*/
+
 	// register the user
 	Fanclub.prototype.register = function( data, callback ){
 		
@@ -409,8 +442,7 @@ this.sparkart = {};
 		
 	};
 	
-	// redraw widgets
-	// used when authorization status changes
+	// Draw widgets
 	Fanclub.prototype.draw = function( $widget, config, callback ){
 		
 		if( typeof callback === 'undefined' && typeof config === 'function' ){
@@ -420,6 +452,7 @@ this.sparkart = {};
 		
 		var fanclub = this;	
 		
+		// If no widget is specified, loop through all of them
 		if( !$widget ){
 			var $widgets = $('.sparkart.fanclub');
 			$widgets.each( function( i, widget ){
@@ -427,13 +460,17 @@ this.sparkart = {};
 			});
 			return;
 		}
-		
-		var widget;	
+			
 		$widget = $($widget); // make sure it's a jquery object
+
+		// Pull configuration params off of the widget element
+		// Merge configuration params into single object
 		var data = $widget.data();
 		config = config || {};
 		config = $.extend( config, data );
 		
+		// Figure out which widget this is
+		var widget;
 		if( $widget.is('.subscriptions') ) widget = 'subscriptions';
 		else if( $widget.is('.plans') ) widget = 'plans';
 		else if( $widget.is('.events') ) widget = 'events';
@@ -447,11 +484,12 @@ this.sparkart = {};
 		
 		$widget
 			.removeClass('error')
-			.addClass('loading');	
+			.addClass('loading');
 		
-		// bind events
+		// Bind events to widget markup
 		this.bindWidget( widget, $widget );
 		
+		// Generate the widget markup and place it in the DOM
 		this.renderWidget( widget, config, function( err, html ){
 			if( err ){
 				$widget
@@ -468,11 +506,12 @@ this.sparkart = {};
 		
 	};
 	
-	// generate a widget's markup
+	// Generate a widget's markup
 	Fanclub.prototype.renderWidget = function( widget, config, callback ){
 
 		var fanclub = this;	
 
+		// Login, Logout, and Register are all special cases that use the "account" endpoint
 		if( widget === 'login' || widget === 'logout' || widget === 'register' ){
 			this.get( 'account', function( err, response ){
 			
@@ -488,8 +527,9 @@ this.sparkart = {};
 			return;
 		}
 	
+		// all other widgets use their own endpoints
 		this.get( widget, config, function( err, response ){
-		
+
 			if( err ) return callback( err );
 			var preprocessors = fanclub.preprocessors[widget];
 			if( preprocessors ){
@@ -505,13 +545,15 @@ this.sparkart = {};
 		
 	};
 	
-	// general method for doing AJAX requests
+	// General method for doing AJAX requests
+	// Lets us custom process errors, set default parameters, etc
 	Fanclub.prototype.request = function( url, method, parameters, callback ){
 
 		parameters = $.extend( {}, parameters );
 		parameters.key = this.key;
 		if( parameters.id ) delete parameters.id;
 
+		// Generate a jQuery AJAX request
 		var request = $.ajax({
 			url: url,
 			type: method,
@@ -523,6 +565,7 @@ this.sparkart = {};
 			data: parameters
 		});
 		
+		// Bind to the AJAX request's deferred events
 		request
 			.done( function( data ){
 				if( callback ) callback( null, data );
@@ -542,7 +585,7 @@ this.sparkart = {};
 		
 	};
 	
-	// shortcut for requesting api data
+	// Shortcut for getting API data
 	Fanclub.prototype.get = function( endpoint, parameters, callback ){	
 		
 		if( typeof callback === 'undefined' && typeof parameters === 'function' ){
@@ -554,6 +597,7 @@ this.sparkart = {};
 		parameters = parameters || {};
 		if( endpoint === 'event' || endpoint === 'plan' ) endpoint +='s';	
 		
+		// If an ID is provided, we're looking up a single resource
 		var url = ( parameters.id )
 			? fanclub.parameters.api_url +'/'+ endpoint +'/'+ parameters.id +'.json'
 			: fanclub.parameters.api_url +'/'+ endpoint +'.json';
@@ -562,7 +606,7 @@ this.sparkart = {};
 		
 	};
 	
-	// shortcut for sending api data
+	// Shortcut for sending api data
 	Fanclub.prototype.post = function( endpoint, parameters, callback ){
 		
 		if( typeof callback === 'undefined' && typeof parameters === 'function' ){
@@ -576,12 +620,12 @@ this.sparkart = {};
 		
 	};
 	
-	// bind DOM events to widgets
+	// Bind DOM events to widgets
 	Fanclub.prototype.bindWidget = function( widget, $widget ){
 		
 		var fanclub = this;	
 		
-		// bind all login widgets
+		// Bind all login widgets
 		if( widget === 'login' ){
 		
 			$widget.on( 'submit.sparkart', function( e ){
@@ -613,7 +657,8 @@ this.sparkart = {};
 				
 			});
 		
-			// bind forgot password widget
+			// Bind forgot password subwidget
+			// NOTE: should this be moved elsewhere?
 			$widget
 				.on( 'click.sparkart', 'a[href="#forgot"]', function( e ){
 					
@@ -638,9 +683,10 @@ this.sparkart = {};
 				});
 				
 		}
+
+		// Bind all logout widgets
 		else if( widget === 'logout' ){
 			
-			// bind all logout widgets
 			$widget.on( 'click.sparkart', 'a[href="#logout"]', function( e ){
 				
 				e.preventDefault();
@@ -653,10 +699,11 @@ this.sparkart = {};
 				
 			});
 		
-		}
+		}	
+
+		// Bind all register widgets
 		else if( widget === 'register' ){
 		
-			// bind all register widgets
 			$widget.on( 'submit.sparkart', function( e ){
 				
 				e.preventDefault();
@@ -697,9 +744,10 @@ this.sparkart = {};
 			});
 		
 		}
+
+		// Bind all account widgets
 		else if( widget === 'account' ){
 		
-			// bind all account widgets
 			$widget.on( 'submit.sparkart', function( e ){
 				
 				e.preventDefault();
@@ -737,8 +785,14 @@ this.sparkart = {};
 		}
 		
 	};
-	
-	// Event Methods
+
+/*
+EVENT EMITTER METHODS
+////////////////////////////////////////////////////////////////////////////////
+Methods for binding, triggering, and unbinding events
+*/
+
+	// Binds a new listener to an event
 	Fanclub.prototype.on = function( type, listener ){
 		
 		var fanclub = this;	
@@ -754,7 +808,8 @@ this.sparkart = {};
 		if( type === 'load' && fanclub.loaded === true ) listener();
 		
 	};
-		
+	
+	// Triggers all event listeners on an event
 	Fanclub.prototype.trigger = function( event ){
 	
 		var event_args = Array.prototype.splice.call( arguments, 1 );
@@ -767,7 +822,8 @@ this.sparkart = {};
 		}
 		
 	};
-		
+	
+	// Removes listeners from an event
 	Fanclub.prototype.off = function( type, removed_listener ){
 	
 		if( this._listeners[type] instanceof Array ){
@@ -791,5 +847,6 @@ this.sparkart = {};
 	Fanclub.prototype.destroy = function(){
 		
 	};
-	
+
+// Pass jQuery and Handlebars to the closure
 })( jQuery, Handlebars );
