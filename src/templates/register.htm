@@ -1,0 +1,41 @@
+{{#customer}}
+{{^registered}}
+<form class="register" method="PUT">
+	<div class="success" style="display: none;">
+		<p>You have successfully completed the registration of your fanclub account.</p>
+	</div>
+	<div class="errors" style="display: none;"></div>
+	<fieldset>
+		<p>Complete your fanclub account registration.</p>
+		{{^email}}
+		<label>Email<br />
+		<input name="email" type="text" /></label>
+		{{^username}}
+		<label>Username<br />
+		<input name="username" type="text" value="{{username}}" /></label><br />
+		{{/username}}
+		{{/email}}
+		{{^first_name}}
+		<label>First Name<br />
+		<input name="first_name" type="text" /></label>
+		{{/first_name}}
+		{{^last_name}}
+		<label>Last Name<br />
+		<input name="last_name" type="text" /></label>
+		{{/last_name}}
+		{{^username}}
+		<label>Username<br />
+		<input name="username" type="text" /></label>
+		{{/^username}}
+		<label>Date of Birth<br />
+		<input name="birthdate" type="text" placeholder="MM-DD-YYYY" /></label>
+		<label>Password<br />
+		<input name="password" type="password" /></label>
+		<label>Password Confirm<br />
+		<input name="password_confirmation" type="password" /></label>
+		<label><input name="accept_terms" type="checkbox" /> I agree to the fanclub <a href="{{terms_url}}" target="_blank">Terms and Conditions</a></label>
+	</fieldset>
+	<button type="submit">Register</button>
+</form>
+{{/registered}}
+{{/customer}}

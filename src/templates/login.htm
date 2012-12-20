@@ -1,0 +1,25 @@
+{{^customer}}
+<form class="login">
+	<div class="success" style="display: none;">
+		<p>You have successfully logged in.</p>
+	</div>
+	<div class="errors" style="display: none;"></div>
+	<fieldset>
+		<label>Email<br />
+		<input name="email" type="text" /></label>
+		<label>Password<br />
+		<input name="password" type="password" /></label>
+		<a href="#forgot">Forgot Password?</a>
+	</fieldset>
+	<button type="submit">Log In</button>
+</form>
+<form class="forgot" style="display:none">
+	<a href="#close">Close</a>
+	<fieldset>
+		<p>Please enter the email address you used for your fanclub account:</p>
+		<label>Email<br />
+		<input type="text" name="email"></input>
+	</fieldset>
+	<button type="submit">Submit</button>
+</form>
+{{/customer}}

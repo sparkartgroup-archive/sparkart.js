@@ -1,0 +1,30 @@
+{{#customer}}
+{{#registered}}
+<form class="account">
+	<div class="success" style="display: none;">
+		<p>Account Successfully Updated!</p>
+	</div>
+	<div class="errors" style="display: none;"></div>
+	<fieldset>
+		<label>Username<br />
+		<input name="username" type="text" value="{{username}}" /></label><br />
+		<label>First Name<br />
+		<input name="first_name" type="text" value="{{first_name}}" /></label><br />
+		<label>Last Name<br />
+		<input name="last_name" type="text" value="{{last_name}}" /></label><br />
+		<label>Email Address<br />
+		<input name="email" type="text" value="{{email}}" /></label><br />
+		<div class="password">
+			<label>Current Password<br />
+			<input name="current_password" type="password" /></label>
+			<hr />
+			<label>New Password<br />
+			<input name="password" type="password" /></label><br />
+			<label>Repeat New Password<br />
+			<input name="password_confirmation" type="password" /></label>
+		</div>
+	</fieldset>
+	<button type="submit">Update Account</button>
+</form>
+{{/registered}}
+{{/customer}}

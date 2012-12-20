@@ -1,0 +1,37 @@
+{{#event}}
+<div class="event">
+	<h2>{{date.month.abbr}} {{date.day.number}}</h2>
+	<h3>{{title}}</h3>
+	<div class="description">{{description}}</div>
+	<dl>
+		{{#doors_open}}
+		<dt>Doors Open</dt>
+		<dd>{{hour.half}}:{{minute}} <span class="ampm">{{ampm}}</span></dd>
+		{{/doors_open}}
+		{{#start}}
+		<dt>Start</dt>
+		<dd>{{hour.half}}:{{minute}} <span class="ampm">{{ampm}}</span></dd>
+		{{/start}}
+	</dl>
+	{{#venue}}
+	<div class="venue">
+		<h4>{{name}}</h4>
+		<strong class="city">{{city}}</strong>, <em class="state">{{state}}</em> <span class="country">{{country}}</span>
+		<h5>Directions</h5>
+		<ul class="directions">
+			{{#directions}}
+			<li><a href="{{google_maps}}">Google Maps</a></li>
+			<li><a href="{{yahoo_maps}}">Yahoo Maps</a></li>
+			<li><a href="{{mapquest}}">Mapquest</a></li>
+			<li><a href="{{bing_maps}}">Bing Maps</a></li>
+			{{/directions}}
+		</ul>
+	</div>
+	{{/venue}}
+	<ul class="links">
+		{{#links}}
+		<li><a href="{{url}}">{{name}}</a></li>
+		{{/links}}
+	</ul>
+</div>
+{{/event}}

@@ -1,0 +1,20 @@
+<ul class="events">
+	{{#events}}
+	<li>
+		<h2><a href="{{../parameters.url}}{{id}}">{{date.month.abbr}} {{date.day.number}}</a></h2>
+		<h3>{{title}}</h3>
+		<div class="description">{{description}}</div>
+		{{#venue}}
+		<div class="venue">
+			<h4>{{name}}</h4>
+			<strong>{{city}}</strong>, {{state}}
+		</div>
+		{{/venue}}
+		<ul class="links">
+			{{#links}}
+			<li><a href="{{url}}">{{name}}</a></li>
+			{{/links}}
+		</ul>
+	</li>
+	{{/events}}
+</ul>

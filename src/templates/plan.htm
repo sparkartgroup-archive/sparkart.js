@@ -1,0 +1,20 @@
+<div class="plan">
+	<h2>{{name}}</h2>
+	<h3>{{price}}</h3>
+	<div class="description">{{description}}</div>
+	{{#package}}
+		<h3>{{name}}</h3>
+		<ul class="items">
+			{{#items}}
+			<li>
+				<img src="{{thumbnail}}" />
+				<strong>{{name}}</strong>
+			</li>
+			{{/items}}
+		</ul>
+	{{/package}}
+	<ul class="actions">
+		<li class="join"><a href="{{checkout}}">Join Now</a></li>
+	</ul>
+	{{#annotations}}<sub class="annotations">{{.}}</sub>{{/annotations}}	
+</div>
