@@ -234,3 +234,12 @@ Sparkart.js comes with a simple build script which allows us to split out templa
 ```
 node build/build.js
 ```
+
+### Warning
+
+Some users of the build script have encountered errors when running from the sparkart.js directory. If this happens to you use the following commands instead:
+
+```
+cd build
+node build.js
+```
