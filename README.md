@@ -224,3 +224,13 @@ Triggered when a customer logs out
 ##### register
 
 Triggered when a customer registers
+
+
+
+#### Building the script
+
+Sparkart.js comes with a simple build script which allows us to split out template markup in a reasonable fashion. In order to build Sparkart.js you must have [Node.js](http://nodejs.org/) installed.
+
+```
+node build/build.js
+```
