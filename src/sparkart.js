@@ -276,6 +276,7 @@ Many methods rely on and use each other
 		else if( $widget.is('.register') ) widget = 'register';
 		else if( $widget.is('.account') ) widget = 'account';
 		else if( $widget.is('.orders') ) widget = 'orders';
+		else if( $widget.is('.affiliates') ) widget = 'affiliates';
 		
 		$widget
 			.removeClass('error')
@@ -306,8 +307,8 @@ Many methods rely on and use each other
 
 		var fanclub = this;	
 
-		// Login, Logout, and Register are all special cases that use the "account" endpoint
-		if( widget === 'login' || widget === 'logout' || widget === 'register' ){
+		// Login, Logout, Register, and Affiliates are all special cases that use the "account" endpoint
+		if( widget === 'login' || widget === 'logout' || widget === 'register' || widget === 'affiliates' ){
 			this.get( 'account', function( err, response ){
 			
 				if( err ) response = {};
