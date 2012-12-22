@@ -308,7 +308,7 @@ Many methods rely on and use each other
 		var fanclub = this;	
 
 		// Login, Logout, Register, and Affiliates are all special cases that use the "account" endpoint
-		if( widget === 'login' || widget === 'logout' || widget === 'register' || widget === 'affiliates' ){
+		if( widget === 'login' || widget === 'logout' || widget === 'register' ){
 			this.get( 'account', function( err, response ){
 			
 				if( err ) response = {};
