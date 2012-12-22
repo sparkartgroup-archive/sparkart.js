@@ -207,7 +207,8 @@ Many methods rely on and use each other
 			
 			fanclub.trigger( 'login', response.customer );
 			fanclub.customer = response.customer;
-			if( fanclub.parameters.reload.login ) location.reload();
+			if( data.redirect ) location.pathname = data.redirect;
+			else if( fanclub.parameters.reload.login ) location.reload();
 			fanclub.draw();
 			
 		});
@@ -431,7 +432,8 @@ Many methods rely on and use each other
 				var $this = $(this);
 				var data = {
 					email: $this.find('input[name="email"]').val(),
-					password: $this.find('input[name="password"]').val()
+					password: $this.find('input[name="password"]').val(),
+					redirect: $this.data('redirect')
 				};
 				
 				fanclub.login( data, function( errors, response ){
