@@ -90,7 +90,7 @@ Builds the fanclub and returns the new fanclub object
 		parameters = parameters || {};
 
 		// Set the reload options
-		if( parameters.reload === true || parameters.reload === false ){
+		if( typeof parameters.reload === 'boolean' ){
 			parameters.reload = {
 				login: parameters.reload,
 				logout: parameters.reload,
@@ -517,6 +517,7 @@ Many methods rely on and use each other
 					first_name: $this.find('input[name="first_name"]').val(),
 					last_name: $this.find('input[name="last_name"]').val(),
 					username: $this.find('input[name="username"]').val(),
+					birthdate: $this.find('input[name="birthdate"]').val(),
 					email: $this.find('input[name="email"]').val(),
 					password: $this.find('input[name="password"]').val(),
 					password_confirmation: $this.find('input[name="password_confirmation"]').val(),
