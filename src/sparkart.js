@@ -208,7 +208,7 @@ Many methods rely on and use each other
 			fanclub.customer = response.customer;
 			if( data.redirect ) location.pathname = data.redirect;
 			else if( fanclub.parameters.reload.login ) location.reload();
-			fanclub.draw();
+			if( !fanclub.parameters.reload.login ) fanclub.draw();
 
 		});
 
@@ -231,7 +231,7 @@ Many methods rely on and use each other
 			fanclub.trigger('logout');
 			delete fanclub.customer;
 			if( fanclub.parameters.reload.logout ) location.reload();
-			fanclub.draw();
+			else fanclub.draw();
 
 		});
 
@@ -435,6 +435,10 @@ Many methods rely on and use each other
 					redirect: $this.data('redirect')
 				};
 
+				$this
+					.removeClass('error success')
+					.find('div.errors, div.success').hide();
+
 				fanclub.login( data, function( errors, response ){
 
 					// remove old error message
@@ -442,11 +446,13 @@ Many methods rely on and use each other
 					$errors.empty().hide();
 
 					if( errors ){
+						$this.addClass('error');
 						var $err = $( fanclub.templates.errors({ errors: errors }) );
 						$errors.html( $err ).show();
 						return;
 					}
 
+					$this.addClass('success');
 					var $success = $this.find('div.success');
 					$success.show();
 
@@ -517,6 +523,10 @@ Many methods rely on and use each other
 					accept_terms: $this.find('input[name="accept_terms"]').prop('checked')
 				};
 
+				$this
+					.removeClass('error success')
+					.find('div.errors, div.success').hide();
+
 				fanclub.register( data, function( errors, response ){
 
 					// remove old error message
@@ -524,11 +534,13 @@ Many methods rely on and use each other
 					$errors.empty().hide();
 
 					if( errors ){
+						$this.addClass('error');
 						var $err = $( fanclub.templates.errors({ errors: errors }) );
 						$errors.html( $err ).show();
 						return;
 					}
 
+					$this.addClass('success');
 					var $success = $this.find('div.success');
 					$success.show();
 
@@ -556,6 +568,10 @@ Many methods rely on and use each other
 					password_confirmation: $this.find('input[name="password_confirmation"]').val()
 				};
 
+				$this
+					.removeClass('error success')
+					.find('div.errors, div.success').hide();
+
 				fanclub.post( 'account', data, function( errors ){
 
 					// remove old error message
@@ -563,11 +579,13 @@ Many methods rely on and use each other
 					$errors.empty().hide();
 
 					if( errors ){
+						$this.addClass('error');
 						var $err = $( fanclub.templates.errors({ errors: errors }) );
 						$errors.html( $err ).show();
 						return;
 					}
 
+					$this.addClass('success');
 					var $success = $this.find('div.success');
 					$success.show();
 
