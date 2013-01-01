@@ -128,6 +128,11 @@ Builds the fanclub and returns the new fanclub object
 					event.venue = convertAddress( event.venue );
 				});
 				return data;
+			} ],
+			register: [ function( data ){
+				if( data.customer.username === null ) data.customer.username_required = true;
+				else data.customer.username_required === false;
+				return data;
 			} ]
 		};
 		if( parameters.templates ) $.extend( templates, parameters.templates );
@@ -312,6 +317,12 @@ Many methods rely on and use each other
 			this.get( 'account', function( err, response ){
 
 				if( err ) response = {};
+				var preprocessors = fanclub.preprocessors[widget];
+				if( preprocessors ){
+					$( preprocessors ).each( function( i, preprocessor ){
+						response = preprocessor( response );
+					});
+				}
 				var data = { customer: response.customer };
 				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 				data.parameters = config;

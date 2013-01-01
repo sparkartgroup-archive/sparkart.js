@@ -10,11 +10,11 @@
 		{{^email}}
 		<label>Email<br />
 		<input name="email" type="text" /></label>
-		{{^username}}
-		<label>Username<br />
-		<input name="username" type="text" value="{{username}}" /></label><br />
-		{{/username}}
 		{{/email}}
+		{{#username_required}}
+		<label>Username<br />
+		<input name="username" type="text" /></label><br />
+		{{/username_required}}
 		{{^first_name}}
 		<label>First Name<br />
 		<input name="first_name" type="text" /></label>
