@@ -523,12 +523,16 @@ Many methods rely on and use each other
 				e.preventDefault();
 
 				var $this = $(this);
+				var $birth_day = $this.find('select[name="birth_day"]');
+				var $birth_month = $this.find('select[name="birth_month"]');
+				var $birth_year = $this.find('select[name="birth_year"]');
+				var birthdate = $birth_day.val() +'-'+ $birth_month.val() +'-'+ $birth_year.val();
 				var data = {
 					username: $this.find('input[name="username"]').val(),
 					first_name: $this.find('input[name="first_name"]').val(),
 					last_name: $this.find('input[name="last_name"]').val(),
 					username: $this.find('input[name="username"]').val(),
-					birthdate: $this.find('input[name="birthdate"]').val(),
+					birthdate: birthdate,
 					email: $this.find('input[name="email"]').val(),
 					password: $this.find('input[name="password"]').val(),
 					password_confirmation: $this.find('input[name="password_confirmation"]').val(),
