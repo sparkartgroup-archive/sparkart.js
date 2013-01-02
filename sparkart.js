@@ -281,20 +281,30 @@ Many methods rely on and use each other
 	};
 
 	// Draw widgets
-	Fanclub.prototype.draw = function( $widget, config, callback ){
-
-		if( typeof callback === 'undefined' && typeof config === 'function' ){
-			callback = config;
-			config = null;
-		}
+	// $widget, config, callback
+	Fanclub.prototype.draw = function(){
 
 		var fanclub = this;
+		var $widget;
+		var config;
+		var callback;
+
+		// figure out what our arguments really are
+		for( var i in arguments ){
+			if( typeof arguments[i] === 'string' || arguments[i] instanceof $ && !$widget ) $widget = arguments[i];
+			else if( Object.prototype.toString.call(arguments[i]) === '[object Object]' && !config ) config = arguments[i];
+			else if( typeof arguments[i] === 'function' && !callback ) callback = arguments[i];
+		}
 
 		// If no widget is specified, loop through all of them
 		if( !$widget ){
 			var $widgets = $('.sparkart.fanclub');
+			var callback_counter = 0;
 			$widgets.each( function( i, widget ){
-				fanclub.draw( widget )
+				fanclub.draw( $(widget), config, function(){
+					callback_counter++;
+					if( callback_counter === $widgets.length && callback ) callback(); 
+				});
 			});
 			return;
 		}
