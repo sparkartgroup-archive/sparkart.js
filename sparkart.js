@@ -317,15 +317,19 @@ Many methods rely on and use each other
 			this.get( 'account', function( err, response ){
 
 				if( err ) response = {};
+
+				data.parameters = config;
+
+				// run preprocessors
 				var preprocessors = fanclub.preprocessors[widget];
 				if( preprocessors ){
 					$( preprocessors ).each( function( i, preprocessor ){
 						response = preprocessor( response );
 					});
 				}
+
 				var data = { customer: response.customer };
 				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
-				data.parameters = config;
 				var html = fanclub.templates[widget]( data );
 
 				if( callback ) callback( null, html );
@@ -338,13 +342,16 @@ Many methods rely on and use each other
 		this.get( widget, config, function( err, response ){
 
 			if( err ) return callback( err );
+
+			response.parameters = config;
+
+			// run preprocessors
 			var preprocessors = fanclub.preprocessors[widget];
 			if( preprocessors ){
 				$( preprocessors ).each( function( i, preprocessor ){
 					response = preprocessor( response );
 				});
 			}
-			response.parameters = config;
 
 			if( callback ) callback( null, fanclub.templates[widget]( response ) );
 
