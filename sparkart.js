@@ -318,6 +318,8 @@ Many methods rely on and use each other
 
 				if( err ) response = {};
 
+				var data = { customer: response.customer };
+
 				data.parameters = config;
 
 				// run preprocessors
@@ -328,7 +330,6 @@ Many methods rely on and use each other
 					});
 				}
 
-				var data = { customer: response.customer };
 				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 				var html = fanclub.templates[widget]( data );
 
