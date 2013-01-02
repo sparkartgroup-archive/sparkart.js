@@ -5,6 +5,41 @@ this.sparkart = {};
 (function( $, Handlebars ){
 
 /*
+HANDLEBARS HELPERS
+////////////////////////////////////////////////////////////////////////////////
+*/
+
+Handlebars.registerHelper( 'birthdate_selector', function(){
+
+	// create markup for birthdate picker
+	var birth_month = '<select name="birth_month">';
+	for( var i in MONTHS ) birth_month += '<option value="'+ ( parseInt(i)+1 ) +'">'+ MONTHS[i] +'</option>';
+	birth_month +='</select>';
+
+	var birth_day = '<select name="birth_day">';
+	var day = 1;
+	while( day <= 31 ){
+		birth_day += '<option value="'+ day +'">'+ day +'</option>';
+		day++;
+	}
+	birth_day += '</select>';
+
+	var birth_year = '<select name="birth_year">';
+	var current_year = new Date().getFullYear();
+	var year = current_year - 115;
+	while( year <= current_year ){
+		birth_year += ( year === current_year - 18 )
+			? '<option value="'+ year +'" selected="selected">'+ year +'</option>'
+			: '<option value="'+ year +'">'+ year +'</option>';
+		year++;
+	}
+	birth_year += '</select>';
+
+	return birth_month + birth_day + birth_year;
+
+});
+
+/*
 PRIVATE VARIABLES AND METHODS
 ////////////////////////////////////////////////////////////////////////////////
 */
@@ -130,8 +165,11 @@ Builds the fanclub and returns the new fanclub object
 				return data;
 			} ],
 			register: [ function( data ){
+
+				// determine if we need to show the username field
 				if( data.customer.username === null ) data.customer.username_required = true;
 				else data.customer.username_required === false;
+
 				return data;
 			} ]
 		};
@@ -318,9 +356,7 @@ Many methods rely on and use each other
 
 				if( err ) response = {};
 
-				var data = { customer: response.customer };
-
-				data.parameters = config;
+				response.parameters = config;
 
 				// run preprocessors
 				var preprocessors = fanclub.preprocessors[widget];
@@ -331,7 +367,7 @@ Many methods rely on and use each other
 				}
 
 				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
-				var html = fanclub.templates[widget]( data );
+				var html = fanclub.templates[widget]( response );
 
 				if( callback ) callback( null, html );
 
