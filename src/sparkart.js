@@ -420,6 +420,9 @@ Many methods rely on and use each other
 			url: url,
 			type: 'get',
 			crossDomain: true,
+			xhrFields: {
+                withCredentials: true
+            },
 			dataType: 'jsonp',
 			data: parameters
 		});
