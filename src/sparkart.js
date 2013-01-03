@@ -303,7 +303,7 @@ Many methods rely on and use each other
 			$widgets.each( function( i, widget ){
 				fanclub.draw( $(widget), config, function(){
 					callback_counter++;
-					if( callback_counter === $widgets.length && callback ) callback(); 
+					if( callback_counter === $widgets.length && callback ) callback();
 				});
 			});
 			return;
@@ -412,17 +412,15 @@ Many methods rely on and use each other
 
 		parameters = $.extend( {}, parameters );
 		parameters.key = this.key;
+		parameters._method = method;
 		if( parameters.id ) delete parameters.id;
 
 		// Generate a jQuery AJAX request
 		var request = $.ajax({
 			url: url,
-			type: method,
+			type: 'get',
 			crossDomain: true,
-			xhrFields: {
-                withCredentials: true
-            },
-			dataType: 'json',
+			dataType: 'jsonp',
 			data: parameters
 		});
 
