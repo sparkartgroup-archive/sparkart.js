@@ -167,8 +167,10 @@ Builds the fanclub and returns the new fanclub object
 			register: [ function( data ){
 
 				// determine if we need to show the username field
-				if( data.customer.username === null ) data.customer.username_required = true;
-				else data.customer.username_required === false;
+				if( data.customer ){
+					if( data.customer.username === null ) data.customer.username_required = true;
+					else data.customer.username_required === false;
+				}
 
 				return data;
 			} ]
@@ -430,7 +432,10 @@ Many methods rely on and use each other
 		// Bind to the AJAX request's deferred events
 		request
 			.done( function( data ){
-				if( callback ) callback( null, data );
+				if( callback ){
+					if( data.status === 'error' ) callback( data.messages );
+					else callback( null, data );
+				}
 			})
 			.fail( function( request ){
 				try {
