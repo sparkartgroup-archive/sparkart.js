@@ -412,20 +412,28 @@ Many methods rely on and use each other
 	// Lets us custom process errors, set default parameters, etc
 	Fanclub.prototype.request = function( url, method, parameters, callback ){
 
+		var dataType = 'json';
 		parameters = $.extend( {}, parameters );
 		parameters.key = this.key;
-		parameters._method = method;
+
+		// If this is IE, we'll try using JSONP instead
+		if( typeof XDomainRequest !== 'undefined' ){
+			parameters._method = method;
+			method = 'GET';
+			dataType = 'jsonp';
+		}
+
 		if( parameters.id ) delete parameters.id;
 
 		// Generate a jQuery AJAX request
 		var request = $.ajax({
 			url: url,
-			type: 'get',
+			type: method,
 			crossDomain: true,
 			xhrFields: {
-                withCredentials: true
-            },
-			dataType: 'jsonp',
+				withCredentials: true
+			},
+			dataType: dataType,
 			data: parameters
 		});
 
