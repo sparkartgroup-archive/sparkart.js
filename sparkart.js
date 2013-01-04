@@ -167,8 +167,10 @@ Builds the fanclub and returns the new fanclub object
 			register: [ function( data ){
 
 				// determine if we need to show the username field
-				if( data.customer.username === null ) data.customer.username_required = true;
-				else data.customer.username_required === false;
+				if( data.customer ){
+					if( data.customer.username === null ) data.customer.username_required = true;
+					else data.customer.username_required === false;
+				}
 
 				return data;
 			} ]
@@ -303,7 +305,7 @@ Many methods rely on and use each other
 			$widgets.each( function( i, widget ){
 				fanclub.draw( $(widget), config, function(){
 					callback_counter++;
-					if( callback_counter === $widgets.length && callback ) callback(); 
+					if( callback_counter === $widgets.length && callback ) callback();
 				});
 			});
 			return;
@@ -410,8 +412,17 @@ Many methods rely on and use each other
 	// Lets us custom process errors, set default parameters, etc
 	Fanclub.prototype.request = function( url, method, parameters, callback ){
 
+		var dataType = 'json';
 		parameters = $.extend( {}, parameters );
 		parameters.key = this.key;
+
+		// If this is IE, we'll try using JSONP instead
+		if( typeof XDomainRequest !== 'undefined' ){
+			parameters._method = method;
+			method = 'GET';
+			dataType = 'jsonp';
+		}
+
 		if( parameters.id ) delete parameters.id;
 
 		// Generate a jQuery AJAX request
@@ -420,16 +431,19 @@ Many methods rely on and use each other
 			type: method,
 			crossDomain: true,
 			xhrFields: {
-                withCredentials: true
-            },
-			dataType: 'json',
+				withCredentials: true
+			},
+			dataType: dataType,
 			data: parameters
 		});
 
 		// Bind to the AJAX request's deferred events
 		request
 			.done( function( data ){
-				if( callback ) callback( null, data );
+				if( callback ){
+					if( data.status === 'error' ) callback( data.messages );
+					else callback( null, data );
+				}
 			})
 			.fail( function( request ){
 				try {
