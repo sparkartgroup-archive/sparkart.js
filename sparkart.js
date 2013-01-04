@@ -138,6 +138,7 @@ Builds the fanclub and returns the new fanclub object
 				logout: true,
 				register: true
 			},
+			redirect: {},
 			api_url: API_URL
 		};
 		fanclub.parameters = $.extend( default_parameters, parameters );
@@ -229,7 +230,9 @@ Many methods rely on and use each other
 
 			fanclub.trigger( 'register', response.customer );
 			fanclub.customer = response.customer;
-			if( fanclub.parameters.reload.register ) location.reload();
+			var redirect = fanclub.parameters.redirect.register || data.redirect
+			if( redirect ) window.location = redirect;
+			else if( fanclub.parameters.reload.register ) location.reload();
 
 		});
 
@@ -251,7 +254,8 @@ Many methods rely on and use each other
 
 			fanclub.trigger( 'login', response.customer );
 			fanclub.customer = response.customer;
-			if( data.redirect ) location.pathname = data.redirect;
+			var redirect = fanclub.parameters.redirect.login || data.redirect
+			if( redirect ) window.location = redirect;
 			else if( fanclub.parameters.reload.login ) location.reload();
 			if( !fanclub.parameters.reload.login ) fanclub.draw();
 
@@ -275,7 +279,9 @@ Many methods rely on and use each other
 
 			fanclub.trigger('logout');
 			delete fanclub.customer;
-			if( fanclub.parameters.reload.logout ) location.reload();
+			var redirect = fanclub.parameters.redirect.logout || data.redirect
+			if( redirect ) window.location = redirect;
+			else if( fanclub.parameters.reload.logout ) location.reload();
 			else fanclub.draw();
 
 		});
