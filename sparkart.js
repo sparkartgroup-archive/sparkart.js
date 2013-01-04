@@ -524,7 +524,14 @@ Many methods rely on and use each other
 					.removeClass('error success')
 					.find('div.errors, div.success').hide();
 
+				// deactivate the form
+				var $submit = $this.find('button[type="submit"]');
+				$submit.prop( 'disabled', true );
+
 				fanclub.login( data, function( errors, response ){
+
+					// reactivate the form
+					$submit.prop( 'disabled', false );
 
 					// remove old error message
 					var $errors = $this.find('div.errors');
@@ -617,7 +624,14 @@ Many methods rely on and use each other
 					.removeClass('error success')
 					.find('div.errors, div.success').hide();
 
+				// deactivate the form
+				var $submit = $this.find('button[type="submit"]');
+				$submit.prop( 'disabled', true );
+
 				fanclub.register( data, function( errors, response ){
+
+					// reactivate the form
+					$submit.prop( 'disabled', false );
 
 					// remove old error message
 					var $errors = $this.find('div.errors');
@@ -662,7 +676,14 @@ Many methods rely on and use each other
 					.removeClass('error success')
 					.find('div.errors, div.success').hide();
 
+				// deactivate the form
+				var $submit = $this.find('button[type="submit"]');
+				$submit.prop( 'disabled', true );
+
 				fanclub.post( 'account', data, function( errors ){
+
+					// reactivate the form
+					$submit.prop( 'disabled', false );
 
 					// remove old error message
 					var $errors = $this.find('div.errors');
