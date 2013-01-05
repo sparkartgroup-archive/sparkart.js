@@ -4,10 +4,10 @@ this.sparkart = {};
 // Execute code inside a closure
 (function( $, Handlebars ){
 
-/*
-HANDLEBARS HELPERS
+//
+// HANDLEBARS HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-*/
+//
 
 Handlebars.registerHelper( 'birthdate_selector', function(){
 
@@ -39,10 +39,10 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 });
 
-/*
-PRIVATE VARIABLES AND METHODS
+//
+// PRIVATE VARIABLES AND METHODS
 ////////////////////////////////////////////////////////////////////////////////
-*/
+//
 
 	// The API url we will look to by default
 	var API_URL = 'https://services.sparkart.net/api/v1/consumer';
@@ -111,11 +111,11 @@ PRIVATE VARIABLES AND METHODS
 	};
 
 
-/*
-FANCLUB CONSTRUCTOR
+//
+// FANCLUB CONSTRUCTOR
 ////////////////////////////////////////////////////////////////////////////////
-Builds the fanclub and returns the new fanclub object
-*/
+// Builds the fanclub and returns the new fanclub object
+//
 
 	var Fanclub = sparkart.Fanclub = function( key, parameters ){
 
@@ -145,7 +145,7 @@ Builds the fanclub and returns the new fanclub object
 
 		// Define ALL of our templates. Ideally we'd have these in external files
 		// Then compile the single JS script
-		var templates = fanclub.templates = {'account': '{{#customer}}{{#registered}}<form class="account">	<div class="success" style="display: none;">		<p>Account Successfully Updated!</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<label>Username<br />		<input name="username" type="text" value="{{username}}" /></label><br />		<label>First Name<br />		<input name="first_name" type="text" value="{{first_name}}" /></label><br />		<label>Last Name<br />		<input name="last_name" type="text" value="{{last_name}}" /></label><br />		<label>Email Address<br />		<input name="email" type="text" value="{{email}}" /></label><br />		<div class="password">			<label>Current Password<br />			<input name="current_password" type="password" /></label>			<hr />			<label>New Password<br />			<input name="password" type="password" /></label><br />			<label>Repeat New Password<br />			<input name="password_confirmation" type="password" /></label>		</div>	</fieldset>	<button type="submit">Update Account</button></form>{{/registered}}{{/customer}}','affiliates': '{{#affiliates}}	<h2>{{name}}</h2>	<ul class="codes">		{{#codes}}<li>{{.}}</li>{{/codes}}	</ul>{{/affiliates}}','errors': '<ul class="errors">{{#errors}}<li>{{.}}</li>{{/errors}}</ul>','event': '{{#event}}<div class="event">	<h2>{{date.month.abbr}} {{date.day.number}}</h2>	<h3>{{title}}</h3>	<div class="description">{{description}}</div>	<dl>		{{#doors_open}}		<dt>Doors Open</dt>		<dd>{{hour.half}}:{{minute}} <span class="ampm">{{ampm}}</span></dd>		{{/doors_open}}		{{#start}}		<dt>Start</dt>		<dd>{{hour.half}}:{{minute}} <span class="ampm">{{ampm}}</span></dd>		{{/start}}	</dl>	{{#venue}}	<div class="venue">		<h4>{{name}}</h4>		<strong class="city">{{city}}</strong>, <em class="state">{{state}}</em> <span class="country">{{country}}</span>		<h5>Directions</h5>		<ul class="directions">			{{#directions}}			<li><a href="{{google_maps}}">Google Maps</a></li>			<li><a href="{{yahoo_maps}}">Yahoo Maps</a></li>			<li><a href="{{mapquest}}">Mapquest</a></li>			<li><a href="{{bing_maps}}">Bing Maps</a></li>			{{/directions}}		</ul>	</div>	{{/venue}}	<ul class="links">		{{#links}}		<li><a href="{{url}}">{{name}}</a></li>		{{/links}}	</ul></div>{{/event}}','events': '<ul class="events">	{{#events}}	<li>		<h2><a href="{{../parameters.url}}{{id}}">{{date.month.abbr}} {{date.day.number}}</a></h2>		<h3>{{title}}</h3>		<div class="description">{{description}}</div>		{{#venue}}		<div class="venue">			<h4>{{name}}</h4>			<strong>{{city}}</strong>, {{state}}		</div>		{{/venue}}		<ul class="links">			{{#links}}			<li><a href="{{url}}">{{name}}</a></li>			{{/links}}		</ul>	</li>	{{/events}}</ul>','login': '{{^customer}}<form class="login">	<div class="success" style="display: none;">		<p>You have successfully logged in.</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<label>Email<br />		<input name="email" type="text" /></label>		<label>Password<br />		<input name="password" type="password" /></label>		<a href="#forgot">Forgot Password?</a>	</fieldset>	<button type="submit">Log In</button></form><form class="forgot" style="display:none">	<a href="#close">Close</a>	<fieldset>		<p>Please enter the email address you used for your fanclub account:</p>		<label>Email<br />		<input type="text" name="email"></input>	</fieldset>	<button type="submit">Submit</button></form>{{/customer}}','logout': '{{#customer}}<a href="#logout">Log Out</a>{{/customer}}','order': '<div class="order">{{contents}}</div>','orders': '<ul class="orders">{{#orders}}<li>{{contents}}</li>{{/orders}}</ul>','plan': '<div class="plan">	<h2>{{name}}</h2>	<h3>{{price}}</h3>	<div class="description">{{description}}</div>	{{#package}}		<h3>{{name}}</h3>		<ul class="items">			{{#items}}			<li>				<img src="{{thumbnail}}" />				<strong>{{name}}</strong>			</li>			{{/items}}		</ul>	{{/package}}	<ul class="actions">		<li class="join"><a href="{{checkout}}">Join Now</a></li>	</ul>	{{#annotations}}<sub class="annotations">{{.}}</sub>{{/annotations}}	</div>','plans': '<ul class="plans">	{{#plans}}	<li>		<h2>{{name}}</h2>		<h3>{{price}}</h3>		<div class="description">{{description}}</div>		{{#package}}			<h3>{{name}}</h3>			<ul class="items">				{{#items}}				<li>					<img src="{{thumbnail}}" />					<strong>{{name}}</strong>				</li>				{{/items}}			</ul>		{{/package}}		<ul class="actions">			<li class="join"><a href="{{checkout}}">Join Now</a></li>		</ul>		{{#annotations}}<sub class="annotations">{{.}}</sub>{{/annotations}}	</li>	{{/plans}}</ul>','receipt': '<ul class="receipt">{{#items}}<li>{{name}}</li>{{/items}}</ul>','register': '{{#customer}}{{^registered}}<form class="register" method="PUT">	<div class="success" style="display: none;">		<p>You have successfully completed the registration of your fanclub account.</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<p>Complete your fanclub account registration.</p>		{{^email}}		<label>Email<br />		<input name="email" type="text" /></label>		{{/email}}		{{#username_required}}		<label>Username<br />		<input name="username" type="text" /></label><br />		{{/username_required}}		{{^first_name}}		<label>First Name<br />		<input name="first_name" type="text" /></label>		{{/first_name}}		{{^last_name}}		<label>Last Name<br />		<input name="last_name" type="text" /></label>		{{/last_name}}		{{^birthdate}}		<label>Date of Birth</label>		{{{birthdate_selector}}		{{/birthdate}}		<label>Password<br />		<input name="password" type="password" /></label>		<label>Password Confirm<br />		<input name="password_confirmation" type="password" /></label>		<label><input name="accept_terms" type="checkbox" /> I agree to the fanclub <a href="{{terms_url}}" target="_blank">Terms and Conditions</a></label>	</fieldset>	<button type="submit">Register</button></form>{{/registered}}{{/customer}}','subscription': '<div class="subscription">{{name}}</div>','subscriptions': '<ul class="subscriptions">	{{#subscriptions}}	<li>{{name}}</li>	{{/subscriptions}}</ul>'};
+		var templates = fanclub.templates = {'account': '{{#customer}}{{#registered}}<form class="account">	<div class="success" style="display: none;">		<p>Account Successfully Updated!</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<label>Username<br />		<input name="username" type="text" value="{{username}}" /></label><br />		<label>First Name<br />		<input name="first_name" type="text" value="{{first_name}}" /></label><br />		<label>Last Name<br />		<input name="last_name" type="text" value="{{last_name}}" /></label><br />		<label>Email Address<br />		<input name="email" type="text" value="{{email}}" /></label><br />		<div class="password">			<label>Current Password<br />			<input name="current_password" type="password" /></label>			<hr />			<label>New Password<br />			<input name="password" type="password" /></label><br />			<label>Repeat New Password<br />			<input name="password_confirmation" type="password" /></label>		</div>	</fieldset>	<button type="submit">Update Account</button></form>{{/registered}}{{/customer}}','affiliates': '{{#affiliates}}	<h2>{{name}}</h2>	<ul class="codes">		{{#codes}}<li>{{.}}</li>{{/codes}}	</ul>{{/affiliates}}','errors': '<ul class="errors">{{#errors}}<li>{{.}}</li>{{/errors}}</ul>','event': '{{#event}}<div class="event">	<h2>{{date.month.abbr}} {{date.day.number}}</h2>	<h3>{{title}}</h3>	<div class="description">{{description}}</div>	<dl>		{{#doors_open}}		<dt>Doors Open</dt>		<dd>{{hour.half}}:{{minute}} <span class="ampm">{{ampm}}</span></dd>		{{/doors_open}}		{{#start}}		<dt>Start</dt>		<dd>{{hour.half}}:{{minute}} <span class="ampm">{{ampm}}</span></dd>		{{/start}}	</dl>	{{#venue}}	<div class="venue">		<h4>{{name}}</h4>		<strong class="city">{{city}}</strong>, <em class="state">{{state}}</em> <span class="country">{{country}}</span>		<h5>Directions</h5>		<ul class="directions">			{{#directions}}			<li><a href="{{google_maps}}">Google Maps</a></li>			<li><a href="{{yahoo_maps}}">Yahoo Maps</a></li>			<li><a href="{{mapquest}}">Mapquest</a></li>			<li><a href="{{bing_maps}}">Bing Maps</a></li>			{{/directions}}		</ul>	</div>	{{/venue}}	<ul class="links">		{{#links}}		<li><a href="{{url}}">{{name}}</a></li>		{{/links}}	</ul></div>{{/event}}','events': '<ul class="events">	{{#events}}	<li>		<h2><a href="{{../parameters.url}}{{id}}">{{date.month.abbr}} {{date.day.number}}</a></h2>		<h3>{{title}}</h3>		<div class="description">{{description}}</div>		{{#venue}}		<div class="venue">			<h4>{{name}}</h4>			<strong>{{city}}</strong>, {{state}}		</div>		{{/venue}}		<ul class="links">			{{#links}}			<li><a href="{{url}}">{{name}}</a></li>			{{/links}}		</ul>	</li>	{{/events}}</ul>','login': '{{^customer}}<form class="login">	<div class="success" style="display: none;">		<p>You have successfully logged in.</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<label>Email<br />		<input name="email" type="text" /></label>		<label>Password<br />		<input name="password" type="password" /></label>		<a href="#forgot">Forgot Password?</a>	</fieldset>	<button type="submit">Log In</button></form><form class="forgot" style="display:none">	<a href="#close">Close</a>	<fieldset>		<p>Please enter the email address you used for your fanclub account:</p>		<label>Email<br />		<input type="text" name="email"></input>	</fieldset>	<button type="submit">Submit</button></form>{{/customer}}','logout': '{{#customer}}<a href="#logout">Log Out</a>{{/customer}}','order': '<div class="order">{{contents}}</div>','orders': '<ul class="orders">{{#orders}}<li>{{contents}}</li>{{/orders}}</ul>','password_reset': '{{#token}}<form class="password_reset">	<div class="success" style="display: none;">		<p>Password Successfully Updated!</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<div class="password">			<label>New Password<br />			<input name="password" type="password" /></label><br />			<label>Repeat New Password<br />			<input name="password_confirmation" type="password" /></label>		</div>	</fieldset>	<button type="submit">Update Password</button></form>{{/token}}','plan': '<div class="plan">	<h2>{{name}}</h2>	<h3>{{price}}</h3>	<div class="description">{{description}}</div>	{{#package}}		<h3>{{name}}</h3>		<ul class="items">			{{#items}}			<li>				<img src="{{thumbnail}}" />				<strong>{{name}}</strong>			</li>			{{/items}}		</ul>	{{/package}}	<ul class="actions">		<li class="join"><a href="{{checkout}}">Join Now</a></li>	</ul>	{{#annotations}}<sub class="annotations">{{.}}</sub>{{/annotations}}	</div>','plans': '<ul class="plans">	{{#plans}}	<li>		<h2>{{name}}</h2>		<h3>{{price}}</h3>		<div class="description">{{description}}</div>		{{#package}}			<h3>{{name}}</h3>			<ul class="items">				{{#items}}				<li>					<img src="{{thumbnail}}" />					<strong>{{name}}</strong>				</li>				{{/items}}			</ul>		{{/package}}		<ul class="actions">			<li class="join"><a href="{{checkout}}">Join Now</a></li>		</ul>		{{#annotations}}<sub class="annotations">{{.}}</sub>{{/annotations}}	</li>	{{/plans}}</ul>','receipt': '<ul class="receipt">{{#items}}<li>{{name}}</li>{{/items}}</ul>','register': '{{#customer}}{{^registered}}<form class="register" method="PUT">	<div class="success" style="display: none;">		<p>You have successfully completed the registration of your fanclub account.</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<p>Complete your fanclub account registration.</p>		{{^email}}		<label>Email<br />		<input name="email" type="text" /></label>		{{/email}}		{{#username_required}}		<label>Username<br />		<input name="username" type="text" /></label><br />		{{/username_required}}		{{^first_name}}		<label>First Name<br />		<input name="first_name" type="text" /></label>		{{/first_name}}		{{^last_name}}		<label>Last Name<br />		<input name="last_name" type="text" /></label>		{{/last_name}}		{{^birthdate}}		<label>Date of Birth</label>		{{{birthdate_selector}}		{{/birthdate}}		<label>Password<br />		<input name="password" type="password" /></label>		<label>Password Confirm<br />		<input name="password_confirmation" type="password" /></label>		<label><input name="accept_terms" type="checkbox" /> I agree to the fanclub <a href="{{terms_url}}" target="_blank">Terms and Conditions</a></label>	</fieldset>	<button type="submit">Register</button></form>{{/registered}}{{/customer}}','subscription': '<div class="subscription">{{name}}</div>','subscriptions': '<ul class="subscriptions">	{{#subscriptions}}	<li>{{name}}</li>	{{/subscriptions}}</ul>'};
 
 		// Define default preprocessors
 		var preprocessors = fanclub.preprocessors = {
@@ -207,12 +207,12 @@ Builds the fanclub and returns the new fanclub object
 
 	};
 
-/*
-PUBLIC METHODS
+//
+// PUBLIC METHODS
 ////////////////////////////////////////////////////////////////////////////////
-Any and all methods available publicly
-Many methods rely on and use each other
-*/
+// Any and all methods available publicly
+// Many methods rely on and use each other
+//
 
 	// register the user
 	Fanclub.prototype.register = function( data, callback ){
@@ -336,6 +336,7 @@ Many methods rely on and use each other
 		else if( $widget.is('.logout') ) widget = 'logout';
 		else if( $widget.is('.register') ) widget = 'register';
 		else if( $widget.is('.account') ) widget = 'account';
+		else if( $widget.is('.password_reset') ) widget = 'password_reset';
 		else if( $widget.is('.orders') ) widget = 'orders';
 		else if( $widget.is('.affiliates') ) widget = 'affiliates';
 
@@ -390,27 +391,41 @@ Many methods rely on and use each other
 				if( callback ) callback( null, html );
 
 			});
-			return;
+
 		}
 
-		// all other widgets use their own endpoints
-		this.get( widget, config, function( err, response ){
+		else if( widget === 'password_reset' ){
 
-			if( err ) return callback( err );
+			var html = fanclub.templates[widget]({
+				token: true
+			});
 
-			response.parameters = config;
+			if( callback ) callback( null, html );
 
-			// run preprocessors
-			var preprocessors = fanclub.preprocessors[widget];
-			if( preprocessors ){
-				$( preprocessors ).each( function( i, preprocessor ){
-					response = preprocessor( response );
-				});
-			}
+		}
 
-			if( callback ) callback( null, fanclub.templates[widget]( response ) );
+		else {
 
-		});
+			// all other widgets use their own endpoints
+			this.get( widget, config, function( err, response ){
+
+				if( err ) return callback( err );
+
+				response.parameters = config;
+
+				// run preprocessors
+				var preprocessors = fanclub.preprocessors[widget];
+				if( preprocessors ){
+					$( preprocessors ).each( function( i, preprocessor ){
+						response = preprocessor( response );
+					});
+				}
+
+				if( callback ) callback( null, fanclub.templates[widget]( response ) );
+
+			});
+
+		}
 
 	};
 
@@ -509,7 +524,9 @@ Many methods rely on and use each other
 		// Bind all login widgets
 		if( widget === 'login' ){
 
-			$widget.on( 'submit.sparkart', function( e ){
+			$widget
+			.off( '.sparkart' )
+			.on( 'submit.sparkart', function( e ){
 
 				e.preventDefault();
 
@@ -555,34 +572,36 @@ Many methods rely on and use each other
 			// Bind forgot password subwidget
 			// NOTE: should this be moved elsewhere?
 			$widget
-				.on( 'click.sparkart', 'a[href="#forgot"]', function( e ){
+			.on( 'click.sparkart', 'a[href="#forgot"]', function( e ){
 
-					e.preventDefault();
+				e.preventDefault();
 
-					var $this = $(this);
-					var $login = $this.closest('.sparkart.fanclub.login');
-					var $forgot = $login.find('form.forgot');
+				var $this = $(this);
+				var $login = $this.closest('.sparkart.fanclub.login');
+				var $forgot = $login.find('form.forgot');
 
-					$forgot.show();
+				$forgot.show();
 
-				})
-				.on( 'click.sparkart', 'a[href="#close"]', function( e ){
+			})
+			.on( 'click.sparkart', 'a[href="#close"]', function( e ){
 
-					e.preventDefault();
+				e.preventDefault();
 
-					var $this = $(this);
-					var $forgot = $this.closest('form.forgot');
+				var $this = $(this);
+				var $forgot = $this.closest('form.forgot');
 
-					$forgot.hide();
+				$forgot.hide();
 
-				});
+			});
 
 		}
 
 		// Bind all logout widgets
 		else if( widget === 'logout' ){
 
-			$widget.on( 'click.sparkart', 'a[href="#logout"]', function( e ){
+			$widget
+			.off( '.sparkart' )
+			.on( 'click.sparkart', 'a[href="#logout"]', function( e ){
 
 				e.preventDefault();
 
@@ -599,7 +618,9 @@ Many methods rely on and use each other
 		// Bind all register widgets
 		else if( widget === 'register' ){
 
-			$widget.on( 'submit.sparkart', function( e ){
+			$widget
+			.off( '.sparkart' )
+			.on( 'submit.sparkart', function( e ){
 
 				e.preventDefault();
 
@@ -657,7 +678,9 @@ Many methods rely on and use each other
 		// Bind all account widgets
 		else if( widget === 'account' ){
 
-			$widget.on( 'submit.sparkart', function( e ){
+			$widget
+			.off( '.sparkart' )
+			.on( 'submit.sparkart', function( e ){
 
 				e.preventDefault();
 
@@ -701,6 +724,56 @@ Many methods rely on and use each other
 					$success.show();
 
 				});
+
+			});
+
+		}
+
+		else if( widget === 'password_reset' ){
+
+			$widget
+			.off( '.sparkart' )
+			.on( 'submit.sparkart', function( e ){
+
+				e.preventDefault();
+
+				var $this = $(this);
+				var data = {
+					password: $this.find('input[name="password"]'),
+					password_confirmation: $this.find('input[name="password_confirmation"]')
+				};
+
+				$this
+					.removeClass('error success')
+					.find('div.errors, div.success').hide();
+
+				// deactivate the form
+				var $submit = $this.find('button[type="submit"]');
+				$submit.prop( 'disabled', true );
+
+				fanclub.post( 'password_reset/', function( errors ){
+
+					// reactivate the form
+					$submit.prop( 'disabled', false );
+
+					// remove old error message
+					var $errors = $this.find('div.errors');
+					$errors.empty().hide();
+
+					if( errors ){
+						$this.addClass('error');
+						var $err = $( fanclub.templates.errors({ errors: errors }) );
+						$errors.html( $err ).show();
+						return;
+					}
+
+					$this.addClass('success');
+					var $success = $this.find('div.success');
+					$success.show();
+
+				});
+
+				console.log( 'password reset submission', arguments );
 
 			});
 

@@ -4,10 +4,10 @@ this.sparkart = {};
 // Execute code inside a closure
 (function( $, Handlebars ){
 
-/*
-HANDLEBARS HELPERS
+//
+// HANDLEBARS HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-*/
+//
 
 Handlebars.registerHelper( 'birthdate_selector', function(){
 
@@ -39,10 +39,10 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 });
 
-/*
-PRIVATE VARIABLES AND METHODS
+//
+// PRIVATE VARIABLES AND METHODS
 ////////////////////////////////////////////////////////////////////////////////
-*/
+//
 
 	// The API url we will look to by default
 	var API_URL = 'https://services.sparkart.net/api/v1/consumer';
@@ -111,11 +111,11 @@ PRIVATE VARIABLES AND METHODS
 	};
 
 
-/*
-FANCLUB CONSTRUCTOR
+//
+// FANCLUB CONSTRUCTOR
 ////////////////////////////////////////////////////////////////////////////////
-Builds the fanclub and returns the new fanclub object
-*/
+// Builds the fanclub and returns the new fanclub object
+//
 
 	var Fanclub = sparkart.Fanclub = function( key, parameters ){
 
@@ -207,12 +207,12 @@ Builds the fanclub and returns the new fanclub object
 
 	};
 
-/*
-PUBLIC METHODS
+//
+// PUBLIC METHODS
 ////////////////////////////////////////////////////////////////////////////////
-Any and all methods available publicly
-Many methods rely on and use each other
-*/
+// Any and all methods available publicly
+// Many methods rely on and use each other
+//
 
 	// register the user
 	Fanclub.prototype.register = function( data, callback ){
@@ -336,6 +336,7 @@ Many methods rely on and use each other
 		else if( $widget.is('.logout') ) widget = 'logout';
 		else if( $widget.is('.register') ) widget = 'register';
 		else if( $widget.is('.account') ) widget = 'account';
+		else if( $widget.is('.password_reset') ) widget = 'password_reset';
 		else if( $widget.is('.orders') ) widget = 'orders';
 		else if( $widget.is('.affiliates') ) widget = 'affiliates';
 
@@ -390,27 +391,41 @@ Many methods rely on and use each other
 				if( callback ) callback( null, html );
 
 			});
-			return;
+
 		}
 
-		// all other widgets use their own endpoints
-		this.get( widget, config, function( err, response ){
+		else if( widget === 'password_reset' ){
 
-			if( err ) return callback( err );
+			var html = fanclub.templates[widget]({
+				token: true
+			});
 
-			response.parameters = config;
+			if( callback ) callback( null, html );
 
-			// run preprocessors
-			var preprocessors = fanclub.preprocessors[widget];
-			if( preprocessors ){
-				$( preprocessors ).each( function( i, preprocessor ){
-					response = preprocessor( response );
-				});
-			}
+		}
 
-			if( callback ) callback( null, fanclub.templates[widget]( response ) );
+		else {
 
-		});
+			// all other widgets use their own endpoints
+			this.get( widget, config, function( err, response ){
+
+				if( err ) return callback( err );
+
+				response.parameters = config;
+
+				// run preprocessors
+				var preprocessors = fanclub.preprocessors[widget];
+				if( preprocessors ){
+					$( preprocessors ).each( function( i, preprocessor ){
+						response = preprocessor( response );
+					});
+				}
+
+				if( callback ) callback( null, fanclub.templates[widget]( response ) );
+
+			});
+
+		}
 
 	};
 
@@ -509,7 +524,9 @@ Many methods rely on and use each other
 		// Bind all login widgets
 		if( widget === 'login' ){
 
-			$widget.on( 'submit.sparkart', function( e ){
+			$widget
+			.off( '.sparkart' )
+			.on( 'submit.sparkart', function( e ){
 
 				e.preventDefault();
 
@@ -555,34 +572,36 @@ Many methods rely on and use each other
 			// Bind forgot password subwidget
 			// NOTE: should this be moved elsewhere?
 			$widget
-				.on( 'click.sparkart', 'a[href="#forgot"]', function( e ){
+			.on( 'click.sparkart', 'a[href="#forgot"]', function( e ){
 
-					e.preventDefault();
+				e.preventDefault();
 
-					var $this = $(this);
-					var $login = $this.closest('.sparkart.fanclub.login');
-					var $forgot = $login.find('form.forgot');
+				var $this = $(this);
+				var $login = $this.closest('.sparkart.fanclub.login');
+				var $forgot = $login.find('form.forgot');
 
-					$forgot.show();
+				$forgot.show();
 
-				})
-				.on( 'click.sparkart', 'a[href="#close"]', function( e ){
+			})
+			.on( 'click.sparkart', 'a[href="#close"]', function( e ){
 
-					e.preventDefault();
+				e.preventDefault();
 
-					var $this = $(this);
-					var $forgot = $this.closest('form.forgot');
+				var $this = $(this);
+				var $forgot = $this.closest('form.forgot');
 
-					$forgot.hide();
+				$forgot.hide();
 
-				});
+			});
 
 		}
 
 		// Bind all logout widgets
 		else if( widget === 'logout' ){
 
-			$widget.on( 'click.sparkart', 'a[href="#logout"]', function( e ){
+			$widget
+			.off( '.sparkart' )
+			.on( 'click.sparkart', 'a[href="#logout"]', function( e ){
 
 				e.preventDefault();
 
@@ -599,7 +618,9 @@ Many methods rely on and use each other
 		// Bind all register widgets
 		else if( widget === 'register' ){
 
-			$widget.on( 'submit.sparkart', function( e ){
+			$widget
+			.off( '.sparkart' )
+			.on( 'submit.sparkart', function( e ){
 
 				e.preventDefault();
 
@@ -657,7 +678,9 @@ Many methods rely on and use each other
 		// Bind all account widgets
 		else if( widget === 'account' ){
 
-			$widget.on( 'submit.sparkart', function( e ){
+			$widget
+			.off( '.sparkart' )
+			.on( 'submit.sparkart', function( e ){
 
 				e.preventDefault();
 
@@ -701,6 +724,56 @@ Many methods rely on and use each other
 					$success.show();
 
 				});
+
+			});
+
+		}
+
+		else if( widget === 'password_reset' ){
+
+			$widget
+			.off( '.sparkart' )
+			.on( 'submit.sparkart', function( e ){
+
+				e.preventDefault();
+
+				var $this = $(this);
+				var data = {
+					password: $this.find('input[name="password"]'),
+					password_confirmation: $this.find('input[name="password_confirmation"]')
+				};
+
+				$this
+					.removeClass('error success')
+					.find('div.errors, div.success').hide();
+
+				// deactivate the form
+				var $submit = $this.find('button[type="submit"]');
+				$submit.prop( 'disabled', true );
+
+				fanclub.post( 'password_reset/', function( errors ){
+
+					// reactivate the form
+					$submit.prop( 'disabled', false );
+
+					// remove old error message
+					var $errors = $this.find('div.errors');
+					$errors.empty().hide();
+
+					if( errors ){
+						$this.addClass('error');
+						var $err = $( fanclub.templates.errors({ errors: errors }) );
+						$errors.html( $err ).show();
+						return;
+					}
+
+					$this.addClass('success');
+					var $success = $this.find('div.success');
+					$success.show();
+
+				});
+
+				console.log( 'password reset submission', arguments );
 
 			});
 
