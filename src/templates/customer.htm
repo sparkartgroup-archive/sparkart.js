@@ -1,0 +1,14 @@
+{{#customer}}
+{{#registered}}
+<div class="info">
+	{{#if username}}
+	<strong class="username">{{username}}</strong>
+	{{else}}
+	<strong class="name">{{first_name}} {{last_name}}</strong>
+	{{/if}}
+	{{#subscription}}
+	<span class="subscription">{{plan.name}}</span>
+	{{/subscription}}
+</div>
+{{/registered}}
+{{/customer}}

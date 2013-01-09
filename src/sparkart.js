@@ -338,6 +338,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		else if( $widget.is('.logout') ) widget = 'logout';
 		else if( $widget.is('.register') ) widget = 'register';
 		else if( $widget.is('.account') ) widget = 'account';
+		else if( $widget.is('.customer') ) widget = 'customer';
 		else if( $widget.is('.password_reset') ) widget = 'password_reset';
 		else if( $widget.is('.orders') ) widget = 'orders';
 		else if( $widget.is('.affiliates') ) widget = 'affiliates';
@@ -372,7 +373,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		var fanclub = this;
 
 		// Login, Logout, Register, and Affiliates are all special cases that use the "account" endpoint
-		if( widget === 'login' || widget === 'logout' || widget === 'register' ){
+		if( widget === 'login' || widget === 'logout' || widget === 'register' || widget === 'customer' ){
 			this.get( 'account', function( err, response ){
 
 				if( err ) response = {};
