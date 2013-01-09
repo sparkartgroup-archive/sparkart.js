@@ -129,14 +129,16 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 			parameters.reload = {
 				login: parameters.reload,
 				logout: parameters.reload,
-				register: parameters.reload
+				register: parameters.reload,
+				password_reset: parameters.password_reset
 			};
 		}
 		var default_parameters = {
 			reload: {
 				login: true,
 				logout: true,
-				register: true
+				register: true,
+				password_reset: true
 			},
 			redirect: {},
 			api_url: API_URL
@@ -520,13 +522,14 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 	Fanclub.prototype.bindWidget = function( widget, $widget ){
 
 		var fanclub = this;
+		var data = $widget.data();
 
 		// Bind all login widgets
 		if( widget === 'login' ){
 
 			$widget
 			.off( '.sparkart' )
-			.on( 'submit.sparkart', function( e ){
+			.on( 'submit.sparkart', 'form.login', function( e ){
 
 				e.preventDefault();
 
@@ -591,6 +594,46 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				var $forgot = $this.closest('form.forgot');
 
 				$forgot.hide();
+
+			})
+			.on( 'submit.sparkart', 'form.forgot', function( e ){
+
+				e.preventDefault();
+
+				var $this = $(this);
+				var data = {
+					email: $this.find('input[name="email"]').val()
+				};
+
+				$this
+					.removeClass('error success')
+					.find('div.errors, div.success').hide();
+
+				// deactivate the form
+				var $submit = $this.find('button[type="submit"]');
+				$submit.prop( 'disabled', true );
+
+				fanclub.post( 'password_reset', data, function( errors, response ){
+
+					// reactivate the form
+					$submit.prop( 'disabled', false );
+
+					// remove old error message
+					var $errors = $this.find('div.errors');
+					$errors.empty().hide();
+
+					if( errors ){
+						$this.addClass('error');
+						var $err = $( fanclub.templates.errors({ errors: errors }) );
+						$errors.html( $err ).show();
+						return;
+					}
+
+					$this.addClass('success');
+					var $success = $this.find('div.success');
+					$success.show();
+
+				});
 
 			});
 
@@ -739,8 +782,18 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 				var $this = $(this);
 				var data = {
-					password: $this.find('input[name="password"]'),
-					password_confirmation: $this.find('input[name="password_confirmation"]')
+					password: $this.find('input[name="password"]').val(),
+					password_confirmation: $this.find('input[name="password_confirmation"]').val()
+				};
+
+				// extract password reset key
+				var query_bits = location.search.substr(1).split('&');
+				var query = {};
+				for( var i = query_bits.length - 1; i >= 0; i-- ){
+					var bits = query_bits[i].split('=');
+					var key = bits[0];
+					var value = bits[1];
+					query[key] = value;
 				};
 
 				$this
@@ -751,7 +804,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				var $submit = $this.find('button[type="submit"]');
 				$submit.prop( 'disabled', true );
 
-				fanclub.post( 'password_reset/', function( errors ){
+				fanclub.post( 'password_reset/'+ query.token, data, function( errors ){
 
 					// reactivate the form
 					$submit.prop( 'disabled', false );
@@ -770,6 +823,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					$this.addClass('success');
 					var $success = $this.find('div.success');
 					$success.show();
+
+					var redirect = fanclub.parameters.redirect.password_reset || data.redirect;
+					if( redirect ) window.location = redirect;
 
 				});
 
