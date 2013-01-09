@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>Sparkart.js Test Runner</title>
+
+	<link href="./styles/vendor/jasmine/jasmine.css" rel="stylesheet" type="text/css" />
+
+	<!-- Test Libraries -->
+	<script src="./scripts/vendor/jasmine/jasmine.js"></script>
+	<script src="./scripts/vendor/jasmine/jasmine-html.js"></script>
+
+	<!-- Sparkart.js & Dependencies -->
+	<script src="./scripts/vendor/jquery/jquery.js"></script>
+	<script src="./scripts/vendor/handlebars/handlebars.js"></script>
+	<script src="../sparkart.js"></script>
+
+	<!-- Tests -->
+	<script src="./scripts/tests.js"></script>
+
+	<!-- Start Environment -->
+	<script>
+		
+		(function(){
+			
+			var jasmineEnv = jasmine.getEnv();
+			var trivialReporter = new jasmine.TrivialReporter();
+			var currentWindowOnload = window.onload;
+			var execJasmine = function(){
+				jasmineEnv.execute();
+			}
+			
+			jasmineEnv.updateInterval = 1000;
+			jasmineEnv.addReporter( trivialReporter );
+			jasmineEnv.specFilter = function( spec ){
+				return trivialReporter.specFilter(spec);
+			};
+
+			window.onload = function(){
+				if( currentWindowOnload )
+					currentWindowOnload();
+				execJasmine();
+			};
+
+		})();
+
+	</script>
+
+</head>
+<body>
+
+
+
+</body>
+</html>
