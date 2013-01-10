@@ -23,14 +23,17 @@ describe( 'Fanclub', function(){
 	var fanclub;
 
 	$.mockjax({
-		url: FAKE_API_URL +'/account.json*',
+		url: FAKE_API_URL +'/account.json',
+		data: {
+			key: FAKE_KEY
+		},
 		status: 200,
 		responseText: mock_responses.account.success
 	});
-
+	
 	beforeEach( function(){
 
-		fanclub = new sparkart.Fanclub( FAKE_KEY );
+		fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
 
 	});
 
