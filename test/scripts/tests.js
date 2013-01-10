@@ -1,6 +1,43 @@
+var FAKE_API_URL = 'http://fake.sparkart.net';
+var FAKE_KEY = 'test';
+
+var mock_responses = {
+	account: {
+		success: {
+			status: 'ok',
+			customer: {
+				id: 1,
+				first_name: 'Test',
+				last_name: 'User',
+				email: 'test@sparkart.com',
+				fanclub_id: 1,
+				registered: true,
+				subscription: {}
+			}
+		}
+	}
+};
+
 describe( 'Fanclub', function(){
 
+	var fanclub;
+
+	$.mockjax({
+		url: FAKE_API_URL +'/account.json*',
+		status: 200,
+		responseText: mock_responses.account.success
+	});
+
+	beforeEach( function(){
+
+		fanclub = new sparkart.Fanclub( FAKE_KEY );
+
+	});
+
 	it( 'draws all widgets found on the page', function(){
+
+
+
 	});
 
 	it( 'creates a parameters object from defaults and specified options', function(){
