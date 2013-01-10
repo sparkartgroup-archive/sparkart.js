@@ -266,7 +266,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 	};
 
 	// log the user out
-	Fanclub.prototype.logout = function( callback ){
+	Fanclub.prototype.logout = function( data, callback ){
 
 		var fanclub = this;
 
@@ -535,11 +535,10 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				e.preventDefault();
 
 				var $this = $(this);
-				var data = {
+				data = $.extend( data, {
 					email: $this.find('input[name="email"]').val(),
-					password: $this.find('input[name="password"]').val(),
-					redirect: $this.data('redirect')
-				};
+					password: $this.find('input[name="password"]').val()
+				});
 
 				$this
 					.removeClass('error success')
@@ -602,9 +601,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				e.preventDefault();
 
 				var $this = $(this);
-				var data = {
+				data = $.extend( data, {
 					email: $this.find('input[name="email"]').val()
-				};
+				});
 
 				$this
 					.removeClass('error success')
@@ -649,7 +648,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 				e.preventDefault();
 
-				fanclub.logout( function( err ){
+				fanclub.logout( data, function( err ){
 
 					if( err ) return console.log( err );
 
@@ -673,7 +672,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				var $birth_month = $this.find('select[name="birth_month"]');
 				var $birth_year = $this.find('select[name="birth_year"]');
 				var birthdate = $birth_day.val() +'-'+ $birth_month.val() +'-'+ $birth_year.val();
-				var data = {
+				data = $.extend( data, {
 					username: $this.find('input[name="username"]').val(),
 					first_name: $this.find('input[name="first_name"]').val(),
 					last_name: $this.find('input[name="last_name"]').val(),
@@ -683,7 +682,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					password: $this.find('input[name="password"]').val(),
 					password_confirmation: $this.find('input[name="password_confirmation"]').val(),
 					accept_terms: $this.find('input[name="accept_terms"]').prop('checked')
-				};
+				});
 
 				$this
 					.removeClass('error success')
@@ -729,7 +728,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				e.preventDefault();
 
 				var $this = $(this);
-				var data = {
+				data = $.extend( data, {
 					username: $this.find('input[name="username"]').val(),
 					first_name: $this.find('input[name="first_name"]').val(),
 					last_name: $this.find('input[name="last_name"]').val(),
@@ -737,7 +736,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					current_password: $this.find('input[name="current_password"]').val(),
 					password: $this.find('input[name="password"]').val(),
 					password_confirmation: $this.find('input[name="password_confirmation"]').val()
-				};
+				});
 
 				$this
 					.removeClass('error success')
@@ -782,10 +781,10 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				e.preventDefault();
 
 				var $this = $(this);
-				var data = {
+				data = $.extend( data, {
 					password: $this.find('input[name="password"]').val(),
 					password_confirmation: $this.find('input[name="password_confirmation"]').val()
-				};
+				});
 
 				// extract password reset key
 				var query_bits = location.search.substr(1).split('&');
@@ -829,8 +828,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					if( redirect ) window.location = redirect;
 
 				});
-
-				console.log( 'password reset submission', arguments );
 
 			});
 
