@@ -877,6 +877,8 @@ Methods for binding, triggering, and unbinding events
 	// Removes listeners from an event
 	Fanclub.prototype.off = function( type, removed_listener ){
 
+		if( !type && !removed_listener ) this._listeners = {};
+
 		if( this._listeners[type] instanceof Array ){
 			var listeners = this._listeners[type];
 			if( removed_listener ){
@@ -895,7 +897,14 @@ Methods for binding, triggering, and unbinding events
 
 	};
 
+	// Destroy all traces of Sparkart Fanclub
 	Fanclub.prototype.destroy = function(){
+
+		this.off();
+
+		$('.sparkart.fanclub')
+			.off('.sparkart')
+			.empty();
 
 	};
 

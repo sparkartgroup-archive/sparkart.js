@@ -52,39 +52,56 @@ describe( 'Fanclub', function(){
 		status: 200,
 		responseText: mock_responses.fanclub.success
 	});
-	
-	describe( 'initializer', function(){
 
-		beforeEach( function(){
+	beforeEach( function(){
 
-			$('#test').html('<div class="sparkart fanclub account"></div><div class="sparkart fanclub customer"></div>');
-			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+		$('#test').html('<div class="sparkart fanclub account"></div><div class="sparkart fanclub customer"></div>');
 
+	});
+
+	afterEach( function(){
+
+		$('#test').empty();
+
+	});
+
+	it( 'draws all widgets found on the page', function( done ){
+
+		fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+		fanclub.on( 'render', function(){
+			var account_contents = $('#test').find('div.sparkart.fanclub.account').html();
+			var customer_contents = $('#test').find('div.sparkart.fanclub.customer').html();
+			assert( account_contents.length > 0, 'Account widget has markup' );
+			assert( customer_contents.length > 0, 'Customer widget has markup' );
+			done();
 		});
+		fanclub.destroy();
 
-		afterEach( function(){
+	});
 
-			$('#test').empty();
+	it( 'acquires parameters from defaults and specified options', function(){
 
+		var account_preprocessor = function( data ){ return data; }
+		fanclub = new sparkart.Fanclub( FAKE_KEY, {
+			api_url: FAKE_API_URL,
+			preprocessors: {
+				account: account_preprocessor,
+			}
 		});
+		assert( fanclub.parameters.api_url === FAKE_API_URL, 'API URL is as specified' );
+		assert( $.inArray( account_preprocessor, fanclub.preprocessors.account ) >= 0, 'Account preprocessor has been added to preprocessors array' );
+		fanclub.destroy();
 
-		it( 'draws all widgets found on the page', function( done ){
+	});
 
-			fanclub.on( 'render', function(){
-				var account_contents = $('#test').find('div.sparkart.fanclub.account').html();
-				var customer_contents = $('#test').find('div.sparkart.fanclub.customer').html();
-				assert( account_contents.length > 0, 'Account widget has markup' );
-				assert( customer_contents.length > 0, 'Customer widget has markup' );
-				done();
-			});
+	it( 'gets initial fanclub data', function(){
 
+		fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+		fanclub.on( 'load', function(){
+			assert( !!fanclub.customer, 'Customer data exists' );
+			assert( !!fanclub.name, 'Fanclub data exists' );
 		});
-
-		it( 'creates a parameters object from defaults and specified options', function(){
-		});
-
-		it( 'gets initial fanclub data', function(){
-		});
+		fanclub.destroy();
 
 	});
 
