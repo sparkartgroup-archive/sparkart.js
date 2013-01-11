@@ -31,22 +31,35 @@ describe( 'Fanclub', function(){
 		responseText: mock_responses.account.success
 	});
 	
-	beforeEach( function(){
+	describe( 'initializer', function(){
 
-		fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+		beforeEach( function(){
 
-	});
+			$('#test').html('<div class="sparkart fanclub login"></div>');
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
 
-	it( 'draws all widgets found on the page', function(){
+		});
 
+		afterEach( function(){
 
+			$('#test').empty();
 
-	});
+		});
 
-	it( 'creates a parameters object from defaults and specified options', function(){
-	});
+		it( 'draws all widgets found on the page', function(){
 
-	it( 'gets initial fanclub data', function(){
+			fanclub.on( 'render', function(){
+				console.log( 'test', $('#test').html() );
+			});
+
+		});
+
+		it( 'creates a parameters object from defaults and specified options', function(){
+		});
+
+		it( 'gets initial fanclub data', function(){
+		});
+
 	});
 
 	describe( 'register', function(){
