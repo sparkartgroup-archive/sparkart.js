@@ -222,6 +222,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 	Fanclub.prototype.register = function( data, callback ){
 
 		var fanclub = this;
+		data = data || {};
 
 		this.post( 'account/register', data, function( err, response ){
 
@@ -246,6 +247,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 	Fanclub.prototype.login = function( data, callback ){
 
 		var fanclub = this;
+		data = data || {};
 
 		this.post( 'login', data, function( err, response ){
 
@@ -271,8 +273,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 	Fanclub.prototype.logout = function( data, callback ){
 
 		var fanclub = this;
+		data = data || {};
 
-		this.post( 'logout', null, function( err, response ){
+		this.post( 'logout', data, function( err, response ){
 
 			if( err ){
 				if( callback ) callback( err );
