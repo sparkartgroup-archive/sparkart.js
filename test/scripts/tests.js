@@ -15,7 +15,20 @@ var mock_responses = {
 				subscription: {}
 			}
 		}
+	},
+	fanclub: {
+		success: {
+			status: 'ok',
+			fanclub: {
+				id: 1,
+				name: 'Test Fanclub'
+			}
+		}
 	}
+};
+
+$.mockjaxSettings = {
+	responseTime: 1
 };
 
 describe( 'Fanclub', function(){
@@ -30,12 +43,21 @@ describe( 'Fanclub', function(){
 		status: 200,
 		responseText: mock_responses.account.success
 	});
+
+	$.mockjax({
+		url: FAKE_API_URL +'/fanclub.json',
+		data: {
+			key: FAKE_KEY
+		},
+		status: 200,
+		responseText: mock_responses.fanclub.success
+	});
 	
 	describe( 'initializer', function(){
 
 		beforeEach( function(){
 
-			$('#test').html('<div class="sparkart fanclub login"></div>');
+			$('#test').html('<div class="sparkart fanclub account"></div><div class="sparkart fanclub customer"></div>');
 			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
 
 		});
@@ -46,10 +68,14 @@ describe( 'Fanclub', function(){
 
 		});
 
-		it( 'draws all widgets found on the page', function(){
+		it( 'draws all widgets found on the page', function( done ){
 
 			fanclub.on( 'render', function(){
-				console.log( 'test', $('#test').html() );
+				var account_contents = $('#test').find('div.sparkart.fanclub.account').html();
+				var customer_contents = $('#test').find('div.sparkart.fanclub.customer').html();
+				assert( account_contents.length > 0, 'Account widget has markup' );
+				assert( customer_contents.length > 0, 'Customer widget has markup' );
+				done();
 			});
 
 		});
