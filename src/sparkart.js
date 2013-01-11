@@ -201,7 +201,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				fanclub.authentications = ( fc_response )? fc_response.fanclub.authentications: null;
 				fanclub.name = ( fc_response )? fc_response.fanclub.name: null;
 				// draw all widgets
-				fanclub.draw();
+				fanclub.draw( function(){
+					fanclub.trigger('render');
+				});
 				fanclub.trigger('load');
 				fanclub.loaded = true;
 			});
