@@ -1,27 +1,41 @@
 var FAKE_API_URL = 'http://fake.sparkart.net';
 var FAKE_KEY = 'test';
 
+var customer = {
+	id: 1,
+	first_name: 'Test',
+	last_name: 'User',
+	email: 'test@sparkart.com',
+	fanclub_id: 1,
+	registered: true,
+	subscription: {}
+};
+
 var mock_responses = {
+	register: {
+		post: {
+			success: {
+				status: 'ok',
+				customer: customer
+			}
+		}
+	},
 	account: {
-		success: {
-			status: 'ok',
-			customer: {
-				id: 1,
-				first_name: 'Test',
-				last_name: 'User',
-				email: 'test@sparkart.com',
-				fanclub_id: 1,
-				registered: true,
-				subscription: {}
+		get: {
+			success: {
+				status: 'ok',
+				customer: customer
 			}
 		}
 	},
 	fanclub: {
-		success: {
-			status: 'ok',
-			fanclub: {
-				id: 1,
-				name: 'Test Fanclub'
+		get: {
+			success: {
+				status: 'ok',
+				fanclub: {
+					id: 1,
+					name: 'Test Fanclub'
+				}
 			}
 		}
 	}
@@ -41,7 +55,7 @@ describe( 'Fanclub', function(){
 			key: FAKE_KEY
 		},
 		status: 200,
-		responseText: mock_responses.account.success
+		responseText: mock_responses.account.get.success
 	});
 
 	$.mockjax({
@@ -50,7 +64,7 @@ describe( 'Fanclub', function(){
 			key: FAKE_KEY
 		},
 		status: 200,
-		responseText: mock_responses.fanclub.success
+		responseText: mock_responses.fanclub.get.success
 	});
 
 	beforeEach( function(){
@@ -108,6 +122,29 @@ describe( 'Fanclub', function(){
 	describe( 'register', function(){
 
 		it( 'registers a user', function(){
+
+			/*$.mockjax({
+				url: FAKE_API_URL +'/register.json',
+				data: {
+					key: FAKE_KEY
+				},
+				status: 200,
+				responseText: mock_responses.register.post.success
+			});*/
+			var d = $.Deferred();
+			var ajax_stub = sinon.stub( $, 'ajax' ).returns( d.promise() );
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+			fanclub.register({
+				first_name: 'Test',
+				last_name: 'User',
+				birthdate: '01-01-1970',
+				email: 'test@sparkart.com',
+				password: 'test',
+				password_confirmation: 'test',
+				accept_terms: true
+			});
+			assert( ajax_stub.calledOnce );
+
 		});
 
 	});
