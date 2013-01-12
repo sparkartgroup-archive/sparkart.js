@@ -131,7 +131,7 @@ describe( 'Fanclub', function(){
 				status: 200,
 				responseText: mock_responses.register.post.success
 			});*/
-			var d = $.Deferred();
+			/*var d = $.Deferred();
 			var ajax_stub = sinon.stub( $, 'ajax' ).returns( d.promise() );
 			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
 			fanclub.register({
@@ -143,7 +143,7 @@ describe( 'Fanclub', function(){
 				password_confirmation: 'test',
 				accept_terms: true
 			});
-			assert( ajax_stub.calledOnce );
+			assert( ajax_stub.calledOnce );*/
 
 		});
 
@@ -165,17 +165,55 @@ describe( 'Fanclub', function(){
 
 	describe( 'draw', function(){
 
-		it( 'draws every widget on the page when none are specified', function(){
+		beforeEach( function(){
+
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+
 		});
 
-		it( 'draws the specified widget', function(){
+		afterEach( function(){
+
+			fanclub.destroy();
+
+		});
+
+		it( 'draws every widget on the page when none are specified', function( done ){
+
+			$('#test').append('<div class="sparkart fanclub account"></div><div class="sparkart fanclub customer"></div>');
+
+			fanclub.on( 'render', function(){
+				var account_contents = $('#test div.sparkart.fanclub.account').html();
+				var customer_contents = $('#test div.sparkart.fanclub.customer').html();
+				assert( account_contents.length > 0, 'Account widget has markup' );
+				assert( customer_contents.length > 0, 'Customer widget has markup' );
+				done();
+			});
+
+		});
+
+		it( 'draws the specified widget', function( done ){
+
+			var $logout = $('<div class="sparkart fanclub logout"></div>');
+			$('#test').append( $logout );
+			fanclub.draw( $logout, function(){
+				var logout_contents = $('#test div.sparkart.fanclub.logout').html();
+				assert( logout_contents.length > 0, 'Logout widget has markup' );
+				done();
+			});
+
 		});
 
 	});
 
 	describe( 'renderWidget', function(){
 
-		it( 'provides the markup of a widget', function(){
+		it( 'provides the markup for account based widgets', function( done ){
+
+			fanclub.renderWidget( 'login', {}, function( err, html ){
+				console.log( html );
+				done();
+			});
+
 		});
 
 	});
