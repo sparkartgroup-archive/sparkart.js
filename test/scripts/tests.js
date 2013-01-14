@@ -25,6 +25,10 @@ var mock_responses = {
 			success: {
 				status: 'ok',
 				customer: customer
+			},
+			error: {
+				status: 'error',
+				errors: []
 			}
 		}
 	},
@@ -36,6 +40,24 @@ var mock_responses = {
 					id: 1,
 					name: 'Test Fanclub'
 				}
+			}
+		}
+	},
+	events: {
+		get: {
+			success: {
+				status: 'ok',
+				events: [{
+					date: '2013-02-10T00:00:00-0500',
+					description: '',
+					doors_open: null,
+					id: 2,
+					links: null,
+					start: null,
+					timezone: 'America/New_York',
+					title: '',
+					venue: {}
+				}]
 			}
 		}
 	}
@@ -207,12 +229,159 @@ describe( 'Fanclub', function(){
 
 	describe( 'renderWidget', function(){
 
-		it( 'provides the markup for account based widgets', function( done ){
+		var account_mock;
 
-			fanclub.renderWidget( 'login', {}, function( err, html ){
-				console.log( html );
-				done();
+		before( function(){
+
+			account_mock = $.mockjax({
+				url: FAKE_API_URL +'/account.json',
+				data: {
+					key: FAKE_KEY
+				},
+				status: 200,
+				responseText: mock_responses.account.get.success
 			});
+
+		});
+		describe( 'account widgets when logged in', function(){
+
+			it( 'does not render the login widget', function( done ){
+
+				fanclub.renderWidget( 'login', {}, function( err, html ){
+					assert( html === '', 'HTML is blank' );
+					done();
+				});
+
+			});
+
+			it( 'renders the account widget', function( done ){
+
+				fanclub.renderWidget( 'account', {}, function( err, html ){
+					assert( html !== '', 'HTML is not blank' );
+					done();
+				});
+
+			});
+
+			it( 'renders the customer widget', function( done ){
+
+				fanclub.renderWidget( 'customer', {}, function( err, html ){
+					assert( html !== '', 'HTML is not blank' );
+					done();
+				});
+
+			});
+
+			it( 'renders the logout widget', function( done ){
+
+				fanclub.renderWidget( 'logout', {}, function( err, html ){
+					assert( html !== '', 'HTML is not blank' );
+					done();
+				});
+
+			});
+
+		});
+		after( function(){
+
+			$.mockjaxClear( account_mock );
+
+		});
+
+		before( function(){
+
+			account_mock = $.mockjax({
+				url: FAKE_API_URL +'/account.json',
+				data: {
+					key: FAKE_KEY
+				},
+				status: 422,
+				responseText: mock_responses.account.get.error
+			});
+
+		});
+		describe( 'account widgets when logged out', function(){
+
+			it( 'renders the login widget', function( done ){
+
+				fanclub.renderWidget( 'login', {}, function( err, html ){
+					assert( html === '', 'HTML is blank' );
+					done();
+				});
+
+			});
+
+			it( 'does not render the account widget', function( done ){
+
+				fanclub.renderWidget( 'account', {}, function( err, html ){
+					assert( html !== '', 'HTML is not blank' );
+					done();
+				});
+
+			});
+
+			it( 'does not render the customer widget', function( done ){
+
+				fanclub.renderWidget( 'customer', {}, function( err, html ){
+					assert( html !== '', 'HTML is not blank' );
+					done();
+				});
+
+			});
+
+			it( 'does not render the logout widget', function( done ){
+
+				fanclub.renderWidget( 'logout', {}, function( err, html ){
+					assert( html !== '', 'HTML is not blank' );
+					done();
+				});
+
+			});
+
+		});
+		after( function(){
+
+			$.mockjaxClear( account_mock );
+
+		});
+
+		before( function(){
+
+			$.mockjax({
+				url: FAKE_API_URL +'/events.json',
+				data: {
+					key: FAKE_KEY
+				},
+				status: 200,
+				responseText: mock_responses.events.get.success
+			});
+
+		});
+		describe( 'normal widgets', function(){
+
+			it( 'renders the widget if request is successful', function( done ){
+
+				fanclub.renderWidget( 'events', {}, function( err, html ){
+					assert( !!html, 'HTML is not blank' );
+					assert( !err, 'There are no errors' );
+					done();
+				});
+
+			});
+
+			it( 'does not render if the request fails', function( done ){
+
+				fanclub.renderWidget( 'plans', {}, function( err, html ){
+					assert( !html, 'HTML is blank' );
+					done();
+				})
+
+			});
+
+		});
+		after( function(){
+
+			$.mockjaxClear( account_mock );
 
 		});
 
