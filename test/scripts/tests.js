@@ -233,6 +233,7 @@ describe( 'Fanclub', function(){
 
 		before( function(){
 
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
 			account_mock = $.mockjax({
 				url: FAKE_API_URL +'/account.json',
 				data: {
@@ -243,6 +244,7 @@ describe( 'Fanclub', function(){
 			});
 
 		});
+
 		describe( 'account widgets when logged in', function(){
 
 			it( 'does not render the login widget', function( done ){
@@ -282,14 +284,17 @@ describe( 'Fanclub', function(){
 			});
 
 		});
+
 		after( function(){
 
+			fanclub.destroy();
 			$.mockjaxClear( account_mock );
 
 		});
 
 		before( function(){
 
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
 			account_mock = $.mockjax({
 				url: FAKE_API_URL +'/account.json',
 				data: {
@@ -341,19 +346,34 @@ describe( 'Fanclub', function(){
 		});
 		after( function(){
 
+			fanclub.destroy();
 			$.mockjaxClear( account_mock );
 
 		});
 
+		var events_mock;
+		var plans_mock;
+
 		before( function(){
 
-			$.mockjax({
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+
+			events_mock = $.mockjax({
 				url: FAKE_API_URL +'/events.json',
 				data: {
 					key: FAKE_KEY
 				},
 				status: 200,
 				responseText: mock_responses.events.get.success
+			});
+
+			plans_mock = $.mockjax({
+				url: FAKE_API_URL +'/plans.json',
+				data: {
+					key: FAKE_KEY
+				},
+				status: 422,
+				responseText: null
 			});
 
 		});
@@ -381,7 +401,9 @@ describe( 'Fanclub', function(){
 		});
 		after( function(){
 
-			$.mockjaxClear( account_mock );
+			fanclub.destroy();
+			$.mockjaxClear( events_mock );
+			$.mockjaxClear( plans_mock );
 
 		});
 
@@ -389,7 +411,32 @@ describe( 'Fanclub', function(){
 
 	describe( 'request', function(){
 
-		it( 'requests data from the API', function(){
+		var events_mock;
+
+		before( function(){
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+			events_mock = $.mockjax({
+				url: FAKE_API_URL +'/events.json',
+				data: {
+					key: FAKE_KEY
+				},
+				status: 200,
+				responseText: mock_responses.events.get.success
+			});
+		});
+
+		it( 'requests data from the API', function( done ){
+
+			fanclub.request( FAKE_API_URL +'/events.json', 'GET', { key: FAKE_KEY }, function( err, data ){
+				assert( !!data, 'Data recieved from API' );
+				done();
+			});
+
+		});
+
+		after( function(){
+			fanclub.destroy();
+			$.mockjaxClear( events_mock );
 		});
 
 	});
@@ -397,6 +444,13 @@ describe( 'Fanclub', function(){
 	describe( 'get', function(){
 
 		it( 'initiates a GET request', function(){
+
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+			var request_stub = sinon.stub( fanclub, 'request' );
+			fanclub.get( 'events', { key: FAKE_KEY } );
+			assert( request_stub.called, 'Request called' );
+			fanclub.destroy();
+
 		});
 
 	});
@@ -404,25 +458,70 @@ describe( 'Fanclub', function(){
 	describe( 'post', function(){
 
 		it( 'initiates a POST request', function(){
+
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+			var request_stub = sinon.stub( fanclub, 'request' );
+			fanclub.post( 'account', { key: FAKE_KEY } );
+			assert( request_stub.called, 'Request called' );
+			fanclub.destroy();
+
 		});
 
 	});
 
 	describe( 'bindWidget', function(){
 
+		fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+
 		it( 'binds events to a login widget', function(){
+
+			var $login_widget = $('<div class="sparkart fanclub login"></div>');
+			fanclub.bindWidget( 'login', $login_widget );
+			var login_widget = $login_widget[0];
+			var data = $.hasData( login_widget ) && $._data( login_widget );
+			assert( data.events.submit.length === 2, 'Two submit events are bound' );
+			assert( data.events.click.length === 2, 'Two click events are bound' );
+
 		});
 
 		it( 'binds events to a register widget', function(){
+
+			var $register_widget = $('<div class="sparkart fanclub register"></div>');
+			fanclub.bindWidget( 'register', $register_widget );
+			var register_widget = $register_widget[0];
+			var data = $.hasData( register_widget ) && $._data( register_widget );
+			assert( data.events.submit.length === 1, 'One submit event is bound' );
+
 		});
 
 		it( 'binds events to a logout widget', function(){
+
+			var $logout_widget = $('<div class="sparkart fanclub logout"></div>');
+			fanclub.bindWidget( 'logout', $logout_widget );
+			var logout_widget = $logout_widget[0];
+			var data = $.hasData( logout_widget ) && $._data( logout_widget );
+			assert( data.events.click.length === 1, 'One click event is bound' );
+
 		});
 
 		it( 'binds events to an account widget', function(){
+
+			var $account_widget = $('<div class="sparkart fanclub account"></div>');
+			fanclub.bindWidget( 'account', $account_widget );
+			var account_widget = $account_widget[0];
+			var data = $.hasData( account_widget ) && $._data( account_widget );
+			assert( data.events.submit.length === 1, 'One submit event is bound' );
+
 		});
 
 		it( 'binds events to a password reset widget', function(){
+
+			var $password_reset_widget = $('<div class="sparkart fanclub password_reset"></div>');
+			fanclub.bindWidget( 'password_reset', $password_reset_widget );
+			var password_reset_widget = $password_reset_widget[0];
+			var data = $.hasData( password_reset_widget ) && $._data( password_reset_widget );
+			assert( data.events.submit.length === 1, 'One submit event is bound' );
+
 		});
 
 	});
