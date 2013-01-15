@@ -471,7 +471,9 @@ describe( 'Fanclub', function(){
 
 	describe( 'bindWidget', function(){
 
-		fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+		beforeEach( function(){
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+		});
 
 		it( 'binds events to a login widget', function(){
 
@@ -521,31 +523,91 @@ describe( 'Fanclub', function(){
 			var password_reset_widget = $password_reset_widget[0];
 			var data = $.hasData( password_reset_widget ) && $._data( password_reset_widget );
 			assert( data.events.submit.length === 1, 'One submit event is bound' );
+		
+		});
 
+		afterEach( function(){
+			fanclub.destroy();
 		});
 
 	});
 
 	describe( 'on', function(){
 
+		beforeEach( function(){
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+		});
+
 		it( 'binds a single event handler', function(){
+
+			var fake_listener = function(){};
+			fanclub.on( 'test', fake_listener );
+			assert( fanclub._listeners.test[0] === fake_listener, 'Fake listener is in _listeners' );
+
+		});
+
+		afterEach( function(){
+			fanclub.destroy();
 		});
 
 	});
 
 	describe( 'trigger', function(){
 
+		beforeEach( function(){
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+		});
+
 		it( 'triggers all event handlers for the specified event', function(){
+
+			var fake_listener = sinon.spy();
+			var fake_listener_2 = sinon.spy();
+			fanclub.on( 'test', fake_listener );
+			fanclub.on( 'test', fake_listener_2 );
+			fanclub.trigger('test');
+			assert( fake_listener.called, 'Fake listener 1 was called' );
+			assert( fake_listener_2.called, 'Fake listener 2 was called' );
+
+		});
+
+		afterEach( function(){
+			fanclub.destroy();
 		});
 
 	});
 
 	describe( 'off', function(){
 
+		beforeEach( function(){
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+		});
+
 		it( 'removes a single event handler from the specified event', function(){
+
+			var fake_listener = function(){};
+			fanclub.on( 'test', fake_listener );
+			assert( fanclub._listeners.test[0] === fake_listener, 'Fake listener is in _listeners' );
+			fanclub.off( 'test', fake_listener );
+			assert( $.inArray( fanclub._listeners, fake_listener ) < 0, 'Fake listener is not in _listeners' );
+
 		});
 
 		it( 'removes all event handlers from the specified event', function(){
+
+			var fake_listener = function(){};
+			var fake_listener_2 = function(){};
+			fanclub.on( 'test', fake_listener );
+			fanclub.on( 'test', fake_listener_2 );
+			assert( fanclub._listeners.test[0] === fake_listener, 'Fake listener is in _listeners' );
+			assert( fanclub._listeners.test[1] === fake_listener_2, 'Fake listener 2 is in _listeners' );
+			fanclub.off('test');
+			assert( $.inArray( fanclub._listeners, fake_listener ) < 0, 'Fake listener is not in _listeners' );
+			assert( $.inArray( fanclub._listeners, fake_listener_2 ) < 0, 'Fake listener 2 is not in _listeners' );
+
+		});
+
+		afterEach( function(){
+			fanclub.destroy();
 		});
 
 	});
