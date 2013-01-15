@@ -20,6 +20,21 @@ var mock_responses = {
 			}
 		}
 	},
+	login: {
+		post: {
+			success: {
+				status: 'ok',
+				customer: customer
+			}
+		}
+	},
+	logout: {
+		post: {
+			success: {
+				status: 'ok'
+			}
+		}
+	},
 	account: {
 		get: {
 			success: {
@@ -143,19 +158,22 @@ describe( 'Fanclub', function(){
 
 	describe( 'register', function(){
 
-		it( 'registers a user', function(){
+		it( 'registers a user', function( done ){
 
-			/*$.mockjax({
-				url: FAKE_API_URL +'/register.json',
+			$.mockjax({
+				url: FAKE_API_URL +'/account/register.json',
+				type: 'POST',
 				data: {
 					key: FAKE_KEY
 				},
 				status: 200,
 				responseText: mock_responses.register.post.success
-			});*/
-			/*var d = $.Deferred();
-			var ajax_stub = sinon.stub( $, 'ajax' ).returns( d.promise() );
-			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+			});
+
+			fanclub = new sparkart.Fanclub( FAKE_KEY, {
+				api_url: FAKE_API_URL,
+				reload: false
+			});
 			fanclub.register({
 				first_name: 'Test',
 				last_name: 'User',
@@ -164,16 +182,44 @@ describe( 'Fanclub', function(){
 				password: 'test',
 				password_confirmation: 'test',
 				accept_terms: true
-			});
-			assert( ajax_stub.calledOnce );*/
+			}, function( err, data ){
 
+				assert( !!data.customer, 'Returns customer object' );
+				done();
+
+			});
 		});
 
 	});
 
 	describe( 'login', function(){
 
-		it( 'logs a user in', function(){
+		it( 'logs a user in', function( done ){
+
+			$.mockjax({
+				url: FAKE_API_URL +'/login.json',
+				type: 'POST',
+				data: {
+					key: FAKE_KEY
+				},
+				status: 200,
+				responseText: mock_responses.login.post.success
+			});
+
+			fanclub = new sparkart.Fanclub( FAKE_KEY, {
+				api_url: FAKE_API_URL,
+				reload: false
+			});
+			fanclub.login({
+				email: 'test@sparkart.com',
+				password: 'test'
+			}, function( err, data ){
+
+				assert( !!data.customer, 'Returns customer object' );
+				done();
+
+			});
+
 		});
 
 	});
@@ -181,6 +227,27 @@ describe( 'Fanclub', function(){
 	describe( 'logout', function(){
 
 		it( 'logs a user out', function(){
+
+			$.mockjax({
+				url: FAKE_API_URL +'/logout.json',
+				type: 'POST',
+				data: {
+					key: FAKE_KEY
+				},
+				status: 200,
+				responseText: mock_responses.logout.post.success
+			});
+
+			fanclub = new sparkart.Fanclub( FAKE_KEY, {
+				api_url: FAKE_API_URL,
+				reload: false
+			});
+			fanclub.logout( function( err, data ){
+
+				done();
+
+			});
+
 		});
 
 	});
