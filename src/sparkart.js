@@ -345,6 +345,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		else if( $widget.is('.account') ) widget = 'account';
 		else if( $widget.is('.customer') ) widget = 'customer';
 		else if( $widget.is('.password_reset') ) widget = 'password_reset';
+		else if( $widget.is('.order') ) widget = 'order';
 		else if( $widget.is('.orders') ) widget = 'orders';
 		else if( $widget.is('.affiliates') ) widget = 'affiliates';
 
