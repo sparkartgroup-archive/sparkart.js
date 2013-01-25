@@ -1,8 +1,9 @@
 <ul class="orders">
 	{{#orders}}
 	<li>
-		<a href="{{../parameters.url}}{{id}}"><h4>Order {{id}</h4></a>
+		<a href="{{../parameters.url}}{{id}}"><h4>Order {{id}}</h4></a>
 		<div class="details">
+			<h5 class="name">{{plan.name}}</h5>
 			<span class="customer">Customer ID: <var>{{customer_id}}</var></span>
 			<ul class="dates">
 				{{#paid_at}}
@@ -13,20 +14,22 @@
 				{{/refunded_at}}
 			</ul>
 		</div>
+		{{#totals}}
 		<dl class="totals">
 			<dt class="subtotal">Subtotal</dt>
-			<dd class="subtotal">{{subtotal}}</dd>
+			<dd class="subtotal">${{subtotal}}</dd>
 			{{#shipping}}
 			<dt class="shipping">Shipping</dt>
-			<dd class="shipping">{{.}}</dd>
+			<dd class="shipping">${{.}}</dd>
 			{{/shipping}}
 			{{#discount}}
 			<dt class="discount">Discount</dt>
-			<dd class="discount">{{.}}</dd>
+			<dd class="discount">${{.}}</dd>
 			{{/discount}}
 			<dt class="total">Total</dt>
-			<dd class="total">{{total}}</dd>
+			<dd class="total">${{total}}</dd>
 		</dl>
+		{{/totals}}
 	</li>
 	{{/orders}}
 </ul>

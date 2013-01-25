@@ -1,6 +1,8 @@
+{{#order}}
 <div class="order">
 	<h4>Order {{id}}</h4>
 	<div class="details">
+		<h5 class="name">{{plan.name}}</h5>
 		<span class="customer">Customer ID: <var>{{customer_id}}</var></span>
 		<ul class="dates">
 			{{#paid_at}}
@@ -12,13 +14,15 @@
 		</ul>
 	</div>
 	{{#billing_address}}
-	<ul class="billing address">
-		<li class="name">{{first_name}} {{last_name}}</li>
-		<li class="email">{{email}}</li>
-		<li class="country">{{country}}</li>
-		<li class="address line1">{{address}}</li>
-		<li class="address line2">{{city}}, {{state}}, {{postal_code}}</li>
-	</ul>
+	<div class="billing">
+		<h6>Billed To</h6>
+		<ul class="address">
+			<li class="name">{{first_name}} {{last_name}}</li>
+			<li class="country">{{country}}</li>
+			<li class="address line1">{{address}}</li>
+			<li class="address line2">{{city}}, {{state}}, {{postal_code}}</li>
+		</ul>
+	</div>
 	{{/billing_address}}
 	<ul class="shipments">
 	{{#shipments}}
@@ -26,13 +30,13 @@
 			{{#tracking_number}}<var class="tracking">{{.}}</var>{{/tracking_number}}
 			<div class="shipping">
 				<h6>Shipped To</h6>
+				{{#shipping_address}}
 				<ul class="address">
 					<li class="name">{{first_name}} {{last_name}}</li>
-					<li class="email">{{email}}</li>
-					<li class="country">{{country}}</li>
 					<li class="address line1">{{address}}</li>
-					<li class="address line2">{{city}}, {{state}}, {{postal_code}}</li>
+					<li class="address line2">{{city}}, {{state}}, {{postal_code}}, {{country}}</li>
 				</ul>
+				{{/shipping_address}}
 			</div>
 			{{#ship_date}}<span class="shipped">Shipped On <var class="date">{{.}}</var></span>{{/ship_date}}
 			<ul class="items">
@@ -47,18 +51,21 @@
 		</li>
 	{{/shipments}}
 	</ul>
+	{{#totals}}
 	<dl class="totals">
 		<dt class="subtotal">Subtotal</dt>
-		<dd class="subtotal">{{subtotal}}</dd>
+		<dd class="subtotal">${{subtotal}}</dd>
 		{{#shipping}}
 		<dt class="shipping">Shipping</dt>
-		<dd class="shipping">{{.}}</dd>
+		<dd class="shipping">${{.}}</dd>
 		{{/shipping}}
 		{{#discount}}
 		<dt class="discount">Discount</dt>
-		<dd class="discount">{{.}}</dd>
+		<dd class="discount">${{.}}</dd>
 		{{/discount}}
 		<dt class="total">Total</dt>
-		<dd class="total">{{total}}</dd>
+		<dd class="total">${{total}}</dd>
 	</dl>
+	{{/totals}}
 </div>
+{{/order}}

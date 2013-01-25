@@ -500,7 +500,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 		var fanclub = this;
 		parameters = parameters || {};
-		if( endpoint === 'event' || endpoint === 'plan' ) endpoint +='s';
+		if( endpoint === 'event' || endpoint === 'plan' || endpoint === 'order' ) endpoint +='s';
 
 		// If an ID is provided, we're looking up a single resource
 		var url = ( parameters.id )
