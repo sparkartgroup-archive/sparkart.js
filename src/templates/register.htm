@@ -1,6 +1,10 @@
-{{#parameters.facebook}}
-<button class="facebook_register" type="button">Register with Facebook</button>
-{{/parameters.facebook}}
+<ul class="authentications">
+{{#unless customer}}
+{{#authentications}}
+<li><button class="{{name}}_register" type="button">Register with {{name}}</button></li>
+{{/authentications}}
+{{/unless}}
+</ul>
 {{#customer}}
 {{^registered}}
 <form class="register" method="PUT">

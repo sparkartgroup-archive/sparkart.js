@@ -147,7 +147,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 		// Define ALL of our templates. Ideally we'd have these in external files
 		// Then compile the single JS script
-		var templates = fanclub.templates = {'account': '{{#customer}}{{#registered}}<form class="account">	<div class="success" style="display: none;">		<p>Account Successfully Updated!</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<label>Username<br />		<input name="username" type="text" value="{{username}}" /></label><br />		<label>First Name<br />		<input name="first_name" type="text" value="{{first_name}}" /></label><br />		<label>Last Name<br />		<input name="last_name" type="text" value="{{last_name}}" /></label><br />		<label>Email Address<br />		<input name="email" type="text" value="{{email}}" /></label><br />		<div class="password">			<label>Current Password<br />			<input name="current_password" type="password" /></label>			<hr />			<label>New Password<br />			<input name="password" type="password" /></label><br />			<label>Repeat New Password<br />			<input name="password_confirmation" type="password" /></label>		</div>	</fieldset>	<button type="submit">Update Account</button></form>{{/registered}}{{/customer}}','affiliates': '{{#affiliates}}	<h2>{{name}}</h2>	<ul class="codes">		{{#codes}}<li>{{.}}</li>{{/codes}}	</ul>{{/affiliates}}','customer': '{{#customer}}{{#registered}}<div class="info">	{{#if username}}	<strong class="username">{{username}}</strong>	{{else}}	<strong class="name">{{first_name}} {{last_name}}</strong>	{{/if}}	{{#subscription}}	<span class="subscription">{{plan.name}}</span>	{{/subscription}}</div>{{/registered}}{{/customer}}','errors': '<ul class="errors">{{#errors}}<li>{{.}}</li>{{/errors}}</ul>','event': '{{#event}}<div class="event">	<h2>{{date.month.abbr}} {{date.day.number}}</h2>	<h3>{{title}}</h3>	<div class="description">{{description}}</div>	<dl>		{{#doors_open}}		<dt>Doors Open</dt>		<dd>{{hour.half}}:{{minute}} <span class="ampm">{{ampm}}</span></dd>		{{/doors_open}}		{{#start}}		<dt>Start</dt>		<dd>{{hour.half}}:{{minute}} <span class="ampm">{{ampm}}</span></dd>		{{/start}}	</dl>	{{#venue}}	<div class="venue">		<h4>{{name}}</h4>		<strong class="city">{{city}}</strong>, <em class="state">{{state}}</em> <span class="country">{{country}}</span>		<h5>Directions</h5>		<ul class="directions">			{{#directions}}			<li><a href="{{google_maps}}">Google Maps</a></li>			<li><a href="{{yahoo_maps}}">Yahoo Maps</a></li>			<li><a href="{{mapquest}}">Mapquest</a></li>			<li><a href="{{bing_maps}}">Bing Maps</a></li>			{{/directions}}		</ul>	</div>	{{/venue}}	<ul class="links">		{{#links}}		<li><a href="{{url}}">{{name}}</a></li>		{{/links}}	</ul></div>{{/event}}','events': '<ul class="events">	{{#events}}	<li>		<h2><a href="{{../parameters.url}}{{id}}">{{date.month.abbr}} {{date.day.number}}</a></h2>		<h3>{{title}}</h3>		<div class="description">{{description}}</div>		{{#venue}}		<div class="venue">			<h4>{{name}}</h4>			<strong>{{city}}</strong>, {{state}}		</div>		{{/venue}}		<ul class="links">			{{#links}}			<li><a href="{{url}}">{{name}}</a></li>			{{/links}}		</ul>	</li>	{{/events}}</ul>','login': '{{^customer}}<form class="login">	<div class="success" style="display: none;">		<p>You have successfully logged in.</p>	</div>	<div class="errors" style="display: none;"></div>	{{#parameters.facebook}}<button class="facebook_login" type="button">Login with Facebook</button>{{/parameters.facebook}}	<fieldset>		<label>Email<br />		<input name="email" type="text" /></label>		<label>Password<br />		<input name="password" type="password" /></label>		<a href="#forgot">Forgot Password?</a>	</fieldset>	<button type="submit">Log In</button></form><form class="forgot" style="display:none">	<a href="#close">Close</a>	<div class="success" style="display: none;">		<p>A message has been sent to this address. Please check your email for instructions on how to reset your password.</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<p>Please enter the email address you used for your fanclub account:</p>		<label>Email<br />		<input type="text" name="email"></input>	</fieldset>	<button type="submit">Submit</button></form>{{/customer}}','logout': '{{#customer}}<a href="#logout">Log Out</a>{{/customer}}','order': '{{#order}}<div class="order">	<h4>Order {{id}}</h4>	<div class="details">		<h5 class="name">{{plan.name}}</h5>		<span class="customer">Customer ID: <var>{{customer_id}}</var></span>		<ul class="dates">			{{#paid_at}}			<li class="paid">Paid <var class="date">{{.}}</var></li>			{{/paid_at}}			{{#refunded_at}}			<li class="refunded">Refunded <var class="refunded">{{.}}</var></li>			{{/refunded_at}}		</ul>	</div>	{{#billing_address}}	<div class="billing">		<h6>Billed To</h6>		<ul class="address">			<li class="name">{{first_name}} {{last_name}}</li>			<li class="country">{{country}}</li>			<li class="address line1">{{address}}</li>			<li class="address line2">{{city}}, {{state}}, {{postal_code}}</li>		</ul>	</div>	{{/billing_address}}	<ul class="shipments">	{{#shipments}}		<li>			{{#tracking_number}}<var class="tracking">{{.}}</var>{{/tracking_number}}			<div class="shipping">				<h6>Shipped To</h6>				{{#shipping_address}}				<ul class="address">					<li class="name">{{first_name}} {{last_name}}</li>					<li class="address line1">{{address}}</li>					<li class="address line2">{{city}}, {{state}}, {{postal_code}}, {{country}}</li>				</ul>				{{/shipping_address}}			</div>			{{#ship_date}}<span class="shipped">Shipped On <var class="date">{{.}}</var></span>{{/ship_date}}			<ul class="items">			{{#items}}				<li>					{{#thumbnail}}<img class="thumbnail" src="{{.}}" />{{/thumbnail}}					<strong class="name">{{name}}</strong>					{{#option}}<span class="option">{{.}}</span>{{/option}}				</li>			{{/items}}			</ul>		</li>	{{/shipments}}	</ul>	{{#totals}}	<dl class="totals">		<dt class="subtotal">Subtotal</dt>		<dd class="subtotal">${{subtotal}}</dd>		{{#shipping}}		<dt class="shipping">Shipping</dt>		<dd class="shipping">${{.}}</dd>		{{/shipping}}		{{#discount}}		<dt class="discount">Discount</dt>		<dd class="discount">${{.}}</dd>		{{/discount}}		<dt class="total">Total</dt>		<dd class="total">${{total}}</dd>	</dl>	{{/totals}}</div>{{/order}}','orders': '<ul class="orders">	{{#orders}}	<li>		<a href="{{../parameters.url}}{{id}}"><h4>Order {{id}}</h4></a>		<div class="details">			<h5 class="name">{{plan.name}}</h5>			<span class="customer">Customer ID: <var>{{customer_id}}</var></span>			<ul class="dates">				{{#paid_at}}				<li class="paid">Paid <var class="date">{{.}}</var></li>				{{/paid_at}}				{{#refunded_at}}				<li class="refunded">Refunded <var class="refunded">{{.}}</var></li>				{{/refunded_at}}			</ul>		</div>		{{#totals}}		<dl class="totals">			<dt class="subtotal">Subtotal</dt>			<dd class="subtotal">${{subtotal}}</dd>			{{#shipping}}			<dt class="shipping">Shipping</dt>			<dd class="shipping">${{.}}</dd>			{{/shipping}}			{{#discount}}			<dt class="discount">Discount</dt>			<dd class="discount">${{.}}</dd>			{{/discount}}			<dt class="total">Total</dt>			<dd class="total">${{total}}</dd>		</dl>		{{/totals}}	</li>	{{/orders}}</ul>','password_reset': '{{#token}}<form class="password_reset">	<div class="success" style="display: none;">		<p>Password Successfully Updated!</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<div class="password">			<label>New Password<br />			<input name="password" type="password" /></label><br />			<label>Repeat New Password<br />			<input name="password_confirmation" type="password" /></label>		</div>	</fieldset>	<button type="submit">Update Password</button></form>{{/token}}','plan': '<div class="plan">	<h2>{{name}}</h2>	<h3>{{price}}</h3>	<div class="description">{{description}}</div>	{{#package}}		<h3>{{name}}</h3>		<ul class="items">			{{#items}}			<li>				<img src="{{thumbnail}}" />				<strong>{{name}}</strong>			</li>			{{/items}}		</ul>	{{/package}}	<ul class="actions">		<li class="join"><a href="{{checkout}}">Join Now</a></li>	</ul>	{{#annotations}}<sub class="annotations">{{.}}</sub>{{/annotations}}	</div>','plans': '<ul class="plans">	{{#plans}}	<li>		<h2>{{name}}</h2>		<h3>{{price}}</h3>		<div class="description">{{description}}</div>		{{#package}}			<h3>{{name}}</h3>			<ul class="items">				{{#items}}				<li>					<img src="{{thumbnail}}" />					<strong>{{name}}</strong>				</li>				{{/items}}			</ul>		{{/package}}		<ul class="actions">			<li class="join"><a href="{{checkout}}">Join Now</a></li>		</ul>		{{#annotations}}<sub class="annotations">{{.}}</sub>{{/annotations}}	</li>	{{/plans}}</ul>','receipt': '<ul class="receipt">{{#items}}<li>{{name}}</li>{{/items}}</ul>','register': '{{#parameters.facebook}}<button class="facebook_register" type="button">Register with Facebook</button>{{/parameters.facebook}}{{#customer}}{{^registered}}<form class="register" method="PUT">	<div class="success" style="display: none;">		<p>You have successfully completed the registration of your fanclub account.</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<p>Complete your fanclub account registration.</p>		{{^email}}		<label>Email<br />		<input name="email" type="text" /></label>		{{/email}}		{{#username_required}}		<label>Username<br />		<input name="username" type="text" /></label><br />		{{/username_required}}		{{^first_name}}		<label>First Name<br />		<input name="first_name" type="text" /></label>		{{/first_name}}		{{^last_name}}		<label>Last Name<br />		<input name="last_name" type="text" /></label>		{{/last_name}}		{{^birthdate}}		<label>Date of Birth</label>		{{{birthdate_selector}}		{{/birthdate}}		<label>Password<br />		<input name="password" type="password" /></label>		<label>Password Confirm<br />		<input name="password_confirmation" type="password" /></label>		<label><input name="accept_terms" type="checkbox" /> I agree to the fanclub <a href="{{terms_url}}" target="_blank">Terms and Conditions</a></label>	</fieldset>	<button type="submit">Register</button></form>{{/registered}}{{/customer}}','subscription': '<div class="subscription">{{name}}</div>','subscriptions': '<ul class="subscriptions">	{{#subscriptions}}	<li>{{name}}</li>	{{/subscriptions}}</ul>'};
+		var templates = fanclub.templates = {'account': '{{#customer}}{{#registered}}<form class="account">	<div class="success" style="display: none;">		<p>Account Successfully Updated!</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<label>Username<br />		<input name="username" type="text" value="{{username}}" /></label><br />		<label>First Name<br />		<input name="first_name" type="text" value="{{first_name}}" /></label><br />		<label>Last Name<br />		<input name="last_name" type="text" value="{{last_name}}" /></label><br />		<label>Email Address<br />		<input name="email" type="text" value="{{email}}" /></label><br />		<div class="password">			<label>Current Password<br />			<input name="current_password" type="password" /></label>			<hr />			<label>New Password<br />			<input name="password" type="password" /></label><br />			<label>Repeat New Password<br />			<input name="password_confirmation" type="password" /></label>		</div>	</fieldset>	<button type="submit">Update Account</button></form>{{/registered}}{{/customer}}','affiliates': '{{#affiliates}}	<h2>{{name}}</h2>	<ul class="codes">		{{#codes}}<li>{{.}}</li>{{/codes}}	</ul>{{/affiliates}}','customer': '{{#customer}}{{#registered}}<div class="info">	{{#if username}}	<strong class="username">{{username}}</strong>	{{else}}	<strong class="name">{{first_name}} {{last_name}}</strong>	{{/if}}	{{#subscription}}	<span class="subscription">{{plan.name}}</span>	{{/subscription}}</div>{{/registered}}{{/customer}}','errors': '<ul class="errors">{{#errors}}<li>{{.}}</li>{{/errors}}</ul>','event': '{{#event}}<div class="event">	<h2>{{date.month.abbr}} {{date.day.number}}</h2>	<h3>{{title}}</h3>	<div class="description">{{description}}</div>	<dl>		{{#doors_open}}		<dt>Doors Open</dt>		<dd>{{hour.half}}:{{minute}} <span class="ampm">{{ampm}}</span></dd>		{{/doors_open}}		{{#start}}		<dt>Start</dt>		<dd>{{hour.half}}:{{minute}} <span class="ampm">{{ampm}}</span></dd>		{{/start}}	</dl>	{{#venue}}	<div class="venue">		<h4>{{name}}</h4>		<strong class="city">{{city}}</strong>, <em class="state">{{state}}</em> <span class="country">{{country}}</span>		<h5>Directions</h5>		<ul class="directions">			{{#directions}}			<li><a href="{{google_maps}}">Google Maps</a></li>			<li><a href="{{yahoo_maps}}">Yahoo Maps</a></li>			<li><a href="{{mapquest}}">Mapquest</a></li>			<li><a href="{{bing_maps}}">Bing Maps</a></li>			{{/directions}}		</ul>	</div>	{{/venue}}	<ul class="links">		{{#links}}		<li><a href="{{url}}">{{name}}</a></li>		{{/links}}	</ul></div>{{/event}}','events': '<ul class="events">	{{#events}}	<li>		<h2><a href="{{../parameters.url}}{{id}}">{{date.month.abbr}} {{date.day.number}}</a></h2>		<h3>{{title}}</h3>		<div class="description">{{description}}</div>		{{#venue}}		<div class="venue">			<h4>{{name}}</h4>			<strong>{{city}}</strong>, {{state}}		</div>		{{/venue}}		<ul class="links">			{{#links}}			<li><a href="{{url}}">{{name}}</a></li>			{{/links}}		</ul>	</li>	{{/events}}</ul>','login': '{{^customer}}{{#authentications}}<li><button class="{{name}}_login" type="button">Login with {{name}}</button></li>{{/authentications}}<form class="login">	<div class="success" style="display: none;">		<p>You have successfully logged in.</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<label>Email<br />		<input name="email" type="text" /></label>		<label>Password<br />		<input name="password" type="password" /></label>		<a href="#forgot">Forgot Password?</a>	</fieldset>	<button type="submit">Log In</button></form><form class="forgot" style="display:none">	<a href="#close">Close</a>	<div class="success" style="display: none;">		<p>A message has been sent to this address. Please check your email for instructions on how to reset your password.</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<p>Please enter the email address you used for your fanclub account:</p>		<label>Email<br />		<input type="text" name="email"></input>	</fieldset>	<button type="submit">Submit</button></form>{{/customer}}','logout': '{{#customer}}<a href="#logout">Log Out</a>{{/customer}}','order': '{{#order}}<div class="order">	<h4>Order {{id}}</h4>	<div class="details">		<h5 class="name">{{plan.name}}</h5>		<span class="customer">Customer ID: <var>{{customer_id}}</var></span>		<ul class="dates">			{{#paid_at}}			<li class="paid">Paid <var class="date">{{.}}</var></li>			{{/paid_at}}			{{#refunded_at}}			<li class="refunded">Refunded <var class="refunded">{{.}}</var></li>			{{/refunded_at}}		</ul>	</div>	{{#billing_address}}	<div class="billing">		<h6>Billed To</h6>		<ul class="address">			<li class="name">{{first_name}} {{last_name}}</li>			<li class="country">{{country}}</li>			<li class="address line1">{{address}}</li>			<li class="address line2">{{city}}, {{state}}, {{postal_code}}</li>		</ul>	</div>	{{/billing_address}}	<ul class="shipments">	{{#shipments}}		<li>			{{#tracking_number}}<var class="tracking">{{.}}</var>{{/tracking_number}}			<div class="shipping">				<h6>Shipped To</h6>				{{#shipping_address}}				<ul class="address">					<li class="name">{{first_name}} {{last_name}}</li>					<li class="address line1">{{address}}</li>					<li class="address line2">{{city}}, {{state}}, {{postal_code}}, {{country}}</li>				</ul>				{{/shipping_address}}			</div>			{{#ship_date}}<span class="shipped">Shipped On <var class="date">{{.}}</var></span>{{/ship_date}}			<ul class="items">			{{#items}}				<li>					{{#thumbnail}}<img class="thumbnail" src="{{.}}" />{{/thumbnail}}					<strong class="name">{{name}}</strong>					{{#option}}<span class="option">{{.}}</span>{{/option}}				</li>			{{/items}}			</ul>		</li>	{{/shipments}}	</ul>	{{#totals}}	<dl class="totals">		<dt class="subtotal">Subtotal</dt>		<dd class="subtotal">${{subtotal}}</dd>		{{#shipping}}		<dt class="shipping">Shipping</dt>		<dd class="shipping">${{.}}</dd>		{{/shipping}}		{{#discount}}		<dt class="discount">Discount</dt>		<dd class="discount">${{.}}</dd>		{{/discount}}		<dt class="total">Total</dt>		<dd class="total">${{total}}</dd>	</dl>	{{/totals}}</div>{{/order}}','orders': '<ul class="orders">	{{#orders}}	<li>		<a href="{{../parameters.url}}{{id}}"><h4>Order {{id}}</h4></a>		<div class="details">			<h5 class="name">{{plan.name}}</h5>			<span class="customer">Customer ID: <var>{{customer_id}}</var></span>			<ul class="dates">				{{#paid_at}}				<li class="paid">Paid <var class="date">{{.}}</var></li>				{{/paid_at}}				{{#refunded_at}}				<li class="refunded">Refunded <var class="refunded">{{.}}</var></li>				{{/refunded_at}}			</ul>		</div>		{{#totals}}		<dl class="totals">			<dt class="subtotal">Subtotal</dt>			<dd class="subtotal">${{subtotal}}</dd>			{{#shipping}}			<dt class="shipping">Shipping</dt>			<dd class="shipping">${{.}}</dd>			{{/shipping}}			{{#discount}}			<dt class="discount">Discount</dt>			<dd class="discount">${{.}}</dd>			{{/discount}}			<dt class="total">Total</dt>			<dd class="total">${{total}}</dd>		</dl>		{{/totals}}	</li>	{{/orders}}</ul>','password_reset': '{{#token}}<form class="password_reset">	<div class="success" style="display: none;">		<p>Password Successfully Updated!</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<div class="password">			<label>New Password<br />			<input name="password" type="password" /></label><br />			<label>Repeat New Password<br />			<input name="password_confirmation" type="password" /></label>		</div>	</fieldset>	<button type="submit">Update Password</button></form>{{/token}}','plan': '<div class="plan">	<h2>{{name}}</h2>	<h3>{{price}}</h3>	<div class="description">{{description}}</div>	{{#package}}		<h3>{{name}}</h3>		<ul class="items">			{{#items}}			<li>				<img src="{{thumbnail}}" />				<strong>{{name}}</strong>			</li>			{{/items}}		</ul>	{{/package}}	<ul class="actions">		<li class="join"><a href="{{checkout}}">Join Now</a></li>	</ul>	{{#annotations}}<sub class="annotations">{{.}}</sub>{{/annotations}}	</div>','plans': '<ul class="plans">	{{#plans}}	<li>		<h2>{{name}}</h2>		<h3>{{price}}</h3>		<div class="description">{{description}}</div>		{{#package}}			<h3>{{name}}</h3>			<ul class="items">				{{#items}}				<li>					<img src="{{thumbnail}}" />					<strong>{{name}}</strong>				</li>				{{/items}}			</ul>		{{/package}}		<ul class="actions">			<li class="join"><a href="{{checkout}}">Join Now</a></li>		</ul>		{{#annotations}}<sub class="annotations">{{.}}</sub>{{/annotations}}	</li>	{{/plans}}</ul>','receipt': '<ul class="receipt">{{#items}}<li>{{name}}</li>{{/items}}</ul>','register': '<ul class="authentications">{{#unless customer}}{{#authentications}}<li><button class="{{name}}_register" type="button">Register with {{name}}</button></li>{{/authentications}}{{/unless}}</ul>{{#customer}}{{^registered}}<form class="register" method="PUT">	<div class="success" style="display: none;">		<p>You have successfully completed the registration of your fanclub account.</p>	</div>	<div class="errors" style="display: none;"></div>	<fieldset>		<p>Complete your fanclub account registration.</p>		{{^email}}		<label>Email<br />		<input name="email" type="text" /></label>		{{/email}}		{{#username_required}}		<label>Username<br />		<input name="username" type="text" /></label><br />		{{/username_required}}		{{^first_name}}		<label>First Name<br />		<input name="first_name" type="text" /></label>		{{/first_name}}		{{^last_name}}		<label>Last Name<br />		<input name="last_name" type="text" /></label>		{{/last_name}}		{{^birthdate}}		<label>Date of Birth</label>		{{{birthdate_selector}}		{{/birthdate}}		<label>Password<br />		<input name="password" type="password" /></label>		<label>Password Confirm<br />		<input name="password_confirmation" type="password" /></label>		<label><input name="accept_terms" type="checkbox" /> I agree to the fanclub <a href="{{terms_url}}" target="_blank">Terms and Conditions</a></label>	</fieldset>	<button type="submit">Register</button></form>{{/registered}}{{/customer}}','subscription': '<div class="subscription">{{name}}</div>','subscriptions': '<ul class="subscriptions">	{{#subscriptions}}	<li>{{name}}</li>	{{/subscriptions}}</ul>'};
 
 		// Define default preprocessors
 		var preprocessors = fanclub.preprocessors = {
@@ -384,7 +384,18 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 				if( err ) response = {};
 
+				// add extra information to template json
 				response.parameters = config;
+				if( fanclub.authentications ){
+					var authentications = fanclub.authentications;
+					response.authentications = [];
+					for( var prop in authentications ){ if( authentications.hasOwnProperty(prop) ){
+						var authentication = $.extend( {}, authentications[prop] );
+						authentication.name = prop;
+						response.authentications.push( authentication );
+					}}
+				}
+				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 
 				// run preprocessors
 				var preprocessors = fanclub.preprocessors[widget];
@@ -394,7 +405,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					});
 				}
 
-				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 				var html = fanclub.templates[widget]( response );
 
 				if( callback ) callback( null, html );
@@ -435,84 +445,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 			});
 
 		}
-
-	};
-
-	Fanclub.prototype.setupFacebook = function(){
-		
-		var fanclub = this;	
-		
-		// Load the SDK Asynchronously
-		(function(d){
-			var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-			if (d.getElementById(id)) {return;}
-			js = d.createElement('script'); js.id = id; js.async = true;
-			js.src = "//connect.facebook.net/en_US/all.js";
-			ref.parentNode.insertBefore(js, ref);
-		}(document));
-		
-		window.fbAsyncInit = function(){
-			fanclub.initFacebook()
-		};
-	
-	};
-	
-	Fanclub.prototype.initFacebook = function(){
-	
-		var fanclub = this;	
-	
-		FB.init({
-			appId: this.authentications.facebook.app_id, // App ID
-			channelUrl: this.parameters.facebook.channel_url, // Channel File
-			status: true, // check login status
-			cookie: true, // enable cookies to allow the server to access the session
-			xfbml: true  // parse XFBML
-		});
-		
-		FB.getLoginStatus( function( response ){
-			if( response.status === 'connected' ){
-				// connected
-				console.log( 'connected to facebook app', response );
-				fanclub.getFacebookProfile();
-			} else if( response.status === 'not_authorized' ){
-				// not_authorized
-				console.log( 'not authorized by facebook', response );
-				$('#login').prop( 'disabled', false );
-			} else {
-				// not_logged_in
-				console.log( 'not a logged in to facebook', response );
-				$('#login').prop( 'disabled', false );
-			}
-		});
-	
-	};
-	
-	Fanclub.prototype.getFacebookProfile = function( callback ){
-		
-		FB.api( '/me', function( response ){
-			if( callback ) callback( response );
-		});	
-		
-	};
-
-	Fanclub.prototype.loginWithFacebook = function( callback ){
-
-		var fanclub = this;
-
-		FB.login( function( response ){
-			// User accepts dialog (into their heart)
-			if( response.authResponse ){
-				fanclub.getFacebookProfile( function( profile ){
-					profile.authResponse = response.authResponse;
-					if( callback ) callback( null, profile );
-				});
-			// User cancels dialog
-			} else {
-				if( callback ) callback( 'Login cancelled' );
-			}
-		}, {
-			scope: 'email,user_birthday'	
-		});
 
 	};
 
@@ -612,7 +544,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		// Bind all login widgets
 		if( widget === 'login' ){
 
-			fanclub.setupFacebook();
+			fanclub.facebookSetup();
 
 			$widget
 			.off( '.sparkart' )
@@ -663,7 +595,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				var $this = $(this);
 				var $widget = $this.closest('.sparkart.fanclub');
 
-				fanclub.loginWithFacebook( function( err, result ){
+				fanclub.facebookLogin( function( err, result ){
 
 					if( err ) return err;
 
@@ -764,7 +696,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		// Bind all register widgets
 		else if( widget === 'register' ){
 
-			fanclub.setupFacebook();
+			fanclub.facebookSetup();
 
 			$widget
 			.off( '.sparkart' )
@@ -828,15 +760,15 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				var $this = $(this);
 				var $widget = $this.closest('.sparkart.fanclub');
 
-				fanclub.loginWithFacebook( function( err, result ){
+				fanclub.facebookLogin( function( err, result ){
 
-					console.log( err, result, $this );
 					if( err ) return console.log( err );
 
 					$widget.find('input[name="email"]').val( result.email );
 					$widget.find('input[name="first_name"]').val( result.first_name );
 					$widget.find('input[name="last_name"]').val( result.last_name );
 					$widget.find('form').append('<input name="facebook_signed_request" type="hidden" value="'+ result.authResponse.signedRequest +'" />');
+					$widget.find('input[name="password"], input[name="password_confirmation"]').prop( 'disabled', true );
 
 					if( result.birthday ){
 
@@ -1042,6 +974,88 @@ Methods for binding, triggering, and unbinding events
 		$('.sparkart.fanclub')
 			.off('.sparkart')
 			.empty();
+
+	};
+
+/*
+FACEBOOK METHODS
+////////////////////////////////////////////////////////////////////////////////
+Methods for interacting with facebook
+*/
+
+	Fanclub.prototype.facebookSetup = function(){
+		
+		var fanclub = this;	
+		
+		// Load the SDK Asynchronously
+		(function(d){
+			var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+			if (d.getElementById(id)) {return;}
+			js = d.createElement('script'); js.id = id; js.async = true;
+			js.src = "//connect.facebook.net/en_US/all.js";
+			ref.parentNode.insertBefore(js, ref);
+		}(document));
+		
+		window.fbAsyncInit = function(){
+			fanclub.facebookInit()
+		};
+	
+	};
+	
+	Fanclub.prototype.facebookInit = function(){
+
+		var fanclub = this;	
+	
+		FB.init({
+			appId: this.authentications.facebook.app_id, // App ID
+			channelUrl: this.parameters.facebook.channel_url, // Channel File
+			status: true, // check login status
+			cookie: true, // enable cookies to allow the server to access the session
+			xfbml: true  // parse XFBML
+		});
+		
+		/*FB.getLoginStatus( function( response ){
+			if( response.status === 'connected' ){
+				// connected
+				console.log( 'connected to facebook app', response );
+				fanclub.facebook.profile();
+			} else if( response.status === 'not_authorized' ){
+				// not_authorized
+				console.log( 'not authorized by facebook', response );
+			} else {
+				// not_logged_in
+				console.log( 'not a logged in to facebook', response );
+			}
+		});*/
+	
+	};
+	
+	Fanclub.prototype.facebookProfile = function( callback ){
+			
+		FB.api( '/me', function( response ){
+			if( callback ) callback( response );
+		});	
+		
+	};
+
+	Fanclub.prototype.facebookLogin = function( callback ){
+
+		var fanclub = this;
+
+		FB.login( function( response ){
+			// User accepts dialog (into their heart)
+			if( response.authResponse ){
+				fanclub.facebookProfile( function( profile ){
+					profile.authResponse = response.authResponse;
+					if( callback ) callback( null, profile );
+				});
+			// User cancels dialog
+			} else {
+				if( callback ) callback( 'Login cancelled' );
+			}
+		}, {
+			scope: 'email,user_birthday'	
+		});
 
 	};
 

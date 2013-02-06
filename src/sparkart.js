@@ -384,7 +384,18 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 				if( err ) response = {};
 
+				// add extra information to template json
 				response.parameters = config;
+				if( fanclub.authentications ){
+					var authentications = fanclub.authentications;
+					response.authentications = [];
+					for( var prop in authentications ){ if( authentications.hasOwnProperty(prop) ){
+						var authentication = $.extend( {}, authentications[prop] );
+						authentication.name = prop;
+						response.authentications.push( authentication );
+					}}
+				}
+				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 
 				// run preprocessors
 				var preprocessors = fanclub.preprocessors[widget];
@@ -394,7 +405,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					});
 				}
 
-				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 				var html = fanclub.templates[widget]( response );
 
 				if( callback ) callback( null, html );
@@ -435,84 +445,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 			});
 
 		}
-
-	};
-
-	Fanclub.prototype.setupFacebook = function(){
-		
-		var fanclub = this;	
-		
-		// Load the SDK Asynchronously
-		(function(d){
-			var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-			if (d.getElementById(id)) {return;}
-			js = d.createElement('script'); js.id = id; js.async = true;
-			js.src = "//connect.facebook.net/en_US/all.js";
-			ref.parentNode.insertBefore(js, ref);
-		}(document));
-		
-		window.fbAsyncInit = function(){
-			fanclub.initFacebook()
-		};
-	
-	};
-	
-	Fanclub.prototype.initFacebook = function(){
-	
-		var fanclub = this;	
-	
-		FB.init({
-			appId: this.authentications.facebook.app_id, // App ID
-			channelUrl: this.parameters.facebook.channel_url, // Channel File
-			status: true, // check login status
-			cookie: true, // enable cookies to allow the server to access the session
-			xfbml: true  // parse XFBML
-		});
-		
-		FB.getLoginStatus( function( response ){
-			if( response.status === 'connected' ){
-				// connected
-				console.log( 'connected to facebook app', response );
-				fanclub.getFacebookProfile();
-			} else if( response.status === 'not_authorized' ){
-				// not_authorized
-				console.log( 'not authorized by facebook', response );
-				$('#login').prop( 'disabled', false );
-			} else {
-				// not_logged_in
-				console.log( 'not a logged in to facebook', response );
-				$('#login').prop( 'disabled', false );
-			}
-		});
-	
-	};
-	
-	Fanclub.prototype.getFacebookProfile = function( callback ){
-		
-		FB.api( '/me', function( response ){
-			if( callback ) callback( response );
-		});	
-		
-	};
-
-	Fanclub.prototype.loginWithFacebook = function( callback ){
-
-		var fanclub = this;
-
-		FB.login( function( response ){
-			// User accepts dialog (into their heart)
-			if( response.authResponse ){
-				fanclub.getFacebookProfile( function( profile ){
-					profile.authResponse = response.authResponse;
-					if( callback ) callback( null, profile );
-				});
-			// User cancels dialog
-			} else {
-				if( callback ) callback( 'Login cancelled' );
-			}
-		}, {
-			scope: 'email,user_birthday'	
-		});
 
 	};
 
@@ -612,7 +544,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		// Bind all login widgets
 		if( widget === 'login' ){
 
-			fanclub.setupFacebook();
+			fanclub.facebookSetup();
 
 			$widget
 			.off( '.sparkart' )
@@ -663,7 +595,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				var $this = $(this);
 				var $widget = $this.closest('.sparkart.fanclub');
 
-				fanclub.loginWithFacebook( function( err, result ){
+				fanclub.facebookLogin( function( err, result ){
 
 					if( err ) return err;
 
@@ -764,7 +696,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		// Bind all register widgets
 		else if( widget === 'register' ){
 
-			fanclub.setupFacebook();
+			fanclub.facebookSetup();
 
 			$widget
 			.off( '.sparkart' )
@@ -828,15 +760,15 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				var $this = $(this);
 				var $widget = $this.closest('.sparkart.fanclub');
 
-				fanclub.loginWithFacebook( function( err, result ){
+				fanclub.facebookLogin( function( err, result ){
 
-					console.log( err, result, $this );
 					if( err ) return console.log( err );
 
 					$widget.find('input[name="email"]').val( result.email );
 					$widget.find('input[name="first_name"]').val( result.first_name );
 					$widget.find('input[name="last_name"]').val( result.last_name );
 					$widget.find('form').append('<input name="facebook_signed_request" type="hidden" value="'+ result.authResponse.signedRequest +'" />');
+					$widget.find('input[name="password"], input[name="password_confirmation"]').prop( 'disabled', true );
 
 					if( result.birthday ){
 
@@ -1042,6 +974,88 @@ Methods for binding, triggering, and unbinding events
 		$('.sparkart.fanclub')
 			.off('.sparkart')
 			.empty();
+
+	};
+
+/*
+FACEBOOK METHODS
+////////////////////////////////////////////////////////////////////////////////
+Methods for interacting with facebook
+*/
+
+	Fanclub.prototype.facebookSetup = function(){
+		
+		var fanclub = this;	
+		
+		// Load the SDK Asynchronously
+		(function(d){
+			var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+			if (d.getElementById(id)) {return;}
+			js = d.createElement('script'); js.id = id; js.async = true;
+			js.src = "//connect.facebook.net/en_US/all.js";
+			ref.parentNode.insertBefore(js, ref);
+		}(document));
+		
+		window.fbAsyncInit = function(){
+			fanclub.facebookInit()
+		};
+	
+	};
+	
+	Fanclub.prototype.facebookInit = function(){
+
+		var fanclub = this;	
+	
+		FB.init({
+			appId: this.authentications.facebook.app_id, // App ID
+			channelUrl: this.parameters.facebook.channel_url, // Channel File
+			status: true, // check login status
+			cookie: true, // enable cookies to allow the server to access the session
+			xfbml: true  // parse XFBML
+		});
+		
+		/*FB.getLoginStatus( function( response ){
+			if( response.status === 'connected' ){
+				// connected
+				console.log( 'connected to facebook app', response );
+				fanclub.facebook.profile();
+			} else if( response.status === 'not_authorized' ){
+				// not_authorized
+				console.log( 'not authorized by facebook', response );
+			} else {
+				// not_logged_in
+				console.log( 'not a logged in to facebook', response );
+			}
+		});*/
+	
+	};
+	
+	Fanclub.prototype.facebookProfile = function( callback ){
+			
+		FB.api( '/me', function( response ){
+			if( callback ) callback( response );
+		});	
+		
+	};
+
+	Fanclub.prototype.facebookLogin = function( callback ){
+
+		var fanclub = this;
+
+		FB.login( function( response ){
+			// User accepts dialog (into their heart)
+			if( response.authResponse ){
+				fanclub.facebookProfile( function( profile ){
+					profile.authResponse = response.authResponse;
+					if( callback ) callback( null, profile );
+				});
+			// User cancels dialog
+			} else {
+				if( callback ) callback( 'Login cancelled' );
+			}
+		}, {
+			scope: 'email,user_birthday'	
+		});
 
 	};
 
