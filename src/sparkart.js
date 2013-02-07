@@ -379,7 +379,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		var fanclub = this;
 
 		// Login, Logout, Register, and Affiliates are all special cases that use the "account" endpoint
-		if( widget === 'login' || widget === 'logout' || widget === 'register' || widget === 'customer' ){
+		if( widget === 'login' || widget === 'logout' || widget === 'register' || widget === 'customer' || widget === 'account'){
 			this.get( 'account', function( err, response ){
 
 				if( err ) response = {};
@@ -387,13 +387,15 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				// add extra information to template json
 				response.parameters = config;
 				if( fanclub.authentications ){
-					var authentications = fanclub.authentications;
 					response.authentications = [];
-					for( var prop in authentications ){ if( authentications.hasOwnProperty(prop) ){
-						var authentication = $.extend( {}, authentications[prop] );
-						authentication.name = prop;
-						response.authentications.push( authentication );
-					}}
+					for( var i in fanclub.authentications ) response.authentications.push( $.extend( {}, fanclub.authentications[i] ) );
+					for( var i = response.customer.authentications.length - 1; i >= 0; i-- ){
+						customer_authentication = response.customer.authentications[i];
+						for( var ii = response.authentications.length - 1; ii >= 0; ii-- ){
+							var authentication = response.authentications[ii];
+							if( authentication.name === customer_authentication.name ) authentication.connected = true;
+						};
+					};
 				}
 				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 
@@ -792,6 +794,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		// Bind all account widgets
 		else if( widget === 'account' ){
 
+			fanclub.facebookSetup();
+
 			$widget
 			.off( '.sparkart' )
 			.on( 'submit.sparkart', function( e ){
@@ -832,10 +836,44 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 						$errors.html( $err ).show();
 						return;
 					}
-
 					$this.addClass('success');
 					var $success = $this.find('div.success');
 					$success.show();
+
+				});
+
+			})
+			.on( 'click.sparkart', '.facebook_connect', function( e ){
+
+				var $this = $(this);
+				var $widget = $this.closest( '.sparkart.fanclub' );
+
+				fanclub.facebookLogin( function( err, response ){
+					
+					fanclub.post( 'account/connect/facebook', {
+						facebook_signed_request: response.authResponse.signedRequest
+					}, function( errors, data ){
+
+						// remove old error message
+						var $errors = $widget.find('div.errors');
+						$errors.empty().hide();
+
+						if( errors ){
+							$widget.addClass('error');
+							var $err = $( fanclub.templates.errors({ errors: errors }) );
+							$errors.html( $err ).show();
+							return;
+						}
+
+						fanclub.draw( $widget, function( err, $widget ){
+
+							$widget.addClass('success');
+							var $success = $widget.find('div.success');
+							$success.show();
+
+						});
+
+					});
 
 				});
 
@@ -1005,28 +1043,19 @@ Methods for interacting with facebook
 	Fanclub.prototype.facebookInit = function(){
 
 		var fanclub = this;	
-	
+		var facebook_app_id;
+
+		for( var i = this.authentications.length - 1; i >= 0; i-- ){
+			if( this.authentications[i].name === 'facebook' ) facebook_app_id = this.authentications[i].app_id;
+		}
+
 		FB.init({
-			appId: this.authentications.facebook.app_id, // App ID
+			appId: facebook_app_id, // App ID
 			channelUrl: this.parameters.facebook.channel_url, // Channel File
 			status: true, // check login status
 			cookie: true, // enable cookies to allow the server to access the session
 			xfbml: true  // parse XFBML
 		});
-		
-		/*FB.getLoginStatus( function( response ){
-			if( response.status === 'connected' ){
-				// connected
-				console.log( 'connected to facebook app', response );
-				fanclub.facebook.profile();
-			} else if( response.status === 'not_authorized' ){
-				// not_authorized
-				console.log( 'not authorized by facebook', response );
-			} else {
-				// not_logged_in
-				console.log( 'not a logged in to facebook', response );
-			}
-		});*/
 	
 	};
 	
