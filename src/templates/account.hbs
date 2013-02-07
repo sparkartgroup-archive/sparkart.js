@@ -1,3 +1,8 @@
+<ul class="authentications">
+	{{#authentications}}
+	<li><button class="{{name}}_connect {{#if connected}}connected{{/if}}" type="button" {{#if connected}}disabled="true"{{/if}}>{{#if connected}}Connected{{else}}Connect{{/if}} with {{name}}</button></li>
+	{{/authentications}}
+</ul>
 {{#customer}}
 {{#registered}}
 <form class="account">

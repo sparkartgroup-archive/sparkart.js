@@ -1,7 +1,9 @@
 {{^customer}}
-{{#authentications}}
-<li><button class="{{name}}_login" type="button">Login with {{name}}</button></li>
-{{/authentications}}
+<ul class="authentications">
+	{{#authentications}}
+	<li><button class="{{name}}_login" type="button">Login with {{name}}</button></li>
+	{{/authentications}}
+</ul>
 <form class="login">
 	<div class="success" style="display: none;">
 		<p>You have successfully logged in.</p>
