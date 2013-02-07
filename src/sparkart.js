@@ -389,13 +389,15 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				if( fanclub.authentications ){
 					response.authentications = [];
 					for( var i in fanclub.authentications ) response.authentications.push( $.extend( {}, fanclub.authentications[i] ) );
-					for( var i = response.customer.authentications.length - 1; i >= 0; i-- ){
-						customer_authentication = response.customer.authentications[i];
-						for( var ii = response.authentications.length - 1; ii >= 0; ii-- ){
-							var authentication = response.authentications[ii];
-							if( authentication.name === customer_authentication.name ) authentication.connected = true;
+					if( fanclub.customer ){
+						for( var i = response.customer.authentications.length - 1; i >= 0; i-- ){
+							customer_authentication = response.customer.authentications[i];
+							for( var ii = response.authentications.length - 1; ii >= 0; ii-- ){
+								var authentication = response.authentications[ii];
+								if( authentication.name === customer_authentication.name ) authentication.connected = true;
+							};
 						};
-					};
+					}
 				}
 				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 
