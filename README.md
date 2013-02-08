@@ -65,18 +65,18 @@ Most of these properties are not set until after the fanclub finishes loading. I
 
 In order to make generating fanclub markup easier, sparkart.js has a widget system which automatically renders fanclub html. The following widgets are available by default:
 
-- **[login](Login Widget)** - A login form for the fan club.
-- **[[logout|Logout Widget]]** - A shortcut to log out of the fan club.
-- **[[register|Register Widget]]** - A registration form for the fan club.
-- **[[password_reset|Password Reset Widget]]** - The password reset form.
-- **[[account|Account Widget]]** - A form for editing the current customer's account.
-- **[[customer|Customer Widget]]** - The current customer's information.
-- **[[plans|Plans Widget]]** - The plans available for this fan club.
-- **[[plan|Plan Widget]]** - A single plan.
-- **[[events|Events Widget]]** - A list of events.
-- **[[event|Event Widget]]** - A single event.
-- **[[orders|Orders Widget]]** - A list of orders.
-- **[[order|Order Widget]]** - A single order.
+- **[login](https://github.com/SparkartGroupInc/sparkart.js/wiki/Login-widget)** - A login form for the fan club.
+- **[logout](https://github.com/SparkartGroupInc/sparkart.js/wiki/Logout-widget)** - A shortcut to log out of the fan club.
+- **[register](https://github.com/SparkartGroupInc/sparkart.js/wiki/Register-widget)** - A registration form for the fan club.
+- **[password_reset](https://github.com/SparkartGroupInc/sparkart.js/wiki/Password-reset-widget)** - The password reset form.
+- **[account](https://github.com/SparkartGroupInc/sparkart.js/wiki/Account-widget)** - A form for editing the current customer's account.
+- **[customer](https://github.com/SparkartGroupInc/sparkart.js/wiki/Customer-widget)** - The current customer's information.
+- **[plans](https://github.com/SparkartGroupInc/sparkart.js/wiki/Plans-Widget)** - The plans available for this fan club.
+- **[plan](https://github.com/SparkartGroupInc/sparkart.js/wiki/Plan-Widget)** - A single plan.
+- **[events](https://github.com/SparkartGroupInc/sparkart.js/wiki/Events-widget)** - A list of events.
+- **[event](https://github.com/SparkartGroupInc/sparkart.js/wiki/Event-widget)** - A single event.
+- **[orders](https://github.com/SparkartGroupInc/sparkart.js/wiki/Orders-widget)** - A list of orders.
+- **[order](https://github.com/SparkartGroupInc/sparkart.js/wiki/Order-widget)** - A single order.
 
 To use a widget, you need to create a container for that widget with the classes `sparkart` `fanclub` and the widget's name (ex: `account`). Then create the fanclub object or run the `draw()` method if the fanclub object has already been instantiated:
 
