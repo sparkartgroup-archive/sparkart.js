@@ -65,7 +65,7 @@ Most of these properties are not set until after the fanclub finishes loading. I
 
 In order to make generating fanclub markup easier, sparkart.js has a widget system which automatically renders fanclub html. The following widgets are available by default:
 
-- **[[login|Login Widget]]** - A login form for the fan club.
+- **[login](Login Widget)** - A login form for the fan club.
 - **[[logout|Logout Widget]]** - A shortcut to log out of the fan club.
 - **[[register|Register Widget]]** - A registration form for the fan club.
 - **[[password_reset|Password Reset Widget]]** - The password reset form.
