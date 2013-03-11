@@ -81,6 +81,7 @@ In order to make generating fanclub markup easier, sparkart.js has a widget syst
 - **[password_reset](https://github.com/SparkartGroupInc/sparkart.js/wiki/Password-reset-widget)** - The password reset form.
 - **[account](https://github.com/SparkartGroupInc/sparkart.js/wiki/Account-widget)** - A form for editing the current customer's account.
 - **[customer](https://github.com/SparkartGroupInc/sparkart.js/wiki/Customer-widget)** - The current customer's information.
+- **[affiliates](https://github.com/SparkartGroupInc/sparkart.js/wiki/Affiliates-Widget)** - The current customer's affiliates information.
 - **[plans](https://github.com/SparkartGroupInc/sparkart.js/wiki/Plans-Widget)** - The plans available for this fan club.
 - **[plan](https://github.com/SparkartGroupInc/sparkart.js/wiki/Plan-Widget)** - A single plan.
 - **[events](https://github.com/SparkartGroupInc/sparkart.js/wiki/Events-widget)** - A list of events.
