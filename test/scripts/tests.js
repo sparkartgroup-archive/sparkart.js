@@ -119,14 +119,14 @@ describe( 'Fanclub', function(){
 	it( 'draws all widgets found on the page', function( done ){
 
 		fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
-		fanclub.on( 'render', function(){
+		fanclub.on( 'load', function(){
 			var account_contents = $('#test').find('div.sparkart.fanclub.account').html();
 			var customer_contents = $('#test').find('div.sparkart.fanclub.customer').html();
 			assert( account_contents.length > 0, 'Account widget has markup' );
 			assert( customer_contents.length > 0, 'Customer widget has markup' );
+			fanclub.destroy();
 			done();
 		});
-		fanclub.destroy();
 
 	});
 
@@ -270,7 +270,7 @@ describe( 'Fanclub', function(){
 
 			$('#test').append('<div class="sparkart fanclub account"></div><div class="sparkart fanclub customer"></div>');
 
-			fanclub.on( 'render', function(){
+			fanclub.on( 'load', function(){
 				var account_contents = $('#test div.sparkart.fanclub.account').html();
 				var customer_contents = $('#test div.sparkart.fanclub.customer').html();
 				assert( account_contents.length > 0, 'Account widget has markup' );

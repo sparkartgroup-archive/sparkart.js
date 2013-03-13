@@ -217,7 +217,7 @@ fanclub.trigger( 'custom', 1, 2, 3 ); // executes the event "custom" with the ar
 
 ##### load
 
-Triggered after the fanclub has finished loading its initial set of data. Properties like **customer** are only available at this point.
+Triggered after the fanclub has finished loading its initial set of data and rendered the first set of widgets. Properties like **customer** are only available at this point.
 
 ```javascript
 fanclub.on( 'load', function(){
@@ -227,7 +227,14 @@ fanclub.on( 'load', function(){
 
 ##### render
 
-Triggered when a widget renders itself. It returns the current widget as an argument.
+Triggered when a widget renders itself. A jQuery object containing the widget that was just rendered is passed to the event callback.
+
+```javascript
+fanclub.on('render', function( $widget ){
+	var is_my_widget = ( $my_widget === $widget );
+	if( is_my_widget ) console.log('It\'s my widget!');
+});
+```
 
 ##### login
 

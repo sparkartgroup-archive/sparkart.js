@@ -202,10 +202,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				fanclub.name = ( fc_response )? fc_response.fanclub.name: null;
 				// draw all widgets
 				fanclub.draw( function(){
-					fanclub.trigger('render');
+					fanclub.trigger('load');
+					fanclub.loaded = true;
 				});
-				fanclub.trigger('load');
-				fanclub.loaded = true;
 			});
 		});
 
@@ -369,6 +368,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				.html( html )
 				.removeClass('loading');
 			if( callback ) callback( null, $widget );
+			fanclub.trigger( 'render', $widget );
 		});
 
 	};
@@ -860,7 +860,7 @@ Methods for binding, triggering, and unbinding events
 
 		this._listeners[type].push(listener);
 
-		if( type === 'load' && fanclub.loaded === true ) listener();
+		if( type === 'load' && fanclub.loaded ) listener();
 
 	};
 
