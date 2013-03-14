@@ -1,6 +1,8 @@
 module.exports = function( grunt ){
 
 	var pkg = grunt.file.readJSON('package.json');
+	var banner = '/* Sparkart.js v'+ pkg.version +'\n'+
+	'   Generated on <%= grunt.template.today("yyyy-mm-dd \'at\' HH:MM:ss") %> */\n\n';
 
 	grunt.initConfig({
 		cwd: process.cwd(),
@@ -24,6 +26,7 @@ module.exports = function( grunt ){
 		concat: {
 			build: {
 				options: {
+					banner: banner,
 					separator: ';'
 				},
 				src: ['src/sparkart.js','compiled/templates.js'],
@@ -32,6 +35,9 @@ module.exports = function( grunt ){
 		},
 		uglify: {
 			build: {
+				options: {
+					banner: banner
+				},
 				files: {
 					'sparkart.min.js': 'sparkart.js'
 				}
