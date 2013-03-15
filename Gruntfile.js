@@ -7,17 +7,8 @@ module.exports = function( grunt ){
 	grunt.initConfig({
 		cwd: process.cwd(),
 		pkg: pkg,
-		handlebars: {
+		templates: {
 			build: {
-				options: {
-					namespace: 'sparkart.Fanclub.templates',
-					wrapped: true,
-					processName: function( filename ){
-						filename = filename.replace( /^src\/templates\//i, '' );
-						filename = filename.replace( /\.hbs$/i, '' );
-						return filename;
-					}
-				},
 				files: {
 					'compiled/templates.js': ['src/templates/**/*.hbs']
 				}
@@ -60,22 +51,25 @@ module.exports = function( grunt ){
 		if( dep.substring( 0, 6 ) === 'grunt-' ) grunt.loadNpmTasks( dep );
 	});
 
-	grunt.registerTask( 'server', 'Start the Solidus server', function(){
-		var child_process = require('child_process');
-		var spawn = child_process.spawn;
-		var server = spawn( 'solidus', ['start'] );
-		console.log('Starting Solidus server...');
-		server.stderr.on( 'data', function( data ){
-			console.error( data.toString() );
-		});
-		server.stdout.on( 'data', function( data ){
-			console.log( data.toString() );
-		});
-		process.on( 'exit', function(){
-			server.kill();
-		});
+	grunt.registerMultiTask( 'templates', 'Convert templates into javascript', function(){
+		// this is an asynchronous task
+		var done = this.async();
+		var files = this.files[0];
+		var concatenated = 'this.sparkart.Fanclub.templates = {';
+		for( var i in files.src ){
+			var key = files.src[i].replace( /(:?src\/templates\/)|\.hbs/ig, '' );
+			var value = grunt.file.read( files.src[i]);
+			value = value.replace( /(['"])/g, '\\$1' ); // we will need these escaped if they exist
+			value = value.replace( /[\r\n|\n|\r]/ig, '' );
+			concatenated += '"'+ key +'": "'+ value +'"';
+			if( i < files.src.length - 1 ) concatenated += ',';
+		}
+		concatenated += '};';
+		grunt.log.write( files.dest );
+		grunt.file.write( files.dest, concatenated, { encoding: 'UTF8' });
+		done();
 	});
 
-	grunt.registerTask( 'build', ['handlebars:build','concat:build','uglify:build','clean:build'] );
+	grunt.registerTask( 'build', ['templates:build','concat:build','uglify:build','clean:build'] );
 
 };

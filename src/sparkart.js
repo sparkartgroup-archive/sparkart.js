@@ -176,11 +176,13 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		};
 		if( parameters.templates ){
 			for( var name in parameters.templates ){
-				parameters.templates[name] = Handlebars.compile( parameters.templates[name] );
+				parameters.templates[name] = parameters.templates[name];
 			}
 		}
 		var templates = fanclub.templates = $.extend( sparkart.Fanclub.templates, parameters.templates );
-		if( parameters.templates ) ;
+		for( var i in templates ){
+			templates[i] = Handlebars.compile( templates[i] );
+		}
 		if( parameters.preprocessors ){
 			for( var key in parameters.preprocessors ){
 				var preprocessor = parameters.preprocessors[key];
