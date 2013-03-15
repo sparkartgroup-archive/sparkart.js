@@ -145,10 +145,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		};
 		fanclub.parameters = $.extend( default_parameters, parameters );
 
-		// Define ALL of our templates. Ideally we'd have these in external files
-		// Then compile the single JS script
-		var templates = fanclub.templates = TEMPLATES;
-
 		// Define default preprocessors
 		var preprocessors = fanclub.preprocessors = {
 			event: [ function( data ){
@@ -178,7 +174,15 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				return data;
 			} ]
 		};
-		if( parameters.templates ) $.extend( templates, parameters.templates );
+		if( parameters.templates ){
+			for( var name in parameters.templates ){
+				parameters.templates[name] = parameters.templates[name];
+			}
+		}
+		var templates = fanclub.templates = $.extend( sparkart.Fanclub.templates, parameters.templates );
+		for( var i in templates ){
+			templates[i] = Handlebars.compile( templates[i] );
+		}
 		if( parameters.preprocessors ){
 			for( var key in parameters.preprocessors ){
 				var preprocessor = parameters.preprocessors[key];
@@ -186,9 +190,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				if( typeof preprocessor === 'function' ) preprocessors[key].push( preprocessor );
 				else preprocessors[key].concat( preprocessor );
 			}
-		}
-		for( var name in templates ){
-			templates[name] = Handlebars.compile( templates[name] );
 		}
 
 		// Fetch initial data from the API
