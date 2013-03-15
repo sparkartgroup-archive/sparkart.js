@@ -61,7 +61,7 @@ module.exports = function( grunt ){
 			var value = grunt.file.read( files.src[i]);
 			value = value.replace( /(['"])/g, '\\$1' ); // we will need these escaped if they exist
 			value = value.replace( /[\r\n|\n|\r]/ig, '' );
-			concatenated += '"'+ key +'": "'+ value +'"';
+			concatenated += '\n"'+ key +'": "'+ value +'"';
 			if( i < files.src.length - 1 ) concatenated += ',';
 		}
 		concatenated += '};';
