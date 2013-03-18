@@ -141,7 +141,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				password_reset: true
 			},
 			redirect: {},
-			api_url: API_URL
+			api_url: API_URL,
+			facebook: {}
 		};
 		fanclub.parameters = $.extend( default_parameters, parameters );
 
