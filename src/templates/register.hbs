@@ -1,3 +1,12 @@
+{{#if customer}}
+{{#unless customer.registered}}
+<ul class="authentications">
+	{{#authentications}}
+	<li><button class="{{name}}_register" type="button">Register with {{name}}</button></li>
+	{{/authentications}}
+</ul>
+{{/unless}}
+{{/if}}
 {{#customer}}
 {{^registered}}
 <form class="register" method="PUT">
