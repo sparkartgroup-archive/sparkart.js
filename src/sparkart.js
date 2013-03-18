@@ -141,7 +141,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				password_reset: true
 			},
 			redirect: {},
-			api_url: API_URL
+			api_url: API_URL,
+			facebook: {}
 		};
 		fanclub.parameters = $.extend( default_parameters, parameters );
 
@@ -380,12 +381,27 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		var fanclub = this;
 
 		// Login, Logout, Register, and Affiliates are all special cases that use the "account" endpoint
-		if( widget === 'login' || widget === 'logout' || widget === 'register' || widget === 'customer' ){
+		if( widget === 'login' || widget === 'logout' || widget === 'register' || widget === 'customer' || widget === 'account'){
 			this.get( 'account', function( err, response ){
 
 				if( err ) response = {};
 
+				// add extra information to template json
 				response.parameters = config;
+				if( fanclub.authentications ){
+					response.authentications = [];
+					for( var i in fanclub.authentications ) response.authentications.push( $.extend( {}, fanclub.authentications[i] ) );
+					if( fanclub.customer ){
+						for( var i = response.customer.authentications.length - 1; i >= 0; i-- ){
+							customer_authentication = response.customer.authentications[i];
+							for( var ii = response.authentications.length - 1; ii >= 0; ii-- ){
+								var authentication = response.authentications[ii];
+								if( authentication.name === customer_authentication.name ) authentication.connected = true;
+							};
+						};
+					}
+				}
+				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 
 				// run preprocessors
 				var preprocessors = fanclub.preprocessors[widget];
@@ -395,7 +411,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					});
 				}
 
-				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 				var html = fanclub.templates[widget]( response );
 
 				if( callback ) callback( null, html );
@@ -535,6 +550,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		// Bind all login widgets
 		if( widget === 'login' ){
 
+			fanclub.facebookSetup();
+
 			$widget
 			.off( '.sparkart' )
 			.on( 'submit.sparkart', 'form.login', function( e ){
@@ -544,7 +561,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				var $this = $(this);
 				data = $.extend( data, {
 					email: $this.find('input[name="email"]').val(),
-					password: $this.find('input[name="password"]').val()
+					password: $this.find('input[name="password"]').val(),
+					facebook_signed_request: $this.find('input[name="facebook_signed_request"]').val()
 				});
 
 				$this
@@ -574,6 +592,22 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					$this.addClass('success');
 					var $success = $this.find('div.success');
 					$success.show();
+
+				});
+
+			})
+			.on( 'click.sparkart', '.facebook_login', function( e ){
+
+				var $this = $(this);
+				var $widget = $this.closest('.sparkart.fanclub');
+
+				fanclub.facebookLogin( function( err, result ){
+
+					if( err ) return err;
+
+					$widget.find('form.login')
+						.append('<input name="facebook_signed_request" type="hidden" value="'+ result.authResponse.signedRequest +'" />')
+						.trigger('submit');
 
 				});
 
@@ -668,6 +702,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		// Bind all register widgets
 		else if( widget === 'register' ){
 
+			fanclub.facebookSetup();
+
 			$widget
 			.off( '.sparkart' )
 			.on( 'submit.sparkart', function( e ){
@@ -688,7 +724,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					email: $this.find('input[name="email"]').val(),
 					password: $this.find('input[name="password"]').val(),
 					password_confirmation: $this.find('input[name="password_confirmation"]').val(),
-					accept_terms: $this.find('input[name="accept_terms"]').prop('checked')
+					accept_terms: $this.find('input[name="accept_terms"]').prop('checked'),
+					facebook_signed_request: $this.find('input[name="facebook_signed_request"]').val()
 				});
 
 				$this
@@ -721,12 +758,47 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 				});
 
+			})
+			.on( 'click.sparkart', '.facebook_register', function( e ){
+
+				e.preventDefault();
+
+				var $this = $(this);
+				var $widget = $this.closest('.sparkart.fanclub');
+
+				fanclub.facebookLogin( function( err, result ){
+
+					if( err ) return console.log( err );
+
+					$widget.find('input[name="email"]').val( result.email );
+					$widget.find('input[name="first_name"]').val( result.first_name );
+					$widget.find('input[name="last_name"]').val( result.last_name );
+					$widget.find('form').append('<input name="facebook_signed_request" type="hidden" value="'+ result.authResponse.signedRequest +'" />');
+					$widget.find('input[name="password"], input[name="password_confirmation"]').prop( 'disabled', true );
+
+					if( result.birthday ){
+
+						var birthday_bits = result.birthday.split('/');
+						var birth_month = birthday_bits[0];
+						var birth_day = birthday_bits[1];
+						var birth_year = birthday_bits[2];
+
+						$widget.find(':input[name="birth_month"]').val( parseInt( birth_month, 10 ) );
+						$widget.find(':input[name="birth_day"]').val( parseInt( birth_day, 10 ) );
+						$widget.find(':input[name="birth_year"]').val( birth_year );
+
+					}
+
+				});
+
 			});
 
 		}
 
 		// Bind all account widgets
 		else if( widget === 'account' ){
+
+			fanclub.facebookSetup();
 
 			$widget
 			.off( '.sparkart' )
@@ -768,10 +840,44 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 						$errors.html( $err ).show();
 						return;
 					}
-
 					$this.addClass('success');
 					var $success = $this.find('div.success');
 					$success.show();
+
+				});
+
+			})
+			.on( 'click.sparkart', '.facebook_connect', function( e ){
+
+				var $this = $(this);
+				var $widget = $this.closest( '.sparkart.fanclub' );
+
+				fanclub.facebookLogin( function( err, response ){
+					
+					fanclub.post( 'account/connect/facebook', {
+						facebook_signed_request: response.authResponse.signedRequest
+					}, function( errors, data ){
+
+						// remove old error message
+						var $errors = $widget.find('div.errors');
+						$errors.empty().hide();
+
+						if( errors ){
+							$widget.addClass('error');
+							var $err = $( fanclub.templates.errors({ errors: errors }) );
+							$errors.html( $err ).show();
+							return;
+						}
+
+						fanclub.draw( $widget, function( err, $widget ){
+
+							$widget.addClass('success');
+							var $success = $widget.find('div.success');
+							$success.show();
+
+						});
+
+					});
 
 				});
 
@@ -910,6 +1016,79 @@ Methods for binding, triggering, and unbinding events
 		$('.sparkart.fanclub')
 			.off('.sparkart')
 			.empty();
+
+	};
+
+/*
+FACEBOOK METHODS
+////////////////////////////////////////////////////////////////////////////////
+Methods for interacting with facebook
+*/
+
+	Fanclub.prototype.facebookSetup = function(){
+		
+		var fanclub = this;	
+		
+		// Load the SDK Asynchronously
+		(function(d){
+			var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+			if (d.getElementById(id)) {return;}
+			js = d.createElement('script'); js.id = id; js.async = true;
+			js.src = "//connect.facebook.net/en_US/all.js";
+			ref.parentNode.insertBefore(js, ref);
+		}(document));
+		
+		window.fbAsyncInit = function(){
+			fanclub.facebookInit()
+		};
+	
+	};
+	
+	Fanclub.prototype.facebookInit = function(){
+
+		var fanclub = this;	
+		var facebook_app_id;
+
+		for( var i = this.authentications.length - 1; i >= 0; i-- ){
+			if( this.authentications[i].name === 'facebook' ) facebook_app_id = this.authentications[i].app_id;
+		}
+
+		FB.init({
+			appId: facebook_app_id, // App ID
+			channelUrl: this.parameters.facebook.channel_url, // Channel File
+			status: true, // check login status
+			cookie: true, // enable cookies to allow the server to access the session
+			xfbml: true  // parse XFBML
+		});
+	
+	};
+	
+	Fanclub.prototype.facebookProfile = function( callback ){
+			
+		FB.api( '/me', function( response ){
+			if( callback ) callback( response );
+		});	
+		
+	};
+
+	Fanclub.prototype.facebookLogin = function( callback ){
+
+		var fanclub = this;
+
+		FB.login( function( response ){
+			// User accepts dialog (into their heart)
+			if( response.authResponse ){
+				fanclub.facebookProfile( function( profile ){
+					profile.authResponse = response.authResponse;
+					if( callback ) callback( null, profile );
+				});
+			// User cancels dialog
+			} else {
+				if( callback ) callback( 'Login cancelled' );
+			}
+		}, {
+			scope: 'email,user_birthday'	
+		});
 
 	};
 
