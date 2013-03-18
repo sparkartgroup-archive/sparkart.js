@@ -549,7 +549,7 @@ describe( 'Fanclub', function(){
 			var login_widget = $login_widget[0];
 			var data = $.hasData( login_widget ) && $._data( login_widget );
 			assert( data.events.submit.length === 2, 'Two submit events are bound' );
-			assert( data.events.click.length === 2, 'Two click events are bound' );
+			assert( data.events.click.length === 3, 'Three click events are bound' );
 
 		});
 

@@ -180,7 +180,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				parameters.templates[name] = parameters.templates[name];
 			}
 		}
-		var templates = fanclub.templates = $.extend( sparkart.Fanclub.templates, parameters.templates );
+		var templates = fanclub.templates = $.extend( {}, sparkart.Fanclub.templates, parameters.templates );
 		for( var i in templates ){
 			templates[i] = Handlebars.compile( templates[i] );
 		}

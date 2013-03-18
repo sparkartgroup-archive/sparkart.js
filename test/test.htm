@@ -27,7 +27,7 @@
 
 		onload = function(){
 
-			var runner = mocha.run();
+			var runner = mocha.globals(['fb*']).run();
 
 		};
 
