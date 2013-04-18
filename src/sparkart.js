@@ -296,6 +296,20 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 	};
 
+	// get mixpanel distinct_id and save it in the session
+	// takes the initialized mixpanel object as an argument
+	Fanclub.prototype.set_mixpanel_distinct_id = function(){
+
+		if( !mixpanel ) return;
+
+		var distinct_id = mixpanel.get_distinct_id();
+
+		this.post( 'mixpanel/set_distinct_id', {
+			'mixpanel_distinct_id': distinct_id
+		});
+
+	};
+
 	// Draw widgets
 	// $widget, config, callback
 	Fanclub.prototype.draw = function(){

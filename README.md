@@ -132,6 +132,22 @@ fanclub.logout( function( err ){
 });
 ```
 
+##### .set_mixpanel_distinct_id()
+
+Grabs the `distinct_id` through the Mixpanel JS API and POSTs it to the server.
+
+\* This requires the user to use `mixpanel` as the variable used to initialize Mixpanel.
+
+This is how it should be initialized:
+
+```javascript
+mixpanel.init("YOUR_MIXPANEL_TOKEN", {
+	loaded: function(){
+	  fanclub.set_mixpanel_distinct_id();
+	}
+});
+```
+
 ##### .draw( widget, config, callback )
 
 - **widget** - A jQuery selector (as a string) or a jQuery selection of a specific widget to draw. If nothing is specified, it draws all widgets on the page.
