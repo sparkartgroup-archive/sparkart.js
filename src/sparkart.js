@@ -110,6 +110,27 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 	};
 
+	// Deletes the Mixpanel cookie forcing it to
+	// create a new distinct_id for the next user
+	var deleteMixpanelCookie = function(){
+		var cookies = document.cookie.split(";");
+		var mixpanel_key = null;
+
+		for( var index = 0; index < cookies.length; index++ ){
+			var key = cookies[index].split("=")[0];
+
+			if( /mp_\w*_mixpanel/.test(key) ) {
+				mixpanel_key = key;
+				break;
+			}
+		}
+
+		if( mixpanel_key ) {
+			var domain = "." + location.host.split('.').slice(1).join('.');
+			document.cookie = mixpanel_key + "=; path=/; domain=" + domain;
+		}
+	}
+
 
 //
 // FANCLUB CONSTRUCTOR
@@ -287,6 +308,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 			fanclub.trigger('logout');
 			delete fanclub.customer;
+			deleteMixpanelCookie();
 			var redirect = fanclub.parameters.redirect.logout || data.redirect
 			if( redirect ) window.location = redirect;
 			else if( fanclub.parameters.reload.logout ) location.reload();
