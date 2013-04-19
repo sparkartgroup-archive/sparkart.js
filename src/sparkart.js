@@ -126,7 +126,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		}
 
 		if( mixpanel_key ) {
-			var domain = "." + location.host.split('.').slice(1).join('.');
+			var split_domain = location.host.split('.');
+			var domain = "." + split_domain.slice(split_domain.length - 2).join('.');
 			document.cookie = mixpanel_key + "=; path=/; domain=" + domain;
 		}
 	}
