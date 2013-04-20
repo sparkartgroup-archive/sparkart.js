@@ -110,29 +110,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 	};
 
-	// Deletes the Mixpanel cookie forcing it to
-	// create a new distinct_id for the next user
-	var deleteMixpanelCookie = function(){
-		var cookies = document.cookie.split(";");
-		var mixpanel_key = null;
-
-		for( var index = 0; index < cookies.length; index++ ){
-			var key = cookies[index].split("=")[0];
-
-			if( /mp_\w*_mixpanel/.test(key) ) {
-				mixpanel_key = key;
-				break;
-			}
-		}
-
-		if( mixpanel_key ) {
-			var split_domain = location.host.split('.');
-			var domain = "." + split_domain.slice(split_domain.length - 2).join('.');
-			document.cookie = mixpanel_key + "=; path=/; domain=" + domain;
-		}
-	}
-
-
 //
 // FANCLUB CONSTRUCTOR
 ////////////////////////////////////////////////////////////////////////////////
@@ -308,8 +285,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 			if( callback ) callback( null, response );
 
 			fanclub.trigger('logout');
+			fanclub.deleteMixpanelCookie();
 			delete fanclub.customer;
-			deleteMixpanelCookie();
 			var redirect = fanclub.parameters.redirect.logout || data.redirect
 			if( redirect ) window.location = redirect;
 			else if( fanclub.parameters.reload.logout ) location.reload();
@@ -319,16 +296,47 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 	};
 
+	// deletes the Mixpanel cookie -- forcing it to
+	// create a new distinct_id for the next user
+	Fanclub.prototype.deleteMixpanelCookie = function(){
+
+		var cookies = document.cookie.split(";");
+		var mixpanel_key = null;
+
+		for( var index = 0; index < cookies.length; index++ ){
+			var key = cookies[index].split("=")[0];
+
+			if( /mp_\w*_mixpanel/.test(key) ) {
+				mixpanel_key = key;
+				break;
+			}
+		};
+
+		if( mixpanel_key ) {
+			var split_domain = location.host.split('.');
+			var domain = "." + split_domain.slice(split_domain.length - 2).join('.');
+			document.cookie = mixpanel_key + "=; path=/; domain=" + domain;
+		}
+
+	};
+
 	// get mixpanel distinct_id and save it in the session
 	// takes the initialized mixpanel object as an argument
-	Fanclub.prototype.set_mixpanel_distinct_id = function(){
+	Fanclub.prototype.setMixpanelDistinctId = function( callback ){
 
-		if( !mixpanel ) return;
+		var data = {
+			'mixpanel_distinct_id': mixpanel.get_distinct_id()
+		};
 
-		var distinct_id = mixpanel.get_distinct_id();
+		this.post( 'mixpanel/set_distinct_id', data, function( err, response ){
 
-		this.post( 'mixpanel/set_distinct_id', {
-			'mixpanel_distinct_id': distinct_id
+			if( err ){
+				if( callback ) callback( err );
+				return;
+			}
+
+			if( callback ) callback( null, response );
+
 		});
 
 	};

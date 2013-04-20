@@ -1,6 +1,13 @@
 var FAKE_API_URL = 'http://fake.sparkart.net';
 var FAKE_KEY = 'test';
 
+var mixpanel_distinct_id = '13e200179256b-0cfbb4618-6c1b2073-232800-13e20017926407';
+var mixpanel = {
+	get_distinct_id: function(){
+		return mixpanel_distinct_id;
+	}
+}
+
 var customer = {
 	id: 1,
 	first_name: 'Test',
@@ -29,6 +36,13 @@ var mock_responses = {
 		}
 	},
 	logout: {
+		post: {
+			success: {
+				status: 'ok'
+			}
+		}
+	},
+	setMixpanelDistinctId: {
 		post: {
 			success: {
 				status: 'ok'
@@ -169,17 +183,21 @@ describe( 'Fanclub', function(){
 
 	describe( 'register', function(){
 
-		it( 'registers a user', function( done ){
+		afterEach( function(){
+			fanclub.destroy();
+		});
 
-			$.mockjax({
-				url: FAKE_API_URL +'/account/register.json',
-				type: 'POST',
-				data: {
-					key: FAKE_KEY
-				},
-				status: 200,
-				responseText: mock_responses.register.post.success
-			});
+		$.mockjax({
+			url: FAKE_API_URL +'/account/register.json',
+			type: 'POST',
+			data: {
+				key: FAKE_KEY
+			},
+			status: 200,
+			responseText: mock_responses.register.post.success
+		});
+
+		it( 'registers a user', function( done ){
 
 			fanclub = new sparkart.Fanclub( FAKE_KEY, {
 				api_url: FAKE_API_URL,
@@ -205,17 +223,21 @@ describe( 'Fanclub', function(){
 
 	describe( 'login', function(){
 
-		it( 'logs a user in', function( done ){
+		afterEach( function(){
+			fanclub.destroy();
+		});
 
-			$.mockjax({
-				url: FAKE_API_URL +'/login.json',
-				type: 'POST',
-				data: {
-					key: FAKE_KEY
-				},
-				status: 200,
-				responseText: mock_responses.login.post.success
-			});
+		$.mockjax({
+			url: FAKE_API_URL +'/login.json',
+			type: 'POST',
+			data: {
+				key: FAKE_KEY
+			},
+			status: 200,
+			responseText: mock_responses.login.post.success
+		});
+
+		it( 'logs a user in', function( done ){
 
 			fanclub = new sparkart.Fanclub( FAKE_KEY, {
 				api_url: FAKE_API_URL,
@@ -225,10 +247,8 @@ describe( 'Fanclub', function(){
 				email: 'test@sparkart.com',
 				password: 'test'
 			}, function( err, data ){
-
 				assert( !!data.customer, 'Returns customer object' );
 				done();
-
 			});
 
 		});
@@ -237,31 +257,65 @@ describe( 'Fanclub', function(){
 
 	describe( 'logout', function(){
 
-		it( 'logs a user out', function( done ){
+		afterEach( function(){
+			fanclub.destroy();
+		});
 
-			$.mockjax({
-				url: FAKE_API_URL +'/logout.json',
-				type: 'POST',
-				data: {
-					key: FAKE_KEY
-				},
-				status: 200,
-				responseText: mock_responses.logout.post.success
-			});
+		$.mockjax({
+			url: FAKE_API_URL +'/logout.json',
+			type: 'POST',
+			data: {
+				key: FAKE_KEY
+			},
+			status: 200,
+			responseText: mock_responses.logout.post.success
+		});
+
+		it( 'logs a user out', function( done ){
 
 			fanclub = new sparkart.Fanclub( FAKE_KEY, {
 				api_url: FAKE_API_URL,
 				reload: false
 			});
 			fanclub.logout( null, function( err, data ){
-
 				done();
-
 			});
 
 		});
 
 	});
+
+	// describe( 'setMixpanelDistinctId', function(){
+
+	// 	afterEach( function(){
+	// 		fanclub.destroy();
+	// 	});
+
+	// 	$.mockjax({
+	// 		url: FAKE_API_URL +'/mixpanel/set_distinct_id.json',
+	// 		type: 'POST',
+	// 		data: {
+	// 			key: FAKE_KEY,
+	// 			mixpanel_distinct_id: mixpanel_distinct_id
+	// 		},
+	// 		status: 200,
+	// 		responseText: mock_responses.setMixpanelDistinctId.post.success
+	// 	});
+
+	// 	it( 'POSTs the Mixpanel distinct_id to the server', function(){
+
+	// 		fanclub = new sparkart.Fanclub( FAKE_KEY, {
+	// 			api_url: FAKE_API_URL,
+	// 			reload: false
+	// 		});
+
+	// 		fanclub.setMixpanelDistinctId( {}, function( err, data ){
+	// 			done();
+	// 		});
+
+	// 	});
+
+	// });
 
 	describe( 'draw', function(){
 
