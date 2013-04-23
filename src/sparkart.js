@@ -315,6 +315,15 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		// If no widget is specified, loop through all of them
 		if( !$widget ){
 			var $widgets = $('.sparkart.fanclub');
+			if( $widgets.length < 1 ){
+				if( callback ){
+					// don't trust anyone who does this
+					setTimeout( function(){ 
+						callback( null, null );
+					}, 1);
+				}
+				return;
+			}
 			var callback_counter = 0;
 			$widgets.each( function( i, widget ){
 				fanclub.draw( $(widget), config, function(){

@@ -1,5 +1,5 @@
 /* Sparkart.js v0.1.0
-   Generated on 2013-03-18 at 13:21:24 */
+   Generated on 2013-04-23 at 12:22:10 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -318,6 +318,15 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		// If no widget is specified, loop through all of them
 		if( !$widget ){
 			var $widgets = $('.sparkart.fanclub');
+			if( $widgets.length < 1 ){
+				if( callback ){
+					// don't trust anyone who does this
+					setTimeout( function(){ 
+						callback( null, null );
+					}, 1);
+				}
+				return;
+			}
 			var callback_counter = 0;
 			$widgets.each( function( i, widget ){
 				fanclub.draw( $(widget), config, function(){

@@ -130,6 +130,16 @@ describe( 'Fanclub', function(){
 
 	});
 
+	it( 'fires load event when no widgets are on the page', function( done ){
+
+		$('#test').empty();
+		fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+		fanclub.on( 'load', function(){
+			done();	
+		});
+
+	});
+
 	it( 'acquires parameters from defaults and specified options', function(){
 
 		var account_preprocessor = function( data ){ return data; }
