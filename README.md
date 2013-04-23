@@ -249,13 +249,6 @@ Triggered when a customer logs out
 
 Triggered when a customer registers
 
-
-
 ## Building the script
 
-Sparkart.js comes with a simple build script which allows us to split out template markup in a reasonable fashion. In order to build Sparkart.js you must have [Node.js](http://nodejs.org/) installed.
-
-```
-cd build
-node build.js
-```
+Sparkart.js uses [Grunt](http://gruntjs.com/) to build the final script. When in development, make sure you edit the files in `/src`, then compile the script. To compile the script, run `grunt compile`. To automatically compile the script when anything in `/src` is changed, run `grunt regarde`.
