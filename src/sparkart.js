@@ -205,7 +205,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 				if( fanclub.tracking.google_analytics.length > 0 ){
 					fanclub.tracking.google_analytics_trackers = [];
-					_gaq = [];
+					_gaq = (typeof(_gaq) === 'undefined' ? [] : _gaq);
 
 					$.each( fanclub.tracking.google_analytics, function( i, property_id ){
 						var tracker = "t" + i;

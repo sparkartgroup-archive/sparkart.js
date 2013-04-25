@@ -1,5 +1,5 @@
 /* Sparkart.js v0.1.0
-   Generated on 2013-04-25 at 18:32:21 */
+   Generated on 2013-04-25 at 18:33:09 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -208,7 +208,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 				if( fanclub.tracking.google_analytics.length > 0 ){
 					fanclub.tracking.google_analytics_trackers = [];
-					_gaq = [];
+					_gaq = (typeof(_gaq) === 'undefined' ? [] : _gaq);
 
 					$.each( fanclub.tracking.google_analytics, function( i, property_id ){
 						var tracker = "t" + i;
