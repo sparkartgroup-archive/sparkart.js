@@ -201,6 +201,28 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				fanclub.customer = ( response )? response.customer: null;
 				fanclub.authentications = ( fc_response )? fc_response.fanclub.authentications: null;
 				fanclub.name = ( fc_response )? fc_response.fanclub.name: null;
+				fanclub.tracking = fc_response.fanclub.tracking;
+
+				if( fanclub.tracking.google_analytics.length > 0 ){
+					fanclub.tracking.google_analytics_trackers = [];
+					_gaq = [];
+
+					$.each( fanclub.tracking.google_analytics, function( i, property_id ){
+						var tracker = "t" + i;
+						fanclub.tracking.google_analytics_trackers.push( tracker );
+
+						_gaq.push([tracker + '._setAccount', property_id]);
+						_gaq.push([tracker + '._setDomainName', window.location.host]);
+						_gaq.push([tracker + '._setAllowLinker', true]);
+					});
+
+					(function() {
+						var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+						ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+						var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+					})();
+				}
+
 				// draw all widgets
 				fanclub.draw( function(){
 					fanclub.trigger('load');
@@ -995,6 +1017,22 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					if( redirect ) window.location = redirect;
 
 				});
+
+			});
+
+		}
+
+		else if( widget === 'plans' ){
+
+			$widget
+			.off( '.sparkart' )
+			.on( 'click.sparkart', 'li.join a', function( e ){
+
+				if( typeof(_gaq) !== 'undefined' && fanclub.tracking.google_analytics_trackers.length > 0 ){
+					$.each( fanclub.tracking.google_analytics_trackers, function( i, tracker ){
+						_gaq.push([tracker + '._link', $(e.target).attr('href')]);
+					});
+				};
 
 			});
 
