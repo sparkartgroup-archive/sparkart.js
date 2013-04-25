@@ -123,12 +123,38 @@ var fanclub = new sparkart.Fanclub( API_KEY, {
 - **data** - An object of data to pass to the logout API endpoint. This is used internally to pass redirect parameters.
 - **callback** - A function to be executed after the logout method completes. Gets `err`.
 
-Logs a user out.
+Logs a user out and automatically deletes the Mixpanel cookie (if it exists)
 
 ```javascript
 fanclub.logout( function( err ){
 	if( err ) return err;
 	console.log('User successfully logged out!');
+});
+```
+
+##### .deleteMixpanelCookie()
+
+Deletes the Mixpanel cookie (if it exists)
+
+```javascript
+fanclub.deleteMixpanelCookie();
+```
+
+##### .setMixpanelDistinctId( callback )
+
+- **callback** - A function to be executed after the logout method completes. Gets `err`.
+
+Grabs the `distinct_id` through the Mixpanel JS API and POSTs it to the server.
+
+\* This requires the user to use `mixpanel` as the variable used to initialize Mixpanel.
+
+This is how it should be initialized:
+
+```javascript
+mixpanel.init("YOUR_MIXPANEL_TOKEN", {
+	loaded: function(){
+	  fanclub.setMixpanelDistinctId();
+	}
 });
 ```
 
