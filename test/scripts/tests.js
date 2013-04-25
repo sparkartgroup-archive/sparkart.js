@@ -155,14 +155,15 @@ describe( 'Fanclub', function(){
 
 	});
 
-	it( 'gets initial fanclub data', function(){
+	it( 'gets initial fanclub data', function( done ){
 
 		fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
 		fanclub.on( 'load', function(){
 			assert( !!fanclub.customer, 'Customer data exists' );
 			assert( !!fanclub.name, 'Fanclub data exists' );
+			fanclub.destroy();
+			done();
 		});
-		fanclub.destroy();
 
 	});
 
@@ -236,7 +237,7 @@ describe( 'Fanclub', function(){
 
 	describe( 'logout', function(){
 
-		it( 'logs a user out', function(){
+		it( 'logs a user out', function( done ){
 
 			$.mockjax({
 				url: FAKE_API_URL +'/logout.json',
@@ -252,7 +253,7 @@ describe( 'Fanclub', function(){
 				api_url: FAKE_API_URL,
 				reload: false
 			});
-			fanclub.logout( function( err, data ){
+			fanclub.logout( null, function( err, data ){
 
 				done();
 
