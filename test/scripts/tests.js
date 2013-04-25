@@ -285,37 +285,37 @@ describe( 'Fanclub', function(){
 
 	});
 
-	// describe( 'setMixpanelDistinctId', function(){
+	describe( 'setMixpanelDistinctId', function(){
 
-	// 	afterEach( function(){
-	// 		fanclub.destroy();
-	// 	});
+		afterEach( function(){
+			fanclub.destroy();
+		});
 
-	// 	$.mockjax({
-	// 		url: FAKE_API_URL +'/mixpanel/set_distinct_id.json',
-	// 		type: 'POST',
-	// 		data: {
-	// 			key: FAKE_KEY,
-	// 			mixpanel_distinct_id: mixpanel_distinct_id
-	// 		},
-	// 		status: 200,
-	// 		responseText: mock_responses.setMixpanelDistinctId.post.success
-	// 	});
+		$.mockjax({
+			url: FAKE_API_URL +'/mixpanel/set_distinct_id.json',
+			type: 'POST',
+			data: {
+				key: FAKE_KEY,
+				mixpanel_distinct_id: mixpanel_distinct_id
+			},
+			status: 200,
+			responseText: mock_responses.setMixpanelDistinctId.post.success
+		});
 
-	// 	it( 'POSTs the Mixpanel distinct_id to the server', function(){
+		it( 'POSTs the Mixpanel distinct_id to the server', function( done ){
 
-	// 		fanclub = new sparkart.Fanclub( FAKE_KEY, {
-	// 			api_url: FAKE_API_URL,
-	// 			reload: false
-	// 		});
+			fanclub = new sparkart.Fanclub( FAKE_KEY, {
+				api_url: FAKE_API_URL,
+				reload: false
+			});
 
-	// 		fanclub.setMixpanelDistinctId( {}, function( err, data ){
-	// 			done();
-	// 		});
+			fanclub.setMixpanelDistinctId( function( err, data ){
+				done();
+			});
 
-	// 	});
+		});
 
-	// });
+	});
 
 	describe( 'draw', function(){
 
