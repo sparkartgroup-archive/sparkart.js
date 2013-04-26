@@ -1,3 +1,7 @@
+mocha.setup({
+	globals: ['_gaq', '_gat']
+});
+
 var FAKE_API_URL = 'http://fake.sparkart.net';
 var FAKE_KEY = 'test';
 
@@ -67,7 +71,10 @@ var mock_responses = {
 				status: 'ok',
 				fanclub: {
 					id: 1,
-					name: 'Test Fanclub'
+					name: 'Test Fanclub',
+					tracking: {
+						google_analytics: ['UA-123456-1']
+					}
 				}
 			}
 		}
@@ -645,6 +652,7 @@ describe( 'Fanclub', function(){
 			var account_widget = $account_widget[0];
 			var data = $.hasData( account_widget ) && $._data( account_widget );
 			assert( data.events.submit.length === 1, 'One submit event is bound' );
+			assert( data.events.click.length === 1, 'One submit event is bound' );
 
 		});
 
@@ -655,7 +663,17 @@ describe( 'Fanclub', function(){
 			var password_reset_widget = $password_reset_widget[0];
 			var data = $.hasData( password_reset_widget ) && $._data( password_reset_widget );
 			assert( data.events.submit.length === 1, 'One submit event is bound' );
-		
+
+		});
+
+		it( 'binds events to a plans widget', function(){
+
+			var $plans_widget = $('<div class="sparkart fanclub plans"></div>');
+			fanclub.bindWidget( 'plans', $plans_widget );
+			var plans_widget = $plans_widget[0];
+			var data = $.hasData( plans_widget ) && $._data( plans_widget );
+			assert( data.events.click.length === 1, 'One submit event is bound' );
+
 		});
 
 		afterEach( function(){
