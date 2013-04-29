@@ -214,6 +214,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 						_gaq.push([tracker + '._setAccount', property_id]);
 						_gaq.push([tracker + '._setDomainName', window.location.host]);
 						_gaq.push([tracker + '._setAllowLinker', true]);
+						_gaq.push([tracker + '._trackPageview']);
 					});
 
 					(function() {
