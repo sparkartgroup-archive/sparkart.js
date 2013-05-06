@@ -1,5 +1,5 @@
 /* Sparkart.js v000.001.002
-   Generated on 2013-04-29 at 13:55:49 */
+   Generated on 2013-05-06 at 15:13:18 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
