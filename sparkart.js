@@ -1,4 +1,4 @@
-/* Sparkart.js v0.1.0
+/* Sparkart.js v000.001.002
    Generated on 2013-04-29 at 13:55:49 */
 
 // Add sparkart to the global namespace
