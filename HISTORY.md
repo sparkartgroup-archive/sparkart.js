@@ -1,3 +1,9 @@
+### 000.001.003
+*May 7, 2013*
+
+- [Feature] Add Contest and Contests widgets
+
+
 ### 000.001.002
 *May 6, 2013*
 
