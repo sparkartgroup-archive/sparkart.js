@@ -1,18 +1,18 @@
-<ul class="contests">
+<ul>
 	{{#contests}}
-	<li class="{{#if running}}running{{/if}}{{#if ended}} ended{{/if}}{{#if entered}} entered{{/if}}">
+	<li>
 
 		<h2><a href="{{../parameters.url}}{{id}}">{{name}}</a></h2>
 
 		<dl>
 		{{#starts}}
 			<dt>Starts</dt>
-			<dd data-date="{{original}}"><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span></dd>
+			<dd><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span></dd>
 		{{/starts}}
 
 		{{#ends}}
 			<dt>{{#if ../ended}}Ended{{else}}End{{/if}}</dt>
-			<dd data-date="{{original}}"><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span></dd>
+			<dd><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span></dd>
 	 	{{/ends}}
 		</dl>
 

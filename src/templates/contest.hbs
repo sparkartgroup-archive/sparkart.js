@@ -1,12 +1,12 @@
 {{#contest}}
-<div class="contest{{#if running}} running{{/if}}{{#if ended}} ended{{/if}}{{#if entered}} entered{{/if}}">
-  	<h2>{{name}}</h2>
+<div>
+	<h2>{{{name}}}</h2>
 
-  	{{#if minimum_age}}
-		<div class="minimum-age"><p>You must be <strong>{{minimum_age}}</strong> or older to enter this contest.</p></div>
+	{{#if minimum_age}}
+		<p class="minimum-age">You must be <strong>{{minimum_age}}</strong> or older to enter this contest.</p>
 	{{/if}}
 
- 	{{#if details}}
+	{{#if details}}
 	<div class="details">
 		<h3>Contest Details</h3>
 
@@ -25,19 +25,19 @@
 	<dl>
 	{{#starts}}
 		<dt>Starts</dt>
-		<dd data-date="{{original}}"><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span></dd>
+		<dd><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span></dd>
 	{{/starts}}
 
 	{{#ends}}
 		<dt>{{#if ../ended}}Ended{{else}}End{{/if}}</dt>
-		<dd data-date="{{original}}"><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span></dd>
+		<dd><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span></dd>
 	{{/ends}}
 	</dl>
 
 	{{#if entered}}
 
 		<div class="success">
-			<p>You have already entered into the {{name}} contest.</p>
+			<p>You have already entered into the {{{name}}} contest.</p>
 		</div>
 
 	{{else}}
@@ -47,15 +47,17 @@
 
 			<div class="success" style="display: none;">
 				<ul class="success">
-					<li>You have been entered into the {{name}} contest</li>
+					<li>You have been entered into the {{{name}}} contest</li>
 					<li>If you are chosen as a winner you will be contacted via email for confirmation and further details</li>
 				</ul>
 			</div>
 			<div class="errors" style="display: none;">Error</div>
 
+			{{#if rules}}
 			<fieldset>
 				<label><input type="checkbox" class="agree" />I agree to the Contest Rules</label><br />
 			</fieldset>
+			{{/if}}
 
 			<ul class="actions">
 				<li><button type="submit">Enter Contest</button></li>

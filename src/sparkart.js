@@ -1065,7 +1065,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				var $this = $(this);
 				var agree = $this.find('input[type="checkbox"]');
 
-				if( !agree.is(':checked') ) {
+				if( agree.length > 0 && !agree.is(':checked') ) {
 
 					// remove old error message
 					var $errors = $this.find('div.errors');
