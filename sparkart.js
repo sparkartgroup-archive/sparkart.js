@@ -1,5 +1,5 @@
-/* Sparkart.js v000.001.002
-   Generated on 2013-05-06 at 15:13:18 */
+/* Sparkart.js v000.001.003
+   Generated on 2013-05-16 at 16:36:19 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -50,6 +50,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 	// The API url we will look to by default
 	var API_URL = 'https://services.sparkart.net/api/v1/consumer';
 
+	// Use correct endpoints in fanclub.get()
+	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan'];
+
 	// Constants for use inside convertDate()
 	var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 	var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -90,8 +93,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 			},
 			minute: minute,
 			second: second,
-			ampm: ( hour / 12 > 1 )? 'AM': 'PM',
-			original: date_string
+			ampm: ( hour / 12 < 1 )? 'AM': 'PM',
+			original: date_string,
+			timezone_offset: timezone_offset
 		};
 
 		return date_information;
@@ -150,6 +154,19 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 		// Define default preprocessors
 		var preprocessors = fanclub.preprocessors = {
+			contest: [ function( data ){
+				data.contest.minimum_age = ( data.contest.minimum_age > 0 ? data.contest.minimum_age : null );
+				data.contest.starts = convertDate( data.contest.starts_at );
+				data.contest.ends = convertDate( data.contest.ends_at );
+				return data;
+			} ],
+			contests: [ function( data ){
+				$( data.contests ).each( function( i, contest ){
+					contest.starts = convertDate( contest.starts_at );
+					contest.ends = convertDate( contest.ends_at );
+				});
+				return data;
+			} ],
 			event: [ function( data ){
 				data.event.date = convertDate( data.event.date );
 				data.event.doors_open = convertDate( data.event.doors_open );
@@ -429,6 +446,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		else if( $widget.is('.order') ) widget = 'order';
 		else if( $widget.is('.orders') ) widget = 'orders';
 		else if( $widget.is('.affiliates') ) widget = 'affiliates';
+		else if( $widget.is('.contest') ) widget = 'contest';
+		else if( $widget.is('.contests') ) widget = 'contests';
 
 		$widget
 			.removeClass('error')
@@ -596,7 +615,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 		var fanclub = this;
 		parameters = parameters || {};
-		if( endpoint === 'event' || endpoint === 'plan' || endpoint === 'order' ) endpoint +='s';
+		if( $.inArray( endpoint, PLURALIZED_ENDPOINTS ) >= 0 ) endpoint += 's';
 
 		// If an ID is provided, we're looking up a single resource
 		var url = ( parameters.id )
@@ -1042,6 +1061,66 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 		}
 
+		else if( widget === 'contest' ){
+
+			$widget
+			.off( '.sparkart' )
+			.on( 'submit.sparkart', function( e ){
+
+				e.preventDefault();
+
+				var $this = $(this);
+				var agree = $this.find('input[type="checkbox"]');
+
+				if( agree.length > 0 && !agree.is(':checked') ) {
+
+					// remove old error message
+					var $errors = $this.find('div.errors');
+					$errors.empty().hide();
+
+					$this.addClass('error');
+					var $err = $( fanclub.templates.errors({ errors: ['To Enter, You Must Agree to the Contest Rules'] }) );
+					$errors.html( $err ).show();
+					return;
+
+				} else {
+
+					$this
+						.removeClass('error success')
+						.find('div.errors, div.success').hide();
+
+					// deactivate the form
+					var $submit = $this.find('button[type="submit"]');
+					$submit.prop( 'disabled', true );
+
+					fanclub.post( 'contests/'+ data.id +'/enter', {}, function( errors ){
+
+						// reactivate the form
+						$submit.prop( 'disabled', false );
+
+						// remove old error message
+						var $errors = $this.find('div.errors');
+						$errors.empty().hide();
+
+						if( errors ){
+							$this.addClass('error');
+							var $err = $( fanclub.templates.errors({ errors: errors }) );
+							$errors.html( $err ).show();
+							return;
+						}
+
+						$this.addClass('success');
+						var $success = $this.find('div.success');
+						$success.show();
+
+					});
+
+				}
+
+			});
+
+		}
+
 	};
 
 /*
@@ -1193,6 +1272,8 @@ Methods for interacting with facebook
 ;this.sparkart.Fanclub.templates = {
 "account": "{{#if customer}}{{#if customer.registered}}<ul class=\"authentications\">	{{#authentications}}	<li><button class=\"{{name}}_connect {{#if connected}}connected{{/if}}\" type=\"button\" {{#if connected}}disabled=\"true\"{{/if}}>{{#if connected}}Connected{{else}}Connect{{/if}} with {{name}}</button></li>	{{/authentications}}</ul>{{/if}}{{/if}}{{#customer}}{{#registered}}<form class=\"account\">	<div class=\"success\" style=\"display: none;\">		<p>Account Successfully Updated!</p>	</div>	<div class=\"errors\" style=\"display: none;\"></div>	<fieldset>		<label>Username<br />		<input name=\"username\" type=\"text\" value=\"{{username}}\" /></label><br />		<label>First Name<br />		<input name=\"first_name\" type=\"text\" value=\"{{first_name}}\" /></label><br />		<label>Last Name<br />		<input name=\"last_name\" type=\"text\" value=\"{{last_name}}\" /></label><br />		<label>Email Address<br />		<input name=\"email\" type=\"text\" value=\"{{email}}\" /></label><br />		<div class=\"password\">			<label>Current Password<br />			<input name=\"current_password\" type=\"password\" /></label>			<hr />			<label>New Password<br />			<input name=\"password\" type=\"password\" /></label><br />			<label>Repeat New Password<br />			<input name=\"password_confirmation\" type=\"password\" /></label>		</div>	</fieldset>	<button type=\"submit\">Update Account</button></form>{{/registered}}{{/customer}}",
 "affiliates": "{{#affiliates}}	<h2>{{name}}</h2>	<ul class=\"codes\">		{{#codes}}<li>{{.}}</li>{{/codes}}	</ul>{{/affiliates}}",
+"contest": "{{#contest}}<div class=\"{{status}}\">	<h2>{{{name}}}</h2>	{{#if minimum_age}}		<p class=\"minimum-age\">You must be <strong>{{minimum_age}}</strong> or older to enter this contest.</p>	{{/if}}	{{#if details}}	<div class=\"details\">		<h3>Contest Details</h3>		{{{details}}}	</div>	{{/if}}	{{#if rules}}	<div class=\"rules\">		<h3>Contest Rules</h3>		{{{rules}}}	</div>	{{/if}}	<dl>	{{#starts}}		<dt>Starts</dt>		<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span></dd>	{{/starts}}	{{#ends}}		<dt>{{#if ../ended}}Ended{{else}}End{{/if}}</dt>		<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span></dd>	{{/ends}}	</dl>	{{#if entered}}		<div class=\"success\">			<p>You have already entered into the {{{name}}} contest.</p>		</div>	{{else}}		{{#if running}}		<form class=\"contest\">			<div class=\"success\" style=\"display: none;\">				<ul class=\"success\">					<li>You have been entered into the {{{name}}} contest</li>					<li>If you are chosen as a winner you will be contacted via email for confirmation and further details</li>				</ul>			</div>			<div class=\"errors\" style=\"display: none;\">Error</div>			{{#if rules}}			<fieldset>				<label><input type=\"checkbox\" class=\"agree\" />I agree to the Contest Rules</label><br />			</fieldset>			{{/if}}			<ul class=\"actions\">				<li><button type=\"submit\">Enter Contest</button></li>			</ul>		</form>		{{/if}}	{{/if}}</div>{{/contest}}",
+"contests": "<ul>	{{#contests}}	<li class=\"{{status}}\">		<h2><a href=\"{{../parameters.url}}{{id}}\">{{name}}</a></h2>		<dl>		{{#starts}}			<dt>Starts</dt>			<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span> <span class=\"timezone\">{{timezone_offset}}</span></dd>		{{/starts}}		{{#ends}}			<dt>{{#if ../ended}}Ended{{else}}End{{/if}}</dt>			<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span> <span class=\"timezone\">{{timezone_offset}}</span></dd>	 	{{/ends}}		</dl>		{{#if details}}		<div class=\"details\">			<h3>Contest Details</h3>			{{{details}}}		</div>		{{/if}} 	</li>	{{/contests}}</ul>",
 "customer": "{{#customer}}{{#registered}}<div class=\"info\">	{{#if username}}	<strong class=\"username\">{{username}}</strong>	{{else}}	<strong class=\"name\">{{first_name}} {{last_name}}</strong>	{{/if}}	{{#subscription}}	<span class=\"subscription\">{{plan.name}}</span>	{{/subscription}}</div>{{/registered}}{{/customer}}",
 "errors": "<ul class=\"errors\">{{#errors}}<li>{{.}}</li>{{/errors}}</ul>",
 "event": "{{#event}}<div class=\"event\">	<h2>{{date.month.abbr}} {{date.day.number}}</h2>	<h3>{{title}}</h3>	<div class=\"description\">{{description}}</div>	<dl>		{{#doors_open}}		<dt>Doors Open</dt>		<dd>{{hour.half}}:{{minute}} <span class=\"ampm\">{{ampm}}</span></dd>		{{/doors_open}}		{{#start}}		<dt>Start</dt>		<dd>{{hour.half}}:{{minute}} <span class=\"ampm\">{{ampm}}</span></dd>		{{/start}}	</dl>	{{#venue}}	<div class=\"venue\">		<h4>{{name}}</h4>		<strong class=\"city\">{{city}}</strong>, <em class=\"state\">{{state}}</em> <span class=\"country\">{{country}}</span>		<h5>Directions</h5>		<ul class=\"directions\">			{{#directions}}			<li><a href=\"{{google_maps}}\">Google Maps</a></li>			<li><a href=\"{{yahoo_maps}}\">Yahoo Maps</a></li>			<li><a href=\"{{mapquest}}\">Mapquest</a></li>			<li><a href=\"{{bing_maps}}\">Bing Maps</a></li>			{{/directions}}		</ul>	</div>	{{/venue}}	<ul class=\"links\">		{{#links}}		<li><a href=\"{{url}}\">{{name}}</a></li>		{{/links}}	</ul></div>{{/event}}",
