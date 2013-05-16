@@ -7,12 +7,12 @@
 		<dl>
 		{{#starts}}
 			<dt>Starts</dt>
-			<dd><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span></dd>
+			<dd><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span> <span class="timezone">{{timezone_offset}}</span></dd>
 		{{/starts}}
 
 		{{#ends}}
 			<dt>{{#if ../ended}}Ended{{else}}End{{/if}}</dt>
-			<dd><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span></dd>
+			<dd><span class="date">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class="time">at {{hour.half}}:{{minute}}</span> <span class="ampm">{{ampm}}</span> <span class="timezone">{{timezone_offset}}</span></dd>
 	 	{{/ends}}
 		</dl>
 

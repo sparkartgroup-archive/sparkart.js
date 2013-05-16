@@ -47,6 +47,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 	// The API url we will look to by default
 	var API_URL = 'https://services.sparkart.net/api/v1/consumer';
 
+	// Use correct endpoints in fanclub.get()
+	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan'];
+
 	// Constants for use inside convertDate()
 	var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 	var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -87,8 +90,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 			},
 			minute: minute,
 			second: second,
-			ampm: ( hour / 12 > 1 )? 'AM': 'PM',
-			original: date_string
+			ampm: ( hour / 12 < 1 )? 'AM': 'PM',
+			original: date_string,
+			timezone_offset: timezone_offset
 		};
 
 		return date_information;
@@ -608,7 +612,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 		var fanclub = this;
 		parameters = parameters || {};
-		if( endpoint === 'contest' || endpoint === 'event' || endpoint === 'order' || endpoint === 'plan' ) endpoint +='s';
+		if( $.inArray( endpoint, PLURALIZED_ENDPOINTS ) >= 0 ) endpoint += 's';
 
 		// If an ID is provided, we're looking up a single resource
 		var url = ( parameters.id )
