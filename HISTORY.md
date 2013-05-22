@@ -1,8 +1,11 @@
 ### 000.001.003
-*May 7, 2013*
+*May 22, 2013*
 
 - [Feature] Add Contest and Contests widgets
+- [Feature] Add Mixpanel Tracking
+- [Feature] Add Google Analytics Enhanced Link Attribution
 
+---
 
 ### 000.001.002
 *May 6, 2013*
