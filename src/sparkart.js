@@ -224,10 +224,13 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					fanclub.tracking.google_analytics_trackers = [];
 					_gaq = (typeof(_gaq) === 'undefined' ? [] : _gaq);
 
+					var pluginUrl = '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+
 					$.each( fanclub.tracking.google_analytics, function( i, property_id ){
 						var tracker = "t" + i;
 						fanclub.tracking.google_analytics_trackers.push( tracker );
 
+						_gaq.push([tracker + '._require', 'inpage_linkid', pluginUrl]);
 						_gaq.push([tracker + '._setAccount', property_id]);
 						_gaq.push([tracker + '._setDomainName', window.location.host]);
 						_gaq.push([tracker + '._setAllowLinker', true]);
@@ -239,6 +242,24 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 						ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 						var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 					})();
+				}
+
+				if( fanclub.tracking.mixpanel ){
+					(function(c,a){window.mixpanel=a;var b,d,h,e;b=c.createElement("script");
+					b.type="text/javascript";b.async=!0;b.src=("https:"===c.location.protocol?"https:":"http:")+
+					'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';d=c.getElementsByTagName("script")[0];
+					d.parentNode.insertBefore(b,d);a._i=[];a.init=function(b,c,f){function d(a,b){
+					var c=b.split(".");2==c.length&&(a=a[c[0]],b=c[1]);a[b]=function(){a.push([b].concat(
+					Array.prototype.slice.call(arguments,0)))}}var g=a;"undefined"!==typeof f?g=a[f]=[]:
+					f="mixpanel";g.people=g.people||[];h=['disable','track','track_pageview','track_links',
+					'track_forms','register','register_once','unregister','identify','alias','name_tag','set_config',
+					'people.set','people.set_once','people.increment','people.track_charge','people.append'];
+					for(e=0;e<h.length;e++)d(g,h[e]);a._i.push([b,c,f])};a.__SV=1.2;})(document,window.mixpanel||[]);
+
+					mixpanel.init(fanclub.tracking.mixpanel, {
+						store_google: false,
+						save_referrer: true
+					});
 				}
 
 				// draw all widgets
