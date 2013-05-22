@@ -88,6 +88,8 @@ In order to make generating fanclub markup easier, sparkart.js has a widget syst
 - **[event](https://github.com/SparkartGroupInc/sparkart.js/wiki/Event-widget)** - A single event.
 - **[orders](https://github.com/SparkartGroupInc/sparkart.js/wiki/Orders-widget)** - A list of orders.
 - **[order](https://github.com/SparkartGroupInc/sparkart.js/wiki/Order-widget)** - A single order.
+- **[contests](https://github.com/SparkartGroupInc/sparkart.js/wiki/Contests-widget)** - A list of contests.
+- **[contest](https://github.com/SparkartGroupInc/sparkart.js/wiki/Contest-widget)** - A single contest.
 
 To use a widget, you need to create a container for that widget with the classes `sparkart` `fanclub` and the widget's name (ex: `account`). Then create the fanclub object or run the `draw()` method if the fanclub object has already been instantiated:
 

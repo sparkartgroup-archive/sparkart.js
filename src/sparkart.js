@@ -47,6 +47,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 	// The API url we will look to by default
 	var API_URL = 'https://services.sparkart.net/api/v1/consumer';
 
+	// Use correct endpoints in fanclub.get()
+	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan'];
+
 	// Constants for use inside convertDate()
 	var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 	var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -87,8 +90,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 			},
 			minute: minute,
 			second: second,
-			ampm: ( hour / 12 > 1 )? 'AM': 'PM',
-			original: date_string
+			ampm: ( hour / 12 < 1 )? 'AM': 'PM',
+			original: date_string,
+			timezone_offset: timezone_offset
 		};
 
 		return date_information;
@@ -147,6 +151,19 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 		// Define default preprocessors
 		var preprocessors = fanclub.preprocessors = {
+			contest: [ function( data ){
+				data.contest.minimum_age = ( data.contest.minimum_age > 0 ? data.contest.minimum_age : null );
+				data.contest.starts = convertDate( data.contest.starts_at );
+				data.contest.ends = convertDate( data.contest.ends_at );
+				return data;
+			} ],
+			contests: [ function( data ){
+				$( data.contests ).each( function( i, contest ){
+					contest.starts = convertDate( contest.starts_at );
+					contest.ends = convertDate( contest.ends_at );
+				});
+				return data;
+			} ],
 			event: [ function( data ){
 				data.event.date = convertDate( data.event.date );
 				data.event.doors_open = convertDate( data.event.doors_open );
@@ -426,6 +443,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		else if( $widget.is('.order') ) widget = 'order';
 		else if( $widget.is('.orders') ) widget = 'orders';
 		else if( $widget.is('.affiliates') ) widget = 'affiliates';
+		else if( $widget.is('.contest') ) widget = 'contest';
+		else if( $widget.is('.contests') ) widget = 'contests';
 
 		$widget
 			.removeClass('error')
@@ -593,7 +612,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 		var fanclub = this;
 		parameters = parameters || {};
-		if( endpoint === 'event' || endpoint === 'plan' || endpoint === 'order' ) endpoint +='s';
+		if( $.inArray( endpoint, PLURALIZED_ENDPOINTS ) >= 0 ) endpoint += 's';
 
 		// If an ID is provided, we're looking up a single resource
 		var url = ( parameters.id )
@@ -1034,6 +1053,66 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 						_gaq.push([tracker + '._link', $(e.target).attr('href')]);
 					});
 				};
+
+			});
+
+		}
+
+		else if( widget === 'contest' ){
+
+			$widget
+			.off( '.sparkart' )
+			.on( 'submit.sparkart', function( e ){
+
+				e.preventDefault();
+
+				var $this = $(this);
+				var agree = $this.find('input[type="checkbox"]');
+
+				if( agree.length > 0 && !agree.is(':checked') ) {
+
+					// remove old error message
+					var $errors = $this.find('div.errors');
+					$errors.empty().hide();
+
+					$this.addClass('error');
+					var $err = $( fanclub.templates.errors({ errors: ['To Enter, You Must Agree to the Contest Rules'] }) );
+					$errors.html( $err ).show();
+					return;
+
+				} else {
+
+					$this
+						.removeClass('error success')
+						.find('div.errors, div.success').hide();
+
+					// deactivate the form
+					var $submit = $this.find('button[type="submit"]');
+					$submit.prop( 'disabled', true );
+
+					fanclub.post( 'contests/'+ data.id +'/enter', {}, function( errors ){
+
+						// reactivate the form
+						$submit.prop( 'disabled', false );
+
+						// remove old error message
+						var $errors = $this.find('div.errors');
+						$errors.empty().hide();
+
+						if( errors ){
+							$this.addClass('error');
+							var $err = $( fanclub.templates.errors({ errors: errors }) );
+							$errors.html( $err ).show();
+							return;
+						}
+
+						$this.addClass('success');
+						var $success = $this.find('div.success');
+						$success.show();
+
+					});
+
+				}
 
 			});
 
