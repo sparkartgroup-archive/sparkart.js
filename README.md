@@ -279,4 +279,4 @@ Triggered when a customer registers
 
 ## Building the script
 
-Sparkart.js uses [Grunt](http://gruntjs.com/) to build the final script. When in development, make sure you edit the files in `/src`, then compile the script. To compile the script, run `grunt compile`. To automatically compile the script when anything in `/src` is changed, run `grunt regarde`.
+Sparkart.js uses [Grunt](http://gruntjs.com/) to build the final script. When in development, make sure you edit the files in `/src`, then compile the script. To compile the script, run `grunt build`. To automatically compile the script when anything in `/src` is changed, run `grunt regarde`.
