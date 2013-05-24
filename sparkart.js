@@ -1,5 +1,5 @@
-/* Sparkart.js v000.001.003
-   Generated on 2013-05-22 at 13:27:11 */
+/* Sparkart.js v000.002.002
+   Generated on 2013-05-24 at 14:17:34 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -260,8 +260,11 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 					for(e=0;e<h.length;e++)d(g,h[e]);a._i.push([b,c,f])};a.__SV=1.2;})(document,window.mixpanel||[]);
 
 					mixpanel.init(fanclub.tracking.mixpanel, {
-						store_google: false,
-						save_referrer: true
+						store_google: true,
+						save_referrer: true,
+						loaded: function(){
+							fanclub.setMixpanelDistinctId();
+						}
 					});
 				}
 
@@ -427,7 +430,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 			if( $widgets.length < 1 ){
 				if( callback ){
 					// don't trust anyone who does this
-					setTimeout( function(){ 
+					setTimeout( function(){
 						callback( null, null );
 					}, 1);
 				}
@@ -973,7 +976,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				var $widget = $this.closest( '.sparkart.fanclub' );
 
 				fanclub.facebookLogin( function( err, response ){
-					
+
 					fanclub.post( 'account/connect/facebook', {
 						facebook_signed_request: response.authResponse.signedRequest
 					}, function( errors, data ){
@@ -1222,9 +1225,9 @@ Methods for interacting with facebook
 */
 
 	Fanclub.prototype.facebookSetup = function(){
-		
-		var fanclub = this;	
-		
+
+		var fanclub = this;
+
 		// Load the SDK Asynchronously
 		(function(d){
 			var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
@@ -1233,16 +1236,16 @@ Methods for interacting with facebook
 			js.src = "//connect.facebook.net/en_US/all.js";
 			ref.parentNode.insertBefore(js, ref);
 		}(document));
-		
+
 		window.fbAsyncInit = function(){
 			fanclub.facebookInit()
 		};
-	
+
 	};
-	
+
 	Fanclub.prototype.facebookInit = function(){
 
-		var fanclub = this;	
+		var fanclub = this;
 		var facebook_app_id;
 
 		for( var i = this.authentications.length - 1; i >= 0; i-- ){
@@ -1256,15 +1259,15 @@ Methods for interacting with facebook
 			cookie: true, // enable cookies to allow the server to access the session
 			xfbml: true  // parse XFBML
 		});
-	
+
 	};
-	
+
 	Fanclub.prototype.facebookProfile = function( callback ){
-			
+
 		FB.api( '/me', function( response ){
 			if( callback ) callback( response );
-		});	
-		
+		});
+
 	};
 
 	Fanclub.prototype.facebookLogin = function( callback ){
@@ -1283,7 +1286,7 @@ Methods for interacting with facebook
 				if( callback ) callback( 'Login cancelled' );
 			}
 		}, {
-			scope: 'email,user_birthday'	
+			scope: 'email,user_birthday'
 		});
 
 	};
