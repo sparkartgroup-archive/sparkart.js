@@ -1,5 +1,5 @@
-/* Sparkart.js v000.002.002
-   Generated on 2013-05-24 at 14:17:34 */
+/* Sparkart.js v000.003.001
+   Generated on 2013-05-28 at 16:33:58 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -310,59 +310,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 	};
 
-	// log the user in
-	Fanclub.prototype.login = function( data, callback ){
-
-		var fanclub = this;
-		data = data || {};
-
-		this.post( 'login', data, function( err, response ){
-
-			if( err ){
-				if( callback ) callback( err );
-				return;
-			}
-
-			if( callback ) callback( null, response );
-
-			fanclub.trigger( 'login', response.customer );
-			fanclub.customer = response.customer;
-			var redirect = fanclub.parameters.redirect.login || data.redirect
-			if( redirect ) window.location = redirect;
-			else if( fanclub.parameters.reload.login ) location.reload();
-			if( !fanclub.parameters.reload.login ) fanclub.draw();
-
-		});
-
-	};
-
-	// log the user out
-	Fanclub.prototype.logout = function( data, callback ){
-
-		var fanclub = this;
-		data = data || {};
-
-		this.post( 'logout', data, function( err, response ){
-
-			if( err ){
-				if( callback ) callback( err );
-				return;
-			}
-
-			if( callback ) callback( null, response );
-
-			fanclub.trigger('logout');
-			fanclub.deleteMixpanelCookie();
-			delete fanclub.customer;
-			var redirect = fanclub.parameters.redirect.logout || data.redirect
-			if( redirect ) window.location = redirect;
-			else if( fanclub.parameters.reload.logout ) location.reload();
-			else fanclub.draw();
-
-		});
-
-	};
-
 	// deletes the Mixpanel cookie -- forcing it to
 	// create a new distinct_id for the next user
 	Fanclub.prototype.deleteMixpanelCookie = function(){
@@ -461,8 +408,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		else if( $widget.is('.events') ) widget = 'events';
 		else if( $widget.is('.event') ) widget = 'event';
 		else if( $widget.is('.receipt') ) widget = 'receipt';
-		else if( $widget.is('.login') ) widget = 'login';
-		else if( $widget.is('.logout') ) widget = 'logout';
 		else if( $widget.is('.register') ) widget = 'register';
 		else if( $widget.is('.account') ) widget = 'account';
 		else if( $widget.is('.customer') ) widget = 'customer';
@@ -503,8 +448,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 		var fanclub = this;
 
-		// Login, Logout, Register, and Affiliates are all special cases that use the "account" endpoint
-		if( widget === 'login' || widget === 'logout' || widget === 'register' || widget === 'customer' || widget === 'account'){
+		// Special cases that use the "account" endpoint
+		if( widget === 'register' || widget === 'customer' || widget === 'account'){
 			this.get( 'account', function( err, response ){
 
 				if( err ) response = {};
@@ -670,160 +615,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		var fanclub = this;
 		var data = $widget.data();
 
-		// Bind all login widgets
-		if( widget === 'login' ){
-
-			fanclub.facebookSetup();
-
-			$widget
-			.off( '.sparkart' )
-			.on( 'submit.sparkart', 'form.login', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				data = $.extend( data, {
-					email: $this.find('input[name="email"]').val(),
-					password: $this.find('input[name="password"]').val(),
-					facebook_signed_request: $this.find('input[name="facebook_signed_request"]').val()
-				});
-
-				$this
-					.removeClass('error success')
-					.find('div.errors, div.success').hide();
-
-				// deactivate the form
-				var $submit = $this.find('button[type="submit"]');
-				$submit.prop( 'disabled', true );
-
-				fanclub.login( data, function( errors, response ){
-
-					// reactivate the form
-					$submit.prop( 'disabled', false );
-
-					// remove old error message
-					var $errors = $this.find('div.errors');
-					$errors.empty().hide();
-
-					if( errors ){
-						$this.addClass('error');
-						var $err = $( fanclub.templates.errors({ errors: errors }) );
-						$errors.html( $err ).show();
-						return;
-					}
-
-					$this.addClass('success');
-					var $success = $this.find('div.success');
-					$success.show();
-
-				});
-
-			})
-			.on( 'click.sparkart', '.facebook_login', function( e ){
-
-				var $this = $(this);
-				var $widget = $this.closest('.sparkart.fanclub');
-
-				fanclub.facebookLogin( function( err, result ){
-
-					if( err ) return err;
-
-					$widget.find('form.login')
-						.append('<input name="facebook_signed_request" type="hidden" value="'+ result.authResponse.signedRequest +'" />')
-						.trigger('submit');
-
-				});
-
-			});
-
-			// Bind forgot password subwidget
-			// NOTE: should this be moved elsewhere?
-			$widget
-			.on( 'click.sparkart', 'a[href="#forgot"]', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				var $login = $this.closest('.sparkart.fanclub.login');
-				var $forgot = $login.find('form.forgot');
-
-				$forgot.show();
-
-			})
-			.on( 'click.sparkart', 'a[href="#close"]', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				var $forgot = $this.closest('form.forgot');
-
-				$forgot.hide();
-
-			})
-			.on( 'submit.sparkart', 'form.forgot', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				data = $.extend( data, {
-					email: $this.find('input[name="email"]').val()
-				});
-
-				$this
-					.removeClass('error success')
-					.find('div.errors, div.success').hide();
-
-				// deactivate the form
-				var $submit = $this.find('button[type="submit"]');
-				$submit.prop( 'disabled', true );
-
-				fanclub.post( 'password_reset', data, function( errors, response ){
-
-					// reactivate the form
-					$submit.prop( 'disabled', false );
-
-					// remove old error message
-					var $errors = $this.find('div.errors');
-					$errors.empty().hide();
-
-					if( errors ){
-						$this.addClass('error');
-						var $err = $( fanclub.templates.errors({ errors: errors }) );
-						$errors.html( $err ).show();
-						return;
-					}
-
-					$this.addClass('success');
-					var $success = $this.find('div.success');
-					$success.show();
-
-				});
-
-			});
-
-		}
-
-		// Bind all logout widgets
-		else if( widget === 'logout' ){
-
-			$widget
-			.off( '.sparkart' )
-			.on( 'click.sparkart', 'a[href="#logout"]', function( e ){
-
-				e.preventDefault();
-
-				fanclub.logout( data, function( err ){
-
-					if( err ) return console.log( err );
-
-				});
-
-			});
-
-		}
-
 		// Bind all register widgets
-		else if( widget === 'register' ){
+		if( widget === 'register' ){
 
 			fanclub.facebookSetup();
 
@@ -1302,11 +1095,9 @@ Methods for interacting with facebook
 "errors": "<ul class=\"errors\">{{#errors}}<li>{{.}}</li>{{/errors}}</ul>",
 "event": "{{#event}}<div class=\"event\">	<h2>{{date.month.abbr}} {{date.day.number}}</h2>	<h3>{{title}}</h3>	<div class=\"description\">{{description}}</div>	<dl>		{{#doors_open}}		<dt>Doors Open</dt>		<dd>{{hour.half}}:{{minute}} <span class=\"ampm\">{{ampm}}</span></dd>		{{/doors_open}}		{{#start}}		<dt>Start</dt>		<dd>{{hour.half}}:{{minute}} <span class=\"ampm\">{{ampm}}</span></dd>		{{/start}}	</dl>	{{#venue}}	<div class=\"venue\">		<h4>{{name}}</h4>		<strong class=\"city\">{{city}}</strong>, <em class=\"state\">{{state}}</em> <span class=\"country\">{{country}}</span>		<h5>Directions</h5>		<ul class=\"directions\">			{{#directions}}			<li><a href=\"{{google_maps}}\">Google Maps</a></li>			<li><a href=\"{{yahoo_maps}}\">Yahoo Maps</a></li>			<li><a href=\"{{mapquest}}\">Mapquest</a></li>			<li><a href=\"{{bing_maps}}\">Bing Maps</a></li>			{{/directions}}		</ul>	</div>	{{/venue}}	<ul class=\"links\">		{{#links}}		<li><a href=\"{{url}}\">{{name}}</a></li>		{{/links}}	</ul></div>{{/event}}",
 "events": "<ul class=\"events\">	{{#events}}	<li>		<h2><a href=\"{{../parameters.url}}{{id}}\">{{date.month.abbr}} {{date.day.number}}</a></h2>		<h3>{{title}}</h3>		<div class=\"description\">{{description}}</div>		{{#venue}}		<div class=\"venue\">			<h4>{{name}}</h4>			<strong>{{city}}</strong>, {{state}}		</div>		{{/venue}}		<ul class=\"links\">			{{#links}}			<li><a href=\"{{url}}\">{{name}}</a></li>			{{/links}}		</ul>	</li>	{{/events}}</ul>",
-"login": "{{^customer}}<ul class=\"authentications\">	{{#authentications}}	<li><button class=\"{{name}}_login\" type=\"button\">Login with {{name}}</button></li>	{{/authentications}}</ul><form class=\"login\">	<div class=\"success\" style=\"display: none;\">		<p>You have successfully logged in.</p>	</div>	<div class=\"errors\" style=\"display: none;\"></div>	<fieldset>		<label>Email<br />		<input name=\"email\" type=\"text\" /></label>		<label>Password<br />		<input name=\"password\" type=\"password\" /></label>		<a href=\"#forgot\">Forgot Password?</a>	</fieldset>	<button type=\"submit\">Log In</button></form><form class=\"forgot\" style=\"display:none\">	<a href=\"#close\">Close</a>	<div class=\"success\" style=\"display: none;\">		<p>A message has been sent to this address. Please check your email for instructions on how to reset your password.</p>	</div>	<div class=\"errors\" style=\"display: none;\"></div>	<fieldset>		<p>Please enter the email address you used for your fanclub account:</p>		<label>Email<br />		<input type=\"text\" name=\"email\"></input>	</fieldset>	<button type=\"submit\">Submit</button></form>{{/customer}}",
-"logout": "{{#customer}}<a href=\"#logout\">Log Out</a>{{/customer}}",
 "order": "{{#order}}<div class=\"order\">	<h4>Order {{id}}</h4>	<div class=\"details\">		<h5 class=\"name\">{{plan.name}}</h5>		<span class=\"customer\">Customer ID: <var>{{customer_id}}</var></span>		<ul class=\"dates\">			{{#paid_at}}			<li class=\"paid\">Paid <var class=\"date\">{{.}}</var></li>			{{/paid_at}}			{{#refunded_at}}			<li class=\"refunded\">Refunded <var class=\"refunded\">{{.}}</var></li>			{{/refunded_at}}		</ul>	</div>	{{#billing_address}}	<div class=\"billing\">		<h6>Billed To</h6>		<ul class=\"address\">			<li class=\"name\">{{first_name}} {{last_name}}</li>			<li class=\"country\">{{country}}</li>			<li class=\"address line1\">{{address}}</li>			<li class=\"address line2\">{{city}}, {{state}}, {{postal_code}}</li>		</ul>	</div>	{{/billing_address}}	<ul class=\"shipments\">	{{#shipments}}		<li>			{{#tracking_number}}<var class=\"tracking\">{{.}}</var>{{/tracking_number}}			<div class=\"shipping\">				<h6>Shipped To</h6>				{{#shipping_address}}				<ul class=\"address\">					<li class=\"name\">{{first_name}} {{last_name}}</li>					<li class=\"address line1\">{{address}}</li>					<li class=\"address line2\">{{city}}, {{state}}, {{postal_code}}, {{country}}</li>				</ul>				{{/shipping_address}}			</div>			{{#ship_date}}<span class=\"shipped\">Shipped On <var class=\"date\">{{.}}</var></span>{{/ship_date}}			<ul class=\"items\">			{{#items}}				<li>					{{#thumbnail}}<img class=\"thumbnail\" src=\"{{.}}\" />{{/thumbnail}}					<strong class=\"name\">{{name}}</strong>					{{#option}}<span class=\"option\">{{.}}</span>{{/option}}				</li>			{{/items}}			</ul>		</li>	{{/shipments}}	</ul>	{{#totals}}	<dl class=\"totals\">		<dt class=\"subtotal\">Subtotal</dt>		<dd class=\"subtotal\">${{subtotal}}</dd>		{{#shipping}}		<dt class=\"shipping\">Shipping</dt>		<dd class=\"shipping\">${{.}}</dd>		{{/shipping}}		{{#discount}}		<dt class=\"discount\">Discount</dt>		<dd class=\"discount\">${{.}}</dd>		{{/discount}}		<dt class=\"total\">Total</dt>		<dd class=\"total\">${{total}}</dd>	</dl>	{{/totals}}</div>{{/order}}",
 "orders": "<ul class=\"orders\">	{{#orders}}	<li>		<a href=\"{{../parameters.url}}{{id}}\"><h4>Order {{id}}</h4></a>		<div class=\"details\">			<h5 class=\"name\">{{plan.name}}</h5>			<span class=\"customer\">Customer ID: <var>{{customer_id}}</var></span>			<ul class=\"dates\">				{{#paid_at}}				<li class=\"paid\">Paid <var class=\"date\">{{.}}</var></li>				{{/paid_at}}				{{#refunded_at}}				<li class=\"refunded\">Refunded <var class=\"refunded\">{{.}}</var></li>				{{/refunded_at}}			</ul>		</div>		{{#totals}}		<dl class=\"totals\">			<dt class=\"subtotal\">Subtotal</dt>			<dd class=\"subtotal\">${{subtotal}}</dd>			{{#shipping}}			<dt class=\"shipping\">Shipping</dt>			<dd class=\"shipping\">${{.}}</dd>			{{/shipping}}			{{#discount}}			<dt class=\"discount\">Discount</dt>			<dd class=\"discount\">${{.}}</dd>			{{/discount}}			<dt class=\"total\">Total</dt>			<dd class=\"total\">${{total}}</dd>		</dl>		{{/totals}}	</li>	{{/orders}}</ul>",
-"password_reset": "{{#token}}<form class=\"password_reset\">	<div class=\"success\" style=\"display: none;\">		<p>Password Successfully Updated!</p>	</div>	<div class=\"errors\" style=\"display: none;\"></div>	<fieldset>		<div class=\"password\">			<label>New Password<br />			<input name=\"password\" type=\"password\" /></label><br />			<label>Repeat New Password<br />			<input name=\"password_confirmation\" type=\"password\" /></label>		</div>	</fieldset>	<button type=\"submit\">Update Password</button></form>{{/token}}",
+"password_reset": "{{#token}}<form class=\"password_reset\">  <div class=\"success\" style=\"display: none;\">    <p>Password Successfully Updated!</p>  </div>  <div class=\"errors\" style=\"display: none;\"></div>  <fieldset>    <div class=\"password\">      <label>New Password<br />      <input name=\"password\" type=\"password\" /></label><br />      <label>Repeat New Password<br />      <input name=\"password_confirmation\" type=\"password\" /></label>    </div>  </fieldset>  <button type=\"submit\">Update Password</button></form>{{/token}}",
 "plan": "<div class=\"plan\">	<h2>{{name}}</h2>	<h3>{{price}}</h3>	<div class=\"description\">{{description}}</div>	{{#package}}		<h3>{{name}}</h3>		<ul class=\"items\">			{{#items}}			<li>				<img src=\"{{thumbnail}}\" />				<strong>{{name}}</strong>			</li>			{{/items}}		</ul>	{{/package}}	<ul class=\"actions\">		<li class=\"join\"><a href=\"{{checkout}}\">Join Now</a></li>	</ul>	{{#annotations}}<sub class=\"annotations\">{{.}}</sub>{{/annotations}}	</div>",
 "plans": "<ul class=\"plans\">	{{#plans}}	<li>		<h2>{{name}}</h2>		<h3>{{price}}</h3>		<div class=\"description\">{{description}}</div>		{{#package}}			<h3>{{name}}</h3>			<ul class=\"items\">				{{#items}}				<li>					<img src=\"{{thumbnail}}\" />					<strong>{{name}}</strong>				</li>				{{/items}}			</ul>		{{/package}}		<ul class=\"actions\">			<li class=\"join\"><a href=\"{{checkout}}\">Join Now</a></li>		</ul>		{{#annotations}}<sub class=\"annotations\">{{.}}</sub>{{/annotations}}	</li>	{{/plans}}</ul>",
 "receipt": "<ul class=\"receipt\">{{#items}}<li>{{name}}</li>{{/items}}</ul>",

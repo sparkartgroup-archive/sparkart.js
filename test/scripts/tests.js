@@ -31,21 +31,6 @@ var mock_responses = {
 			}
 		}
 	},
-	login: {
-		post: {
-			success: {
-				status: 'ok',
-				customer: customer
-			}
-		}
-	},
-	logout: {
-		post: {
-			success: {
-				status: 'ok'
-			}
-		}
-	},
 	setMixpanelDistinctId: {
 		post: {
 			success: {
@@ -76,6 +61,23 @@ var mock_responses = {
 						google_analytics: ['UA-123456-1']
 					}
 				}
+			}
+		}
+	},
+	contests: {
+		get: {
+			success: {
+				status: 'ok',
+				contests: [{
+					id: 1,
+					name: "All Access 2012 Meet & Greet",
+					fanclub_id: 1,
+					minimum_age: 13
+				}]
+			},
+			error: {
+				status: 'error',
+				errors: []
 			}
 		}
 	},
@@ -114,6 +116,15 @@ describe( 'Fanclub', function(){
 		},
 		status: 200,
 		responseText: mock_responses.account.get.success
+	});
+
+	$.mockjax({
+		url: FAKE_API_URL +'/contests.json',
+		data: {
+			key: FAKE_KEY
+		},
+		status: 200,
+		responseText: mock_responses.fanclub.get.success
 	});
 
 	$.mockjax({
@@ -228,69 +239,6 @@ describe( 'Fanclub', function(){
 
 	});
 
-	describe( 'login', function(){
-
-		afterEach( function(){
-			fanclub.destroy();
-		});
-
-		$.mockjax({
-			url: FAKE_API_URL +'/login.json',
-			type: 'POST',
-			data: {
-				key: FAKE_KEY
-			},
-			status: 200,
-			responseText: mock_responses.login.post.success
-		});
-
-		it( 'logs a user in', function( done ){
-
-			fanclub = new sparkart.Fanclub( FAKE_KEY, {
-				api_url: FAKE_API_URL,
-				reload: false
-			});
-			fanclub.login({
-				email: 'test@sparkart.com',
-				password: 'test'
-			}, function( err, data ){
-				assert( !!data.customer, 'Returns customer object' );
-				done();
-			});
-
-		});
-
-	});
-
-	describe( 'logout', function(){
-
-		afterEach( function(){
-			fanclub.destroy();
-		});
-
-		$.mockjax({
-			url: FAKE_API_URL +'/logout.json',
-			type: 'POST',
-			data: {
-				key: FAKE_KEY
-			},
-			status: 200,
-			responseText: mock_responses.logout.post.success
-		});
-
-		it( 'logs a user out', function( done ){
-
-			fanclub = new sparkart.Fanclub( FAKE_KEY, {
-				api_url: FAKE_API_URL,
-				reload: false
-			});
-			fanclub.logout( null, function( err, data ){
-				done();
-			});
-
-		});
-
-	});
 
 	describe( 'setMixpanelDistinctId', function(){
 
@@ -354,12 +302,12 @@ describe( 'Fanclub', function(){
 
 		it( 'draws the specified widget', function( done ){
 
-			var $logout = $('<div class="sparkart fanclub logout"></div>');
-			$('#test').append( $logout );
-			fanclub.draw( $logout, function(){
-				var logout_contents = $('#test div.sparkart.fanclub.logout').html();
-				assert( logout_contents.length > 0, 'Logout widget has markup' );
-				done();
+			var $contests = $('<div class="sparkart fanclub contests"></div>');
+			$('#test').append( $contests );
+			fanclub.draw( $contests, function(){
+			  var contests_contents = $('#test div.sparkart.fanclub.contests').html();
+			 	assert( contests_contents.length > 0, 'Contests widget has markup' );
+			  done();
 			});
 
 		});
@@ -386,15 +334,6 @@ describe( 'Fanclub', function(){
 
 		describe( 'account widgets when logged in', function(){
 
-			it( 'does not render the login widget', function( done ){
-
-				fanclub.renderWidget( 'login', {}, function( err, html ){
-					assert( html === '', 'HTML is blank' );
-					done();
-				});
-
-			});
-
 			it( 'renders the account widget', function( done ){
 
 				fanclub.renderWidget( 'account', {}, function( err, html ){
@@ -407,15 +346,6 @@ describe( 'Fanclub', function(){
 			it( 'renders the customer widget', function( done ){
 
 				fanclub.renderWidget( 'customer', {}, function( err, html ){
-					assert( html !== '', 'HTML is not blank' );
-					done();
-				});
-
-			});
-
-			it( 'renders the logout widget', function( done ){
-
-				fanclub.renderWidget( 'logout', {}, function( err, html ){
 					assert( html !== '', 'HTML is not blank' );
 					done();
 				});
@@ -446,15 +376,6 @@ describe( 'Fanclub', function(){
 		});
 		describe( 'account widgets when logged out', function(){
 
-			it( 'renders the login widget', function( done ){
-
-				fanclub.renderWidget( 'login', {}, function( err, html ){
-					assert( html === '', 'HTML is blank' );
-					done();
-				});
-
-			});
-
 			it( 'does not render the account widget', function( done ){
 
 				fanclub.renderWidget( 'account', {}, function( err, html ){
@@ -467,15 +388,6 @@ describe( 'Fanclub', function(){
 			it( 'does not render the customer widget', function( done ){
 
 				fanclub.renderWidget( 'customer', {}, function( err, html ){
-					assert( html !== '', 'HTML is not blank' );
-					done();
-				});
-
-			});
-
-			it( 'does not render the logout widget', function( done ){
-
-				fanclub.renderWidget( 'logout', {}, function( err, html ){
 					assert( html !== '', 'HTML is not blank' );
 					done();
 				});
@@ -614,16 +526,6 @@ describe( 'Fanclub', function(){
 			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
 		});
 
-		it( 'binds events to a login widget', function(){
-
-			var $login_widget = $('<div class="sparkart fanclub login"></div>');
-			fanclub.bindWidget( 'login', $login_widget );
-			var login_widget = $login_widget[0];
-			var data = $.hasData( login_widget ) && $._data( login_widget );
-			assert( data.events.submit.length === 2, 'Two submit events are bound' );
-			assert( data.events.click.length === 3, 'Three click events are bound' );
-
-		});
 
 		it( 'binds events to a register widget', function(){
 
@@ -632,16 +534,6 @@ describe( 'Fanclub', function(){
 			var register_widget = $register_widget[0];
 			var data = $.hasData( register_widget ) && $._data( register_widget );
 			assert( data.events.submit.length === 1, 'One submit event is bound' );
-
-		});
-
-		it( 'binds events to a logout widget', function(){
-
-			var $logout_widget = $('<div class="sparkart fanclub logout"></div>');
-			fanclub.bindWidget( 'logout', $logout_widget );
-			var logout_widget = $logout_widget[0];
-			var data = $.hasData( logout_widget ) && $._data( logout_widget );
-			assert( data.events.click.length === 1, 'One click event is bound' );
 
 		});
 
@@ -673,6 +565,16 @@ describe( 'Fanclub', function(){
 			var plans_widget = $plans_widget[0];
 			var data = $.hasData( plans_widget ) && $._data( plans_widget );
 			assert( data.events.click.length === 1, 'One submit event is bound' );
+
+		});
+
+		it( 'binds events to a contest widget', function(){
+
+			var $contest_widget = $('<div class="sparkart fanclub contest"></div>');
+			fanclub.bindWidget( 'contest', $contest_widget );
+			var contest_widget = $contest_widget[0];
+			var data = $.hasData( contest_widget ) && $._data( contest_widget );
+			assert( data.events.submit.length === 1, 'One submit event is bound' );
 
 		});
 
