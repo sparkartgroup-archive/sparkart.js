@@ -307,59 +307,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 	};
 
-	// log the user in
-	Fanclub.prototype.login = function( data, callback ){
-
-		var fanclub = this;
-		data = data || {};
-
-		this.post( 'login', data, function( err, response ){
-
-			if( err ){
-				if( callback ) callback( err );
-				return;
-			}
-
-			if( callback ) callback( null, response );
-
-			fanclub.trigger( 'login', response.customer );
-			fanclub.customer = response.customer;
-			var redirect = fanclub.parameters.redirect.login || data.redirect
-			if( redirect ) window.location = redirect;
-			else if( fanclub.parameters.reload.login ) location.reload();
-			if( !fanclub.parameters.reload.login ) fanclub.draw();
-
-		});
-
-	};
-
-	// log the user out
-	Fanclub.prototype.logout = function( data, callback ){
-
-		var fanclub = this;
-		data = data || {};
-
-		this.post( 'logout', data, function( err, response ){
-
-			if( err ){
-				if( callback ) callback( err );
-				return;
-			}
-
-			if( callback ) callback( null, response );
-
-			fanclub.trigger('logout');
-			fanclub.deleteMixpanelCookie();
-			delete fanclub.customer;
-			var redirect = fanclub.parameters.redirect.logout || data.redirect
-			if( redirect ) window.location = redirect;
-			else if( fanclub.parameters.reload.logout ) location.reload();
-			else fanclub.draw();
-
-		});
-
-	};
-
 	// deletes the Mixpanel cookie -- forcing it to
 	// create a new distinct_id for the next user
 	Fanclub.prototype.deleteMixpanelCookie = function(){
@@ -458,12 +405,9 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		else if( $widget.is('.events') ) widget = 'events';
 		else if( $widget.is('.event') ) widget = 'event';
 		else if( $widget.is('.receipt') ) widget = 'receipt';
-		else if( $widget.is('.login') ) widget = 'login';
-		else if( $widget.is('.logout') ) widget = 'logout';
 		else if( $widget.is('.register') ) widget = 'register';
 		else if( $widget.is('.account') ) widget = 'account';
 		else if( $widget.is('.customer') ) widget = 'customer';
-		else if( $widget.is('.password_reset') ) widget = 'password_reset';
 		else if( $widget.is('.order') ) widget = 'order';
 		else if( $widget.is('.orders') ) widget = 'orders';
 		else if( $widget.is('.affiliates') ) widget = 'affiliates';
@@ -500,8 +444,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 
 		var fanclub = this;
 
-		// Login, Logout, Register, and Affiliates are all special cases that use the "account" endpoint
-		if( widget === 'login' || widget === 'logout' || widget === 'register' || widget === 'customer' || widget === 'account'){
+		// Special cases that use the "account" endpoint
+		if( widget === 'register' || widget === 'customer' || widget === 'account'){
 			this.get( 'account', function( err, response ){
 
 				if( err ) response = {};
@@ -536,16 +480,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				if( callback ) callback( null, html );
 
 			});
-
-		}
-
-		else if( widget === 'password_reset' ){
-
-			var html = fanclub.templates[widget]({
-				token: true
-			});
-
-			if( callback ) callback( null, html );
 
 		}
 
@@ -667,160 +601,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		var fanclub = this;
 		var data = $widget.data();
 
-		// Bind all login widgets
-		if( widget === 'login' ){
-
-			fanclub.facebookSetup();
-
-			$widget
-			.off( '.sparkart' )
-			.on( 'submit.sparkart', 'form.login', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				data = $.extend( data, {
-					email: $this.find('input[name="email"]').val(),
-					password: $this.find('input[name="password"]').val(),
-					facebook_signed_request: $this.find('input[name="facebook_signed_request"]').val()
-				});
-
-				$this
-					.removeClass('error success')
-					.find('div.errors, div.success').hide();
-
-				// deactivate the form
-				var $submit = $this.find('button[type="submit"]');
-				$submit.prop( 'disabled', true );
-
-				fanclub.login( data, function( errors, response ){
-
-					// reactivate the form
-					$submit.prop( 'disabled', false );
-
-					// remove old error message
-					var $errors = $this.find('div.errors');
-					$errors.empty().hide();
-
-					if( errors ){
-						$this.addClass('error');
-						var $err = $( fanclub.templates.errors({ errors: errors }) );
-						$errors.html( $err ).show();
-						return;
-					}
-
-					$this.addClass('success');
-					var $success = $this.find('div.success');
-					$success.show();
-
-				});
-
-			})
-			.on( 'click.sparkart', '.facebook_login', function( e ){
-
-				var $this = $(this);
-				var $widget = $this.closest('.sparkart.fanclub');
-
-				fanclub.facebookLogin( function( err, result ){
-
-					if( err ) return err;
-
-					$widget.find('form.login')
-						.append('<input name="facebook_signed_request" type="hidden" value="'+ result.authResponse.signedRequest +'" />')
-						.trigger('submit');
-
-				});
-
-			});
-
-			// Bind forgot password subwidget
-			// NOTE: should this be moved elsewhere?
-			$widget
-			.on( 'click.sparkart', 'a[href="#forgot"]', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				var $login = $this.closest('.sparkart.fanclub.login');
-				var $forgot = $login.find('form.forgot');
-
-				$forgot.show();
-
-			})
-			.on( 'click.sparkart', 'a[href="#close"]', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				var $forgot = $this.closest('form.forgot');
-
-				$forgot.hide();
-
-			})
-			.on( 'submit.sparkart', 'form.forgot', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				data = $.extend( data, {
-					email: $this.find('input[name="email"]').val()
-				});
-
-				$this
-					.removeClass('error success')
-					.find('div.errors, div.success').hide();
-
-				// deactivate the form
-				var $submit = $this.find('button[type="submit"]');
-				$submit.prop( 'disabled', true );
-
-				fanclub.post( 'password_reset', data, function( errors, response ){
-
-					// reactivate the form
-					$submit.prop( 'disabled', false );
-
-					// remove old error message
-					var $errors = $this.find('div.errors');
-					$errors.empty().hide();
-
-					if( errors ){
-						$this.addClass('error');
-						var $err = $( fanclub.templates.errors({ errors: errors }) );
-						$errors.html( $err ).show();
-						return;
-					}
-
-					$this.addClass('success');
-					var $success = $this.find('div.success');
-					$success.show();
-
-				});
-
-			});
-
-		}
-
-		// Bind all logout widgets
-		else if( widget === 'logout' ){
-
-			$widget
-			.off( '.sparkart' )
-			.on( 'click.sparkart', 'a[href="#logout"]', function( e ){
-
-				e.preventDefault();
-
-				fanclub.logout( data, function( err ){
-
-					if( err ) return console.log( err );
-
-				});
-
-			});
-
-		}
-
 		// Bind all register widgets
-		else if( widget === 'register' ){
+		if( widget === 'register' ){
 
 			fanclub.facebookSetup();
 
@@ -998,67 +780,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 						});
 
 					});
-
-				});
-
-			});
-
-		}
-
-		else if( widget === 'password_reset' ){
-
-			$widget
-			.off( '.sparkart' )
-			.on( 'submit.sparkart', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				data = $.extend( data, {
-					password: $this.find('input[name="password"]').val(),
-					password_confirmation: $this.find('input[name="password_confirmation"]').val()
-				});
-
-				// extract password reset key
-				var query_bits = location.search.substr(1).split('&');
-				var query = {};
-				for( var i = query_bits.length - 1; i >= 0; i-- ){
-					var bits = query_bits[i].split('=');
-					var key = bits[0];
-					var value = bits[1];
-					query[key] = value;
-				};
-
-				$this
-					.removeClass('error success')
-					.find('div.errors, div.success').hide();
-
-				// deactivate the form
-				var $submit = $this.find('button[type="submit"]');
-				$submit.prop( 'disabled', true );
-
-				fanclub.post( 'password_reset/'+ query.token, data, function( errors ){
-
-					// reactivate the form
-					$submit.prop( 'disabled', false );
-
-					// remove old error message
-					var $errors = $this.find('div.errors');
-					$errors.empty().hide();
-
-					if( errors ){
-						$this.addClass('error');
-						var $err = $( fanclub.templates.errors({ errors: errors }) );
-						$errors.html( $err ).show();
-						return;
-					}
-
-					$this.addClass('success');
-					var $success = $this.find('div.success');
-					$success.show();
-
-					var redirect = fanclub.parameters.redirect.password_reset || data.redirect;
-					if( redirect ) window.location = redirect;
 
 				});
 
