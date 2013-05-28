@@ -1,7 +1,7 @@
 ### 000.003.001
 *TBD*
 
-- [Feature] Remove Login/Logout/Password Reset widgets
+- [Feature] Remove Login and Logout widgets
 
 ### 000.002.002
 *May 24, 2013*

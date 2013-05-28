@@ -548,6 +548,16 @@ describe( 'Fanclub', function(){
 
 		});
 
+		it( 'binds events to a password reset widget', function(){
+
+			var $password_reset_widget = $('<div class="sparkart fanclub password_reset"></div>');
+			fanclub.bindWidget( 'password_reset', $password_reset_widget );
+			var password_reset_widget = $password_reset_widget[0];
+			var data = $.hasData( password_reset_widget ) && $._data( password_reset_widget );
+			assert( data.events.submit.length === 1, 'One submit event is bound' );
+
+		});
+
 		it( 'binds events to a plans widget', function(){
 
 			var $plans_widget = $('<div class="sparkart fanclub plans"></div>');
