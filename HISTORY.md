@@ -1,4 +1,16 @@
-### 000.001.003
+### 000.003.001
+*TBD*
+
+- [Feature] Remove Login and Logout widgets
+
+### 000.002.002
+*May 24, 2013*
+
+- [Bug Fix] Mixpanel tracking doesn't set distinct ID
+
+---
+
+### 000.002.001
 *May 22, 2013*
 
 - [Feature] Add Contest and Contests widgets
