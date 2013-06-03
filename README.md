@@ -44,7 +44,7 @@ If the default fanclub configuration doesn't suffice, it can always be overriden
 ```javascript
 var fanclub = new sparkart.Fanclub( API_KEY, {
 	templates: {
-		logout: '<div><a href="#logout">Logout</a></div>'
+		contest: '<div><h1>Contest!</h1></div>'
 	}
 });
 ```
@@ -53,7 +53,7 @@ The following options are available:
 
 * **templates** - *(object of strings)* - An object containing a list of template names and template contents as strings. See [Custom Templates](https://github.com/SparkartGroupInc/sparkart.js/wiki/Custom-Templates) for more information.
 * **preprocessors** - *(object of functions or array)* - An object containing a list of widget names and preprocessor functions. See [Preprocessors](https://github.com/SparkartGroupInc/sparkart.js/wiki/Preprocessors) for more information.
-* **reload** - *(boolean or object of booleans)* - Determines whether the page reloads after a method or not. Specify a single boolean to set all reload settings at once, or set each reload individually. Things that reload: `login`, `register`, `logout`. Reload is on by default.
+* **reload** - *(boolean or object of booleans)* - Determines whether the page reloads after a method or not. Specify a single boolean to set all reload settings at once, or set each reload individually. Things that reload: `register`. Reload is on by default.
 * **redirect** - *(object of strings)* - Determines where to redirect the customer to after data has been submitted. This can be a relative ('/home') or absolute ('http://google.com') URL.
 
 #### Fanclub Properties
@@ -75,8 +75,6 @@ Most of these properties are not set until after the fanclub finishes loading. I
 
 In order to make generating fanclub markup easier, sparkart.js has a widget system which automatically renders fanclub html. The following widgets are available by default:
 
-- **[login](https://github.com/SparkartGroupInc/sparkart.js/wiki/Login-widget)** - A login form for the fan club.
-- **[logout](https://github.com/SparkartGroupInc/sparkart.js/wiki/Logout-widget)** - A shortcut to log out of the fan club.
 - **[register](https://github.com/SparkartGroupInc/sparkart.js/wiki/Register-widget)** - A registration form for the fan club.
 - **[password_reset](https://github.com/SparkartGroupInc/sparkart.js/wiki/Password-reset-widget)** - The password reset form.
 - **[account](https://github.com/SparkartGroupInc/sparkart.js/wiki/Account-widget)** - A form for editing the current customer's account.
@@ -120,20 +118,6 @@ var fanclub = new sparkart.Fanclub( API_KEY, {
 
 #### Fanclub Methods
 
-##### .logout( data, callback )
-
-- **data** - An object of data to pass to the logout API endpoint. This is used internally to pass redirect parameters.
-- **callback** - A function to be executed after the logout method completes. Gets `err`.
-
-Logs a user out and automatically deletes the Mixpanel cookie (if it exists)
-
-```javascript
-fanclub.logout( function( err ){
-	if( err ) return err;
-	console.log('User successfully logged out!');
-});
-```
-
 ##### .deleteMixpanelCookie()
 
 Deletes the Mixpanel cookie (if it exists)
@@ -144,7 +128,7 @@ fanclub.deleteMixpanelCookie();
 
 ##### .setMixpanelDistinctId( callback )
 
-- **callback** - A function to be executed after the logout method completes. Gets `err`.
+- **callback** - A function to be executed after the setMixpanelDistinctId method completes. Gets `err`.
 
 Grabs the `distinct_id` through the Mixpanel JS API and POSTs it to the server.
 
@@ -177,7 +161,7 @@ fanclub.draw( '#events', {
 
 ##### .get( endpoint, parameters, callback )
 
-- **endpoint** - An API endpoint to get information from. ('logout','account','subscriptions','plans','plans/5','events','orders')
+- **endpoint** - An API endpoint to get information from. ('account','subscriptions','plans','plans/5','events','events/5','orders','contests','contests/5')
 - **parameters** - An object of options for the request. These options are listed on the endpoints for the [Sparkart Fanclubs API](http://fanclubs.sparkart.com/developers)
 - **callback** - A function to be executed after the request finishes
 
@@ -192,19 +176,23 @@ fanclub.get( 'account', function( err, user ){
 
 ##### .post( endpoint, parameters, callback )
 
-- **endpoint** - An API endpoint to get information from. ('login','register')
+- **endpoint** - An API endpoint to post information to. ('account/register','contests/1/enter')
 - **parameters** - An object of options for the request. These options are listed on the endpoints for the [Sparkart Fanclubs API](http://fanclubs.sparkart.com/developers)
 - **callback** - A function to be executed after the request finishes
 
 Posts information to the Fanclubs API.
 
 ```javascript
-fanclub.post( 'login', {
+fanclub.post( 'account/register', {
+	email: 'BJFan68@yahoo.com',
+	birthdate: '1968-01-01',
 	username: 'BJFan68',
-	password: '1234'
+	accept_terms: '1',
+	password: 'BJFan68',
+	password_confirmation: 'BJFan68'
 }, function( err, user ){
 	if( err ) return err;
-	console.log( 'User has logged in!', user );
+	console.log( 'User has registered!', user );
 });
 ```
 
@@ -221,7 +209,7 @@ fanclub.destroy(); // all markup reverts to pre-fanclub state
 Binds a callback function to an event.
 
 ```javascript
-fanclub.on( 'login', function(){ console.log('logged in!'); });
+fanclub.on( 'render', function(){ console.log('rendered!'); });
 ```
 
 ##### .off( event, callback )
@@ -229,8 +217,8 @@ fanclub.on( 'login', function(){ console.log('logged in!'); });
 Unbinds event callbacks. Can unbind a single function, or every function for an event.
 
 ```javascript
-fanclub.off('login'); // unbinds all
-fanclub.off( 'login', myMethod ); // unbinds "myMethod"
+fanclub.off('render'); // unbinds all
+fanclub.off( 'render', myMethod ); // unbinds "myMethod"
 ```
 
 ##### .trigger( event, argument, argument2, argument3... )
@@ -264,14 +252,6 @@ fanclub.on('render', function( $widget ){
 	if( is_my_widget ) console.log('It\'s my widget!');
 });
 ```
-
-##### login
-
-Triggered when a customer logs in
-
-##### logout
-
-Triggered when a customer logs out
 
 ##### register
 
