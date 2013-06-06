@@ -10,7 +10,7 @@ var mixpanel = {
 	get_distinct_id: function(){
 		return mixpanel_distinct_id;
 	}
-}
+};
 
 var customer = {
 	id: 1,
@@ -58,7 +58,14 @@ var mock_responses = {
 					id: 1,
 					name: 'Test Fanclub',
 					tracking: {
-						google_analytics: ['UA-123456-1']
+						development: {
+							google_analytics: [],
+							mixpanel: null
+						},
+						production: {
+							google_analytics: ['UA-123456-1'],
+							mixpanel: null
+						}
 					}
 				}
 			}
@@ -235,39 +242,6 @@ describe( 'Fanclub', function(){
 				done();
 
 			});
-		});
-
-	});
-
-
-	describe( 'setMixpanelDistinctId', function(){
-
-		afterEach( function(){
-			fanclub.destroy();
-		});
-
-		$.mockjax({
-			url: FAKE_API_URL +'/mixpanel/set_distinct_id.json',
-			type: 'POST',
-			data: {
-				key: FAKE_KEY,
-				mixpanel_distinct_id: mixpanel_distinct_id
-			},
-			status: 200,
-			responseText: mock_responses.setMixpanelDistinctId.post.success
-		});
-
-		it( 'POSTs the Mixpanel distinct_id to the server', function( done ){
-
-			fanclub = new sparkart.Fanclub( FAKE_KEY, {
-				api_url: FAKE_API_URL,
-				reload: false
-			});
-
-			fanclub.setMixpanelDistinctId( function( err, data ){
-				done();
-			});
-
 		});
 
 	});
@@ -664,4 +638,58 @@ describe( 'Fanclub', function(){
 
 	});
 
+	describe( 'tracking', function(){
+		it( 'gets fanclub data with tracking data for production', function( done ){
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+			fanclub.on( 'load', function(){
+				assert( !!fanclub.tracking, 'Tracking data exists' );
+				assert( (fanclub.tracking.google_analytics.length == 1), 'Correct environment data is set.' );
+				assert( (fanclub.tracking.mixpanel === null), 'Correct environment data is set.' );
+				fanclub.destroy();
+				done();
+			});
+		});
+
+		it( 'gets fanclub data with tracking data for development', function( done ){
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL, environment: 'development' });
+			fanclub.on( 'load', function(){
+				assert( !!fanclub.tracking, 'Tracking data exists' );
+				assert( (fanclub.tracking.google_analytics.length === 0), 'Correct environment data is set.' );
+				assert( (fanclub.tracking.mixpanel === null), 'Correct environment data is set.' );
+				fanclub.destroy();
+				done();
+			});
+		});
+		
+		describe( 'setMixpanelDistinctId', function(){
+			afterEach( function(){
+				fanclub.destroy();
+			});
+
+			$.mockjax({
+				url: FAKE_API_URL +'/mixpanel/set_distinct_id.json',
+				type: 'POST',
+				data: {
+					key: FAKE_KEY,
+					mixpanel_distinct_id: mixpanel_distinct_id
+				},
+				status: 200,
+				responseText: mock_responses.setMixpanelDistinctId.post.success
+			});
+
+			it( 'POSTs the Mixpanel distinct_id to the server', function( done ){
+
+				fanclub = new sparkart.Fanclub( FAKE_KEY, {
+					api_url: FAKE_API_URL,
+					reload: false
+				});
+
+				fanclub.setMixpanelDistinctId( function( err, data ){
+					done();
+				});
+
+			});
+
+		});
+	});
 });

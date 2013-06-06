@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /* Sparkart.js v000.003.002
    Generated on 2013-06-12 at 16:31:41 */
+=======
+/* Sparkart.js v000.003.001
+   Generated on 2013-06-06 at 12:07:50 */
+>>>>>>> Adding concept of environment to sparkart.js
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -148,7 +153,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 			},
 			redirect: {},
 			api_url: API_URL,
-			facebook: {}
+			facebook: {},
+			environment: 'production'
 		};
 		fanclub.parameters = $.extend( default_parameters, parameters );
 
@@ -221,7 +227,14 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				fanclub.customer = ( response )? response.customer: null;
 				fanclub.authentications = ( fc_response )? fc_response.fanclub.authentications: null;
 				fanclub.name = ( fc_response )? fc_response.fanclub.name: null;
-				fanclub.tracking = fc_response.fanclub.tracking;
+
+				if(fanclub.parameters.environment === "production") {
+					fanclub.tracking = fc_response.fanclub.tracking.production;
+				}
+				else {
+					fanclub.tracking = fc_response.fanclub.tracking.development;
+				}
+
 
 				if( fanclub.tracking.google_analytics.length > 0 ){
 					fanclub.tracking.google_analytics_trackers = [];
