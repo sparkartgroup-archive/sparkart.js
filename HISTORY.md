@@ -1,7 +1,16 @@
+### 000.003.002
+*June 12, 2013*
+
+- [Bug Fix] Use proper arguments for `new Date`
+
+---
+
 ### 000.003.001
-*TBD*
+*June 3, 2013*
 
 - [Feature] Remove Login and Logout widgets
+
+---
 
 ### 000.002.002
 *May 24, 2013*
