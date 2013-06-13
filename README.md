@@ -55,6 +55,7 @@ The following options are available:
 * **preprocessors** - *(object of functions or array)* - An object containing a list of widget names and preprocessor functions. See [Preprocessors](https://github.com/SparkartGroupInc/sparkart.js/wiki/Preprocessors) for more information.
 * **reload** - *(boolean or object of booleans)* - Determines whether the page reloads after a method or not. Specify a single boolean to set all reload settings at once, or set each reload individually. Things that reload: `register`. Reload is on by default.
 * **redirect** - *(object of strings)* - Determines where to redirect the customer to after data has been submitted. This can be a relative ('/home') or absolute ('http://google.com') URL.
+* **environment** - *(string)* - Determines which environment's tracking services to use. If set to `development` will use those instead of production tracking services.
 
 #### Fanclub Properties
 
