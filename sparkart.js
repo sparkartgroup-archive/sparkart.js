@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 /* Sparkart.js v000.003.002
-   Generated on 2013-06-12 at 16:31:41 */
-=======
-/* Sparkart.js v000.003.001
-   Generated on 2013-06-06 at 12:07:50 */
->>>>>>> Adding concept of environment to sparkart.js
+   Generated on 2013-06-13 at 12:49:21 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
