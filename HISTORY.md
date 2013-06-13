@@ -1,3 +1,10 @@
+### 000.004.001
+*June 13, 2013*
+
+- [Feature] Add concept of environment for tracking accounts
+
+---
+
 ### 000.003.002
 *June 12, 2013*
 
