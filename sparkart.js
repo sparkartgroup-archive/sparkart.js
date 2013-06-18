@@ -1,5 +1,5 @@
 /* Sparkart.js v000.004.001
-   Generated on 2013-06-18 at 12:38:41 */
+   Generated on 2013-06-18 at 14:21:33 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -202,7 +202,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		}
 		var templates = fanclub.templates = $.extend( {}, sparkart.Fanclub.templates, parameters.templates );
 		for( var i in templates ){
-			templates[i] = Handlebars.compile( templates[i] );
+			if( typeof templates[i] === 'string' ) templates[i] = Handlebars.compile( templates[i] );
+			else if( typeof templates[i] !== 'function' ) console.error('Template "'+ i +'" is not a string or a template function.')
 		}
 		if( parameters.preprocessors ){
 			for( var key in parameters.preprocessors ){
