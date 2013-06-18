@@ -214,72 +214,85 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		// Draw all widgets
 		// Trigger load event
 		// NOTE: get this down to a single request instead of 2
+		var requests_complete = 0;
+		var account_response, fanclub_response;
+
 		fanclub.get( 'account', function( err, response ){
-			fanclub.get( 'fanclub', function( fc_err, fc_response ){
-				fanclub.customer = ( response )? response.customer: null;
-				fanclub.authentications = ( fc_response )? fc_response.fanclub.authentications: null;
-				fanclub.name = ( fc_response )? fc_response.fanclub.name: null;
-
-				if(fanclub.parameters.environment === "production") {
-					fanclub.tracking = fc_response.fanclub.tracking.production;
-				}
-				else {
-					fanclub.tracking = fc_response.fanclub.tracking.development;
-				}
-
-
-				if( fanclub.tracking.google_analytics.length > 0 ){
-					fanclub.tracking.google_analytics_trackers = [];
-					_gaq = (typeof(_gaq) === 'undefined' ? [] : _gaq);
-
-					var pluginUrl = '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
-
-					$.each( fanclub.tracking.google_analytics, function( i, property_id ){
-						var tracker = "t" + i;
-						fanclub.tracking.google_analytics_trackers.push( tracker );
-
-						_gaq.push([tracker + '._require', 'inpage_linkid', pluginUrl]);
-						_gaq.push([tracker + '._setAccount', property_id]);
-						_gaq.push([tracker + '._setDomainName', window.location.host]);
-						_gaq.push([tracker + '._setAllowLinker', true]);
-						_gaq.push([tracker + '._trackPageview']);
-					});
-
-					(function() {
-						var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-						ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-						var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-					})();
-				}
-
-				if( fanclub.tracking.mixpanel ){
-					(function(c,a){window.mixpanel=a;var b,d,h,e;b=c.createElement("script");
-					b.type="text/javascript";b.async=!0;b.src=("https:"===c.location.protocol?"https:":"http:")+
-					'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';d=c.getElementsByTagName("script")[0];
-					d.parentNode.insertBefore(b,d);a._i=[];a.init=function(b,c,f){function d(a,b){
-					var c=b.split(".");2==c.length&&(a=a[c[0]],b=c[1]);a[b]=function(){a.push([b].concat(
-					Array.prototype.slice.call(arguments,0)))}}var g=a;"undefined"!==typeof f?g=a[f]=[]:
-					f="mixpanel";g.people=g.people||[];h=['disable','track','track_pageview','track_links',
-					'track_forms','register','register_once','unregister','identify','alias','name_tag','set_config',
-					'people.set','people.set_once','people.increment','people.track_charge','people.append'];
-					for(e=0;e<h.length;e++)d(g,h[e]);a._i.push([b,c,f])};a.__SV=1.2;})(document,window.mixpanel||[]);
-
-					mixpanel.init(fanclub.tracking.mixpanel, {
-						store_google: true,
-						save_referrer: true,
-						loaded: function(){
-							fanclub.setMixpanelDistinctId();
-						}
-					});
-				}
-
-				// draw all widgets
-				fanclub.draw( function(){
-					fanclub.trigger('load');
-					fanclub.loaded = true;
-				});
-			});
+			requests_complete++;
+			account_response = response;
+			if( requests_complete >= 2 ) drawWidgets();
 		});
+
+		fanclub.get( 'fanclub', function( err, response ){
+			requests_complete++;
+			fanclub_response = response;
+			if( requests_complete >= 2 ) drawWidgets();
+		});
+
+		var drawWidgets = function(){
+			requests_complete = 0;
+			fanclub.customer = ( account_response )? account_response.customer: null;
+			fanclub.authentications = ( fanclub_response )? fanclub_response.fanclub.authentications: null;
+			fanclub.name = ( fanclub_response )? fanclub_response.fanclub.name: null;
+
+			if(fanclub.parameters.environment === "production") {
+				fanclub.tracking = fanclub_response.fanclub.tracking.production;
+			}
+			else {
+				fanclub.tracking = fanclub_response.fanclub.tracking.development;
+			}
+
+			if( fanclub.tracking.google_analytics.length > 0 ){
+				fanclub.tracking.google_analytics_trackers = [];
+				_gaq = (typeof(_gaq) === 'undefined' ? [] : _gaq);
+
+				var pluginUrl = '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+
+				$.each( fanclub.tracking.google_analytics, function( i, property_id ){
+					var tracker = "t" + i;
+					fanclub.tracking.google_analytics_trackers.push( tracker );
+
+					_gaq.push([tracker + '._require', 'inpage_linkid', pluginUrl]);
+					_gaq.push([tracker + '._setAccount', property_id]);
+					_gaq.push([tracker + '._setDomainName', window.location.host]);
+					_gaq.push([tracker + '._setAllowLinker', true]);
+					_gaq.push([tracker + '._trackPageview']);
+				});
+
+				(function() {
+					var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+					ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+					var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+				})();
+			}
+
+			if( fanclub.tracking.mixpanel ){
+				(function(c,a){window.mixpanel=a;var b,d,h,e;b=c.createElement("script");
+				b.type="text/javascript";b.async=!0;b.src=("https:"===c.location.protocol?"https:":"http:")+
+				'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';d=c.getElementsByTagName("script")[0];
+				d.parentNode.insertBefore(b,d);a._i=[];a.init=function(b,c,f){function d(a,b){
+				var c=b.split(".");2==c.length&&(a=a[c[0]],b=c[1]);a[b]=function(){a.push([b].concat(
+				Array.prototype.slice.call(arguments,0)))}}var g=a;"undefined"!==typeof f?g=a[f]=[]:
+				f="mixpanel";g.people=g.people||[];h=['disable','track','track_pageview','track_links',
+				'track_forms','register','register_once','unregister','identify','alias','name_tag','set_config',
+				'people.set','people.set_once','people.increment','people.track_charge','people.append'];
+				for(e=0;e<h.length;e++)d(g,h[e]);a._i.push([b,c,f])};a.__SV=1.2;})(document,window.mixpanel||[]);
+
+				mixpanel.init(fanclub.tracking.mixpanel, {
+					store_google: true,
+					save_referrer: true,
+					loaded: function(){
+						fanclub.setMixpanelDistinctId();
+					}
+				});
+			}
+
+			// draw all widgets
+			fanclub.draw( function(){
+				fanclub.trigger('load');
+				fanclub.loaded = true;
+			});
+		};
 
 	};
 
