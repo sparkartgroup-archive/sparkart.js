@@ -1,3 +1,10 @@
+### 000.004.002
+*June 13, 2013*
+
+- [Clean Up] Remove references to 'registered' field
+
+---
+
 ### 000.004.001
 *June 13, 2013*
 
