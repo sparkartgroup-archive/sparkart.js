@@ -226,6 +226,7 @@ this.sparkart = {};
 					loaded: function(){
 						if( fanclub.customer ){
 							mixpanel.identify(fanclub.customer.id);
+							fanclub.clearMixpanelDistinctId();
 						} else {
 							fanclub.setMixpanelDistinctId();
 						}
@@ -282,6 +283,22 @@ this.sparkart = {};
 		};
 
 		this.post( 'mixpanel/set_distinct_id', data, function( err, response ){
+
+			if( err ){
+				if( callback ) callback( err );
+				return;
+			}
+
+			if( callback ) callback( null, response );
+
+		});
+
+	};
+
+	// clears the mixpanel distinct_id from the session
+	Fanclub.prototype.clearMixpanelDistinctId = function( callback ){
+
+		this.post( 'mixpanel/clear_distinct_id', {}, function( err, response ){
 
 			if( err ){
 				if( callback ) callback( err );

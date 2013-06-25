@@ -29,6 +29,13 @@ var mock_responses = {
 			}
 		}
 	},
+	clearMixpanelDistinctId: {
+		post: {
+			success: {
+				status: 'ok'
+			}
+		}
+	},
 	account: {
 		get: {
 			success: {
@@ -600,7 +607,7 @@ describe( 'Fanclub', function(){
 				done();
 			});
 		});
-		
+
 		describe( 'setMixpanelDistinctId', function(){
 			afterEach( function(){
 				fanclub.destroy();
@@ -629,7 +636,35 @@ describe( 'Fanclub', function(){
 				});
 
 			});
+		});
 
+		describe( 'clearMixpanelDistinctId', function(){
+			afterEach( function(){
+				fanclub.destroy();
+			});
+
+			$.mockjax({
+				url: FAKE_API_URL +'/mixpanel/clear_distinct_id.json',
+				type: 'POST',
+				data: {
+					key: FAKE_KEY,
+				},
+				status: 200,
+				responseText: mock_responses.clearMixpanelDistinctId.post.success
+			});
+
+			it( 'clears the Mixpanel distinct_id from the session', function( done ){
+
+				fanclub = new sparkart.Fanclub( FAKE_KEY, {
+					api_url: FAKE_API_URL,
+					reload: false
+				});
+
+				fanclub.clearMixpanelDistinctId( function( err, data ){
+					done();
+				});
+
+			});
 		});
 	});
 });
