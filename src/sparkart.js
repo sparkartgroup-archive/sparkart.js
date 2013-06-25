@@ -224,7 +224,11 @@ this.sparkart = {};
 					store_google: true,
 					save_referrer: true,
 					loaded: function(){
-						fanclub.setMixpanelDistinctId();
+						if( fanclub.customer ){
+							mixpanel.identify(fanclub.customer.id);
+						} else {
+							fanclub.setMixpanelDistinctId();
+						}
 					}
 				});
 			}

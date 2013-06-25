@@ -1,5 +1,12 @@
-### 000.004.002
-*June 25, 2013*
+### 000.005.002
+*June 27, 2013*
+
+- [Bug Fix] Properly Identify User when Mixpanel Initializes
+
+---
+
+### 000.005.001
+*June 26, 2013*
 
 - [Clean Up] Remove references to 'registered' field
 - [Clean Up] Remove Registration Widget

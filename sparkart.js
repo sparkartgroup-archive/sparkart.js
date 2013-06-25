@@ -1,5 +1,5 @@
 /* Sparkart.js v000.005.001
-   Generated on 2013-06-26 at 20:17:00 */
+   Generated on 2013-06-26 at 18:06:07 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -227,7 +227,11 @@ this.sparkart = {};
 					store_google: true,
 					save_referrer: true,
 					loaded: function(){
-						fanclub.setMixpanelDistinctId();
+						if( fanclub.customer ){
+							mixpanel.identify(fanclub.customer.id);
+						} else {
+							fanclub.setMixpanelDistinctId();
+						}
 					}
 				});
 			}
