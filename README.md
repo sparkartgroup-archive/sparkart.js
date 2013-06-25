@@ -53,7 +53,6 @@ The following options are available:
 
 * **templates** - *(object of strings/functions)* - An object containing a list of template names and template contents as strings or [precompiled Handlebars templates](http://handlebarsjs.com/precompilation.html). See [Custom Templates](https://github.com/SparkartGroupInc/sparkart.js/wiki/Custom-Templates) for more information.
 * **preprocessors** - *(object of functions or array)* - An object containing a list of widget names and preprocessor functions. See [Preprocessors](https://github.com/SparkartGroupInc/sparkart.js/wiki/Preprocessors) for more information.
-* **reload** - *(boolean or object of booleans)* - Determines whether the page reloads after a method or not. Specify a single boolean to set all reload settings at once, or set each reload individually. Things that reload: `register`. Reload is on by default.
 * **redirect** - *(object of strings)* - Determines where to redirect the customer to after data has been submitted. This can be a relative ('/home') or absolute ('http://google.com') URL.
 * **environment** - *(string)* - Determines which environment's tracking services to use. If set to `development` will use those instead of production tracking services.
 
@@ -76,7 +75,6 @@ Most of these properties are not set until after the fanclub finishes loading. I
 
 In order to make generating fanclub markup easier, sparkart.js has a widget system which automatically renders fanclub html. The following widgets are available by default:
 
-- **[register](https://github.com/SparkartGroupInc/sparkart.js/wiki/Register-widget)** - A registration form for the fan club.
 - **[password_reset](https://github.com/SparkartGroupInc/sparkart.js/wiki/Password-reset-widget)** - The password reset form.
 - **[account](https://github.com/SparkartGroupInc/sparkart.js/wiki/Account-widget)** - A form for editing the current customer's account.
 - **[customer](https://github.com/SparkartGroupInc/sparkart.js/wiki/Customer-widget)** - The current customer's information.
@@ -253,10 +251,6 @@ fanclub.on('render', function( $widget ){
 	if( is_my_widget ) console.log('It\'s my widget!');
 });
 ```
-
-##### register
-
-Triggered when a customer registers
 
 ## Building the script
 
