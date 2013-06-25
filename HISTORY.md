@@ -1,7 +1,8 @@
 ### 000.004.002
-*June 13, 2013*
+*June 25, 2013*
 
 - [Clean Up] Remove references to 'registered' field
+- [Clean Up] Remove Registration Widget
 
 ---
 
@@ -22,7 +23,7 @@
 ### 000.003.001
 *June 3, 2013*
 
-- [Feature] Remove Login and Logout widgets
+- [Clean Up] Remove Login and Logout widgets
 
 ---
 
