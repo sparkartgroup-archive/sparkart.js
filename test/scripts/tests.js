@@ -18,7 +18,6 @@ var customer = {
 	last_name: 'User',
 	email: 'test@sparkart.com',
 	fanclub_id: 1,
-	registered: true,
 	subscription: {}
 };
 
