@@ -22,14 +22,6 @@ var customer = {
 };
 
 var mock_responses = {
-	register: {
-		post: {
-			success: {
-				status: 'ok',
-				customer: customer
-			}
-		}
-	},
 	setMixpanelDistinctId: {
 		post: {
 			success: {
@@ -201,46 +193,6 @@ describe( 'Fanclub', function(){
 			assert( !!fanclub.name, 'Fanclub data exists' );
 			fanclub.destroy();
 			done();
-		});
-
-	});
-
-	describe( 'register', function(){
-
-		afterEach( function(){
-			fanclub.destroy();
-		});
-
-		$.mockjax({
-			url: FAKE_API_URL +'/account/register.json',
-			type: 'POST',
-			data: {
-				key: FAKE_KEY
-			},
-			status: 200,
-			responseText: mock_responses.register.post.success
-		});
-
-		it( 'registers a user', function( done ){
-
-			fanclub = new sparkart.Fanclub( FAKE_KEY, {
-				api_url: FAKE_API_URL,
-				reload: false
-			});
-			fanclub.register({
-				first_name: 'Test',
-				last_name: 'User',
-				birthdate: '01-01-1970',
-				email: 'test@sparkart.com',
-				password: 'test',
-				password_confirmation: 'test',
-				accept_terms: true
-			}, function( err, data ){
-
-				assert( !!data.customer, 'Returns customer object' );
-				done();
-
-			});
 		});
 
 	});
@@ -497,17 +449,6 @@ describe( 'Fanclub', function(){
 
 		beforeEach( function(){
 			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
-		});
-
-
-		it( 'binds events to a register widget', function(){
-
-			var $register_widget = $('<div class="sparkart fanclub register"></div>');
-			fanclub.bindWidget( 'register', $register_widget );
-			var register_widget = $register_widget[0];
-			var data = $.hasData( register_widget ) && $._data( register_widget );
-			assert( data.events.submit.length === 1, 'One submit event is bound' );
-
 		});
 
 		it( 'binds events to an account widget', function(){
