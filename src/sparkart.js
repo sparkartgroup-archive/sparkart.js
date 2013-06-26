@@ -5,41 +5,6 @@ this.sparkart = {};
 (function( $, Handlebars ){
 
 //
-// HANDLEBARS HELPERS
-////////////////////////////////////////////////////////////////////////////////
-//
-
-Handlebars.registerHelper( 'birthdate_selector', function(){
-
-	// create markup for birthdate picker
-	var birth_month = '<select name="birth_month">';
-	for( var i in MONTHS ) birth_month += '<option value="'+ ( parseInt(i)+1 ) +'">'+ MONTHS[i] +'</option>';
-	birth_month +='</select>';
-
-	var birth_day = '<select name="birth_day">';
-	var day = 1;
-	while( day <= 31 ){
-		birth_day += '<option value="'+ day +'">'+ day +'</option>';
-		day++;
-	}
-	birth_day += '</select>';
-
-	var birth_year = '<select name="birth_year">';
-	var current_year = new Date().getFullYear();
-	var year = current_year - 115;
-	while( year <= current_year ){
-		birth_year += ( year === current_year - 18 )
-			? '<option value="'+ year +'" selected="selected">'+ year +'</option>'
-			: '<option value="'+ year +'">'+ year +'</option>';
-		year++;
-	}
-	birth_year += '</select>';
-
-	return birth_month + birth_day + birth_year;
-
-});
-
-//
 // PRIVATE VARIABLES AND METHODS
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -128,21 +93,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		parameters = parameters || {};
 
 		// Set the reload options
-		if( typeof parameters.reload === 'boolean' ){
-			parameters.reload = {
-				login: parameters.reload,
-				logout: parameters.reload,
-				register: parameters.reload,
-				password_reset: parameters.password_reset
-			};
-		}
 		var default_parameters = {
-			reload: {
-				login: true,
-				logout: true,
-				register: true,
-				password_reset: true
-			},
 			redirect: {},
 			api_url: API_URL,
 			facebook: {},
@@ -181,16 +132,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 				});
 				return data;
 			} ],
-			register: [ function( data ){
-
-				// determine if we need to show the username field
-				if( data.customer ){
-					if( data.customer.username === null ) data.customer.username_required = true;
-					else data.customer.username_required === false;
-				}
-
-				return data;
-			} ]
 		};
 		if( parameters.templates ){
 			for( var name in parameters.templates ){
@@ -304,31 +245,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 // Many methods rely on and use each other
 //
 
-	// register the user
-	Fanclub.prototype.register = function( data, callback ){
-
-		var fanclub = this;
-		data = data || {};
-
-		this.post( 'account/register', data, function( err, response ){
-
-			if( err ){
-				if( callback ) callback( err );
-				return;
-			}
-
-			if( callback ) callback( null, response );
-
-			fanclub.trigger( 'register', response.customer );
-			fanclub.customer = response.customer;
-			var redirect = fanclub.parameters.redirect.register || data.redirect
-			if( redirect ) window.location = redirect;
-			else if( fanclub.parameters.reload.register ) location.reload();
-
-		});
-
-	};
-
 	// deletes the Mixpanel cookie -- forcing it to
 	// create a new distinct_id for the next user
 	Fanclub.prototype.deleteMixpanelCookie = function(){
@@ -427,7 +343,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		else if( $widget.is('.events') ) widget = 'events';
 		else if( $widget.is('.event') ) widget = 'event';
 		else if( $widget.is('.receipt') ) widget = 'receipt';
-		else if( $widget.is('.register') ) widget = 'register';
 		else if( $widget.is('.account') ) widget = 'account';
 		else if( $widget.is('.customer') ) widget = 'customer';
 		else if( $widget.is('.password_reset') ) widget = 'password_reset';
@@ -468,7 +383,7 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		var fanclub = this;
 
 		// Special cases that use the "account" endpoint
-		if( widget === 'register' || widget === 'customer' || widget === 'account'){
+		if( widget === 'customer' || widget === 'account'){
 			this.get( 'account', function( err, response ){
 
 				if( err ) response = {};
@@ -488,7 +403,6 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 						};
 					}
 				}
-				if( widget === 'register' ) response.terms_url = fanclub.parameters.api_url +'/terms?key='+ fanclub.key;
 
 				// run preprocessors
 				var preprocessors = fanclub.preprocessors[widget];
@@ -634,104 +548,8 @@ Handlebars.registerHelper( 'birthdate_selector', function(){
 		var fanclub = this;
 		var data = $widget.data();
 
-		// Bind all register widgets
-		if( widget === 'register' ){
-
-			fanclub.facebookSetup();
-
-			$widget
-			.off( '.sparkart' )
-			.on( 'submit.sparkart', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				var $birth_day = $this.find('select[name="birth_day"]');
-				var $birth_month = $this.find('select[name="birth_month"]');
-				var $birth_year = $this.find('select[name="birth_year"]');
-				var birthdate = $birth_day.val() +'-'+ $birth_month.val() +'-'+ $birth_year.val();
-				data = $.extend( data, {
-					username: $this.find('input[name="username"]').val(),
-					first_name: $this.find('input[name="first_name"]').val(),
-					last_name: $this.find('input[name="last_name"]').val(),
-					username: $this.find('input[name="username"]').val(),
-					birthdate: birthdate,
-					email: $this.find('input[name="email"]').val(),
-					password: $this.find('input[name="password"]').val(),
-					password_confirmation: $this.find('input[name="password_confirmation"]').val(),
-					accept_terms: $this.find('input[name="accept_terms"]').prop('checked'),
-					facebook_signed_request: $this.find('input[name="facebook_signed_request"]').val()
-				});
-
-				$this
-					.removeClass('error success')
-					.find('div.errors, div.success').hide();
-
-				// deactivate the form
-				var $submit = $this.find('button[type="submit"]');
-				$submit.prop( 'disabled', true );
-
-				fanclub.register( data, function( errors, response ){
-
-					// reactivate the form
-					$submit.prop( 'disabled', false );
-
-					// remove old error message
-					var $errors = $this.find('div.errors');
-					$errors.empty().hide();
-
-					if( errors ){
-						$this.addClass('error');
-						var $err = $( fanclub.templates.errors({ errors: errors }) );
-						$errors.html( $err ).show();
-						return;
-					}
-
-					$this.addClass('success');
-					var $success = $this.find('div.success');
-					$success.show();
-
-				});
-
-			})
-			.on( 'click.sparkart', '.facebook_register', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				var $widget = $this.closest('.sparkart.fanclub');
-
-				fanclub.facebookLogin( function( err, result ){
-
-					if( err ) return console.log( err );
-
-					$widget.find('input[name="email"]').val( result.email );
-					$widget.find('input[name="first_name"]').val( result.first_name );
-					$widget.find('input[name="last_name"]').val( result.last_name );
-					$widget.find('form').append('<input name="facebook_signed_request" type="hidden" value="'+ result.authResponse.signedRequest +'" />');
-					$widget.find('input[name="password"], input[name="password_confirmation"]').prop( 'disabled', true );
-
-					if( result.birthday ){
-
-						var birthday_bits = result.birthday.split('/');
-						var birth_month = birthday_bits[0];
-						var birth_day = birthday_bits[1];
-						var birth_year = birthday_bits[2];
-
-						$widget.find(':input[name="birth_month"]').val( parseInt( birth_month, 10 ) );
-						$widget.find(':input[name="birth_day"]').val( parseInt( birth_day, 10 ) );
-						$widget.find(':input[name="birth_year"]').val( birth_year );
-
-					}
-
-				});
-
-			});
-
-		}
-
 		// Bind all account widgets
-		else if( widget === 'account' ){
+		if( widget === 'account' ){
 
 			fanclub.facebookSetup();
 
