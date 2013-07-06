@@ -16,7 +16,7 @@ this.sparkart = {};
 	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan'];
 
 	// Widgets that require the user to be logged in to render anything
-	var LOGGED_IN_WIDGETS = ['account', 'affiliates', 'customer', 'order', 'orders', 'subscription', 'subscription'];
+	var LOGGED_IN_WIDGETS = ['account', 'affiliates', 'customer', 'order', 'orders', 'receipt', 'subscription', 'subscription'];
 
 	// Constants for use inside convertDate()
 	var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];

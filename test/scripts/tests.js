@@ -36,6 +36,14 @@ var mock_responses = {
 			}
 		}
 	},
+	account_status_logged_in: {
+		get: {
+			success: {
+				status: 'ok',
+				logged_in: true
+			}
+		}
+	},
 	account: {
 		get: {
 			success: {
@@ -113,6 +121,12 @@ $.mockjaxSettings = {
 describe( 'Fanclub', function(){
 
 	var fanclub;
+
+	$.mockjax({
+		url: FAKE_API_URL +'/account/status.json',
+		status: 200,
+		responseText: mock_responses.account_status_logged_in.get.success
+	});
 
 	$.mockjax({
 		url: FAKE_API_URL +'/account.json',
@@ -389,6 +403,72 @@ describe( 'Fanclub', function(){
 			$.mockjaxClear( plans_mock );
 
 		});
+
+		before( function(){
+
+			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
+
+		});
+
+		describe( 'does not render widget when not logged in', function(){
+
+			it( 'does not render the account widget' , function( done ){
+
+				fanclub.logged_in = false;
+				fanclub.renderWidget( 'account', {}, function( err, html ){
+					assert( !html, 'HTML is blank' );
+					done();
+				});
+
+			});
+
+			it( 'does not render the customer widget' , function( done ){
+
+				fanclub.logged_in = false;
+				fanclub.renderWidget( 'customer', {}, function( err, html ){
+					assert( !html, 'HTML is blank' );
+					done();
+				});
+
+			});
+
+			it( 'does not render the affiliates widget' , function( done ){
+
+				fanclub.logged_in = false;
+				fanclub.renderWidget( 'affiliates', {}, function( err, html ){
+					assert( !html, 'HTML is blank' );
+					done();
+				});
+
+			});
+
+			it( 'does not render the orders widget' , function( done ){
+
+				fanclub.logged_in = false;
+				fanclub.renderWidget( 'orders', {}, function( err, html ){
+					assert( !html, 'HTML is blank' );
+					done();
+				});
+
+			});
+
+			it( 'does not render the subscription widget' , function( done ){
+
+				fanclub.logged_in = false;
+				fanclub.renderWidget( 'subscription', {}, function( err, html ){
+					assert( !html, 'HTML is blank' );
+					done();
+				});
+
+			});
+
+		});
+		after( function(){
+
+			fanclub.destroy();
+
+		});
+
 
 	});
 
