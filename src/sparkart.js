@@ -15,6 +15,9 @@ this.sparkart = {};
 	// Use correct endpoints in fanclub.get()
 	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan'];
 
+	// Widgets that require the user to be logged in to render anything
+	var LOGGED_IN_WIDGETS = ['account', 'affiliates', 'customer', 'order', 'orders', 'subscription', 'subscription'];
+
 	// Constants for use inside convertDate()
 	var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 	var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -155,14 +158,28 @@ this.sparkart = {};
 		// Fetch initial data from the API
 		// Draw all widgets
 		// Trigger load event
-		// NOTE: get this down to a single request instead of 2
+		// NOTE: get this down to a single request instead of 2 or 3
 		var requests_complete = 0;
 		var account_response, fanclub_response;
 
-		fanclub.get( 'account', function( err, response ){
-			requests_complete++;
-			account_response = response;
-			if( requests_complete >= 2 ) drawWidgets();
+		// Check login status, so we can short-circuit other API requests if logged out
+		fanclub.get( 'account/status', function( err, response ){
+			fanclub.logged_in = response.logged_in;
+
+			if( fanclub.logged_in ){
+
+				fanclub.get( 'account', function( err, response ){
+					requests_complete++;
+					account_response = response;
+					if( requests_complete >= 2 ) drawWidgets();
+				});
+
+			} else {
+
+				requests_complete++;
+				if( requests_complete >= 2 ) drawWidgets();
+
+			}
 		});
 
 		fanclub.get( 'fanclub', function( err, response ){
@@ -170,6 +187,8 @@ this.sparkart = {};
 			fanclub_response = response;
 			if( requests_complete >= 2 ) drawWidgets();
 		});
+
+
 
 		var drawWidgets = function(){
 			requests_complete = 0;
@@ -402,6 +421,16 @@ this.sparkart = {};
 	Fanclub.prototype.renderWidget = function( widget, config, callback ){
 
 		var fanclub = this;
+
+		// Skip API request and render nothing for certain widgets if not logged in
+		if( !fanclub.logged_in ){
+			if( $.inArray( widget, LOGGED_IN_WIDGETS ) >= 0 ){
+				var html = "";
+
+				if( callback ) callback( null, html );
+				return;
+			}
+		}
 
 		// Special cases that use the "account" endpoint
 		if( widget === 'customer' || widget === 'account'){
