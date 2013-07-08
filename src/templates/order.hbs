@@ -27,7 +27,8 @@
 	<ul class="shipments">
 	{{#shipments}}
 		<li>
-			{{#tracking_number}}<var class="tracking">{{.}}</var>{{/tracking_number}}
+			{{#status}}<span class="status">{{.}}</span>{{/status}}
+			{{#tracking_url}}<var class="tracking"><a href="{{.}}">Tracking URL</a></var>{{/tracking_url}}
 			<div class="shipping">
 				<h6>Shipped To</h6>
 				{{#shipping_address}}
@@ -38,7 +39,6 @@
 				</ul>
 				{{/shipping_address}}
 			</div>
-			{{#ship_date}}<span class="shipped">Shipped On <var class="date">{{.}}</var></span>{{/ship_date}}
 			<ul class="items">
 			{{#items}}
 				<li>
