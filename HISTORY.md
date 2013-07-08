@@ -1,5 +1,5 @@
 ### 000.005.002
-*June 27, 2013*
+*July 8, 2013*
 
 - [Bug Fix] Properly Identify User when Mixpanel Initializes
 
