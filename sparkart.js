@@ -1,5 +1,5 @@
 /* Sparkart.js v000.006.001
-   Generated on 2013-07-08 at 16:03:56 */
+   Generated on 2013-07-08 at 16:58:01 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -426,25 +426,23 @@ this.sparkart = {};
 		var fanclub = this;
 
 		// Skip API request for certain widgets if not logged in
-		if( !fanclub.logged_in ){
-			if( $.inArray( widget, LOGGED_IN_WIDGETS ) >= 0 ){
-				var response = {};
+		if( !fanclub.logged_in && $.inArray( widget, LOGGED_IN_WIDGETS ) >= 0 ){
+			var response = {};
 
-				// run preprocessors
-				var preprocessors = fanclub.preprocessors[widget];
-				if( preprocessors ){
-					$( preprocessors ).each( function( i, preprocessor ){
-						response = preprocessor( response );
-					});
-				}
-
-				if( callback ) callback( null, fanclub.templates[widget]( response ) );
-				return;
+			// run preprocessors
+			var preprocessors = fanclub.preprocessors[widget];
+			if( preprocessors ){
+				$( preprocessors ).each( function( i, preprocessor ){
+					response = preprocessor( response );
+				});
 			}
+
+			if( callback ) callback( null, fanclub.templates[widget]( response ) );
+			return;
 		}
 
 		// Special cases that use the "account" endpoint
-		if( widget === 'customer' || widget === 'account'){
+		else if( widget === 'customer' || widget === 'account'){
 			this.get( 'account', function( err, response ){
 
 				if( err ) response = {};
@@ -495,6 +493,8 @@ this.sparkart = {};
 
 			// all other widgets use their own endpoints
 			this.get( widget, config, function( err, response ){
+				//console.log([err, response])
+				//console.log(callback(err))
 
 				if( err ) return callback( err );
 

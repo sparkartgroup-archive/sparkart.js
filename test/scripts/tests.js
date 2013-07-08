@@ -111,6 +111,30 @@ var mock_responses = {
 				}]
 			}
 		}
+	},
+	plan1: {
+		get: {
+			success: {
+				status: 'ok',
+				plan: {
+					name: 'Free',
+				    class: 'free',
+				    description: '',
+				    online_benefits: '',
+				    duration: null,
+				    display_price: 'Free',
+				    upgrade_price: null,
+				    price: 0,
+				    checkout: 'http://services.sparkart.net/consumer/checkout/1',
+				    annotations: '',
+				    current: false,
+				    upgrade: false,
+				    renewal: false,
+				    available_to_customer: true,
+				    package: { }
+				}
+			}
+		}
 	}
 };
 
@@ -404,19 +428,41 @@ describe( 'Fanclub', function(){
 
 		});
 
+		var plan1_mock;
+
 		before( function(){
 
 			fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
 
+			plan1_mock = $.mockjax({
+				url: FAKE_API_URL +'/plans/1.json',
+				data: {
+					key: FAKE_KEY
+				},
+				status: 200,
+				responseText: mock_responses.plan1.get.success
+			});
+
 		});
 
-		describe( 'does not render widget when not logged in', function(){
+		describe( 'widgets when not logged in', function(){
 
 			it( 'does not render the account widget' , function( done ){
 
 				fanclub.logged_in = false;
 				fanclub.renderWidget( 'account', {}, function( err, html ){
 					assert( !html, 'HTML is blank' );
+					done();
+				});
+
+			});
+
+			it( 'does render the contests widget' , function( done ){
+
+				fanclub.logged_in = false;
+				fanclub.renderWidget( 'contests', {}, function( err, html ){
+					assert( !!html, 'HTML is not blank' );
+					assert( !err, 'There are no errors' );
 					done();
 				});
 
@@ -442,11 +488,34 @@ describe( 'Fanclub', function(){
 
 			});
 
-			it( 'does not render the orders widget' , function( done ){
+			it( 'does render the events widget' , function( done ){
+
+				fanclub.logged_in = false;
+				fanclub.renderWidget( 'events', {}, function( err, html ){
+					assert( !!html, 'HTML is not blank' );
+					assert( !err, 'There are no errors' );
+					done();
+				});
+
+			});
+
+			it( 'does render the orders widget' , function( done ){
 
 				fanclub.logged_in = false;
 				fanclub.renderWidget( 'orders', {}, function( err, html ){
-					assert( !html, 'HTML is blank' );
+					assert( !!html, 'HTML is not blank' );
+					assert( !err, 'There are no errors' );
+					done();
+				});
+
+			});
+
+			it( 'does render the plans widget' , function( done ){
+
+				fanclub.logged_in = false;
+				fanclub.renderWidget( 'plans', {id: '1'}, function( err, html ){
+					assert( !!html, 'HTML is not blank' );
+					assert( !err, 'There are no errors' );
 					done();
 				});
 
@@ -466,6 +535,7 @@ describe( 'Fanclub', function(){
 		after( function(){
 
 			fanclub.destroy();
+			$.mockjaxClear( plan1_mock );
 
 		});
 
