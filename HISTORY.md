@@ -1,3 +1,10 @@
+### 000.006.001
+*TBA*
+
+- [Feature] Check login status before sending API requests
+
+---
+
 ### 000.005.003
 *July 8, 2013*
 

@@ -16,7 +16,7 @@ this.sparkart = {};
 	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan'];
 
 	// Widgets that require the user to be logged in to render anything
-	var LOGGED_IN_WIDGETS = ['account', 'affiliates', 'customer', 'order', 'orders', 'receipt', 'subscription', 'subscription'];
+	var LOGGED_IN_WIDGETS = ['account', 'affiliates', 'customer', 'order', 'orders', 'receipt', 'subscriptions'];
 
 	// Constants for use inside convertDate()
 	var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -422,12 +422,20 @@ this.sparkart = {};
 
 		var fanclub = this;
 
-		// Skip API request and render nothing for certain widgets if not logged in
+		// Skip API request for certain widgets if not logged in
 		if( !fanclub.logged_in ){
 			if( $.inArray( widget, LOGGED_IN_WIDGETS ) >= 0 ){
-				var html = "";
+				var response = {};
 
-				if( callback ) callback( null, html );
+				// run preprocessors
+				var preprocessors = fanclub.preprocessors[widget];
+				if( preprocessors ){
+					$( preprocessors ).each( function( i, preprocessor ){
+						response = preprocessor( response );
+					});
+				}
+
+				if( callback ) callback( null, fanclub.templates[widget]( response ) );
 				return;
 			}
 		}
