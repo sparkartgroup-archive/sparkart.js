@@ -1,5 +1,5 @@
 /* Sparkart.js v000.006.001
-   Generated on 2013-07-08 at 16:58:01 */
+   Generated on 2013-07-08 at 17:11:23 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -18,7 +18,7 @@ this.sparkart = {};
 	// Use correct endpoints in fanclub.get()
 	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan'];
 
-	// Widgets that require the user to be logged in to render anything
+	// Widgets that require the user to be logged in to make an API request
 	var LOGGED_IN_WIDGETS = ['account', 'affiliates', 'customer', 'order', 'orders', 'receipt', 'subscriptions'];
 
 	// Constants for use inside convertDate()
@@ -427,6 +427,7 @@ this.sparkart = {};
 
 		// Skip API request for certain widgets if not logged in
 		if( !fanclub.logged_in && $.inArray( widget, LOGGED_IN_WIDGETS ) >= 0 ){
+
 			var response = {};
 
 			// run preprocessors
@@ -438,7 +439,7 @@ this.sparkart = {};
 			}
 
 			if( callback ) callback( null, fanclub.templates[widget]( response ) );
-			return;
+
 		}
 
 		// Special cases that use the "account" endpoint
@@ -493,8 +494,6 @@ this.sparkart = {};
 
 			// all other widgets use their own endpoints
 			this.get( widget, config, function( err, response ){
-				//console.log([err, response])
-				//console.log(callback(err))
 
 				if( err ) return callback( err );
 

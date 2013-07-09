@@ -452,6 +452,7 @@ describe( 'Fanclub', function(){
 				fanclub.logged_in = false;
 				fanclub.renderWidget( 'account', {}, function( err, html ){
 					assert( !html, 'HTML is blank' );
+					assert( !err, 'There are no errors' );
 					done();
 				});
 
@@ -473,6 +474,7 @@ describe( 'Fanclub', function(){
 				fanclub.logged_in = false;
 				fanclub.renderWidget( 'customer', {}, function( err, html ){
 					assert( !html, 'HTML is blank' );
+					assert( !err, 'There are no errors' );
 					done();
 				});
 
@@ -483,6 +485,7 @@ describe( 'Fanclub', function(){
 				fanclub.logged_in = false;
 				fanclub.renderWidget( 'affiliates', {}, function( err, html ){
 					assert( !html, 'HTML is blank' );
+					assert( !err, 'There are no errors' );
 					done();
 				});
 
