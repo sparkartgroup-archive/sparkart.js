@@ -6,7 +6,7 @@
 		<span class="customer">Customer ID: <var>{{customer_id}}</var></span>
 		<ul class="dates">
 			{{#paid_at}}
-			<li class="paid">Paid <var class="date">{{.}}</var></li>
+			<li class="paid">Paid on <var class="date">{{.}}</var></li>
 			{{/paid_at}}
 			{{#refunded_at}}
 			<li class="refunded">Refunded <var class="refunded">{{.}}</var></li>
@@ -16,29 +16,28 @@
 	{{#billing_address}}
 	<div class="billing">
 		<h6>Billed To</h6>
-		<ul class="address">
-			<li class="name">{{first_name}} {{last_name}}</li>
-			<li class="country">{{country}}</li>
-			<li class="address line1">{{address}}</li>
-			<li class="address line2">{{city}}, {{state}}, {{postal_code}}</li>
-		</ul>
+		<p class="address">
+			{{first_name}} {{last_name}}<br/>
+			{{address}}<br/>
+			{{city}}, {{state}}, {{postal_code}}, {{country}}
+		</p>
 	</div>
 	{{/billing_address}}
 	<ul class="shipments">
-	{{#shipments}}
+	{{#shipment}}
 		<li>
-			{{#tracking_number}}<var class="tracking">{{.}}</var>{{/tracking_number}}
+			{{#status}}<span class="status">{{.}}</span>{{/status}}
+			{{#tracking_url}}<var class="tracking"><a href="{{.}}">Track Your Package</a></var>{{/tracking_url}}
 			<div class="shipping">
 				<h6>Shipped To</h6>
 				{{#shipping_address}}
-				<ul class="address">
-					<li class="name">{{first_name}} {{last_name}}</li>
-					<li class="address line1">{{address}}</li>
-					<li class="address line2">{{city}}, {{state}}, {{postal_code}}, {{country}}</li>
-				</ul>
+				<p class="address">
+					{{first_name}} {{last_name}}<br/>
+					{{address}}<br/>
+					{{city}}, {{state}}, {{postal_code}}, {{country}}
+				</p>
 				{{/shipping_address}}
 			</div>
-			{{#ship_date}}<span class="shipped">Shipped On <var class="date">{{.}}</var></span>{{/ship_date}}
 			<ul class="items">
 			{{#items}}
 				<li>
@@ -49,7 +48,7 @@
 			{{/items}}
 			</ul>
 		</li>
-	{{/shipments}}
+	{{/shipment}}
 	</ul>
 	{{#totals}}
 	<dl class="totals">
