@@ -7,13 +7,21 @@
 			<span class="customer">Customer ID: <var>{{customer_id}}</var></span>
 			<ul class="dates">
 				{{#paid_at}}
-				<li class="paid">Paid <var class="date">{{.}}</var></li>
+				<li class="paid">Paid on <var class="date">{{.}}</var></li>
 				{{/paid_at}}
 				{{#refunded_at}}
 				<li class="refunded">Refunded <var class="refunded">{{.}}</var></li>
 				{{/refunded_at}}
 			</ul>
 		</div>
+		{{#shipment}}
+		<ul class="shipments">
+			<li>
+				{{#status}}<span class="status">{{.}}</span>{{/status}}
+				{{#tracking_url}}<var class="tracking"><a href="{{.}}">Track Your Package</a></var>{{/tracking_url}}
+			</li>
+		</ul>
+		{{/shipment}}
 		{{#totals}}
 		<dl class="totals">
 			<dt class="subtotal">Subtotal</dt>
