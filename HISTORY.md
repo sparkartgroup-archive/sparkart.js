@@ -1,3 +1,10 @@
+### 000.005.003
+*July 8, 2013*
+
+- [Feature] Add shipment status and tracking URL to order template
+
+---
+
 ### 000.005.002
 *July 8, 2013*
 
