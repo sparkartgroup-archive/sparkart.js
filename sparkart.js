@@ -1,5 +1,5 @@
 /* Sparkart.js v000.006.001
-   Generated on 2013-07-08 at 17:11:23 */
+   Generated on 2013-07-09 at 17:35:54 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -166,7 +166,7 @@ this.sparkart = {};
 		var account_response, fanclub_response;
 
 		// Check login status, so we can short-circuit other API requests if logged out
-		fanclub.get( 'account/status', function( err, response ){
+		fanclub.get( 'account/status', { jsonp: true }, function( err, response ){
 			fanclub.logged_in = response.logged_in;
 
 			if( fanclub.logged_in ){
@@ -523,8 +523,8 @@ this.sparkart = {};
 		parameters = $.extend( {}, parameters );
 		parameters.key = this.key;
 
-		// If this is IE, we'll try using JSONP instead
-		if( typeof XDomainRequest !== 'undefined' ){
+		// Use JSONP if this is IE or option is set
+		if( typeof XDomainRequest !== 'undefined' || parameters.jsonp === true ){
 			parameters._method = method;
 			method = 'GET';
 			dataType = 'jsonp';
