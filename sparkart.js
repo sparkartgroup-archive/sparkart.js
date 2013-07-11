@@ -1,5 +1,5 @@
 /* Sparkart.js v000.006.001
-   Generated on 2013-07-10 at 11:23:32 */
+   Generated on 2013-07-10 at 18:42:18 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -162,7 +162,7 @@ this.sparkart = {};
 		// Draw all widgets
 		// Trigger load event
 		// NOTE: get this down to a single request instead of 2 or 3
-		var requests_complete = 0;
+		var account_request_complete, fanclub_request_complete; // Only call drawWidgets if both requests complete
 		var account_response, fanclub_response;
 
 		// Check login status, so we can short-circuit other API requests if logged out
@@ -171,30 +171,35 @@ this.sparkart = {};
 
 			if( fanclub.logged_in ){
 
+				// Request full account object from API if user is logged in
 				fanclub.get( 'account', function( err, response ){
-					requests_complete++;
 					account_response = response;
-					if( requests_complete >= 2 ) drawWidgets();
+					account_request_complete = true;
+					if( account_request_complete && fanclub_request_complete ) drawWidgets();
 				});
 
 			} else {
 
-				requests_complete++;
-				if( requests_complete >= 2 ) drawWidgets();
+				// Skip account request if user is not logged in
+				account_request_complete = true;
+				if( account_request_complete && fanclub_request_complete ) drawWidgets();
 
 			}
 		});
 
+		// Fetch initial Fanclub data from API
 		fanclub.get( 'fanclub', function( err, response ){
-			requests_complete++;
 			fanclub_response = response;
-			if( requests_complete >= 2 ) drawWidgets();
+			fanclub_request_complete = true;
+			if( account_request_complete && fanclub_request_complete ) drawWidgets();
 		});
 
 
 
 		var drawWidgets = function(){
-			requests_complete = 0;
+			account_request_complete = false;
+			fanclub_request_complete = false;
+
 			fanclub.customer = ( account_response )? account_response.customer: null;
 			fanclub.authentications = ( fanclub_response )? fanclub_response.fanclub.authentications: null;
 			fanclub.name = ( fanclub_response )? fanclub_response.fanclub.name: null;
