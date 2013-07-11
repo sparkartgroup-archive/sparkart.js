@@ -15,6 +15,9 @@ this.sparkart = {};
 	// Use correct endpoints in fanclub.get()
 	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan'];
 
+	// Widgets that require the user to be logged in to make an API request
+	var LOGGED_IN_WIDGETS = ['account', 'affiliates', 'customer', 'order', 'orders', 'receipt', 'subscriptions'];
+
 	// Constants for use inside convertDate()
 	var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 	var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -155,24 +158,45 @@ this.sparkart = {};
 		// Fetch initial data from the API
 		// Draw all widgets
 		// Trigger load event
-		// NOTE: get this down to a single request instead of 2
-		var requests_complete = 0;
+		// NOTE: get this down to a single request instead of 2 or 3
+		var account_request_complete, fanclub_request_complete; // Only call drawWidgets if both requests complete
 		var account_response, fanclub_response;
 
-		fanclub.get( 'account', function( err, response ){
-			requests_complete++;
-			account_response = response;
-			if( requests_complete >= 2 ) drawWidgets();
+		// Check login status, so we can short-circuit other API requests if logged out
+		fanclub.get( 'account/status', { jsonp: true }, function( err, response ){
+			fanclub.logged_in = response.logged_in;
+
+			if( fanclub.logged_in ){
+
+				// Request full account object from API if user is logged in
+				fanclub.get( 'account', function( err, response ){
+					account_response = response;
+					account_request_complete = true;
+					if( account_request_complete && fanclub_request_complete ) drawWidgets();
+				});
+
+			} else {
+
+				// Skip account request if user is not logged in
+				account_request_complete = true;
+				if( account_request_complete && fanclub_request_complete ) drawWidgets();
+
+			}
 		});
 
+		// Fetch initial Fanclub data from API
 		fanclub.get( 'fanclub', function( err, response ){
-			requests_complete++;
 			fanclub_response = response;
-			if( requests_complete >= 2 ) drawWidgets();
+			fanclub_request_complete = true;
+			if( account_request_complete && fanclub_request_complete ) drawWidgets();
 		});
+
+
 
 		var drawWidgets = function(){
-			requests_complete = 0;
+			account_request_complete = false;
+			fanclub_request_complete = false;
+
 			fanclub.customer = ( account_response )? account_response.customer: null;
 			fanclub.authentications = ( fanclub_response )? fanclub_response.fanclub.authentications: null;
 			fanclub.name = ( fanclub_response )? fanclub_response.fanclub.name: null;
@@ -403,8 +427,25 @@ this.sparkart = {};
 
 		var fanclub = this;
 
+		// Skip API request for certain widgets if not logged in
+		if( !fanclub.logged_in && $.inArray( widget, LOGGED_IN_WIDGETS ) >= 0 ){
+
+			var response = {};
+
+			// run preprocessors
+			var preprocessors = fanclub.preprocessors[widget];
+			if( preprocessors ){
+				$( preprocessors ).each( function( i, preprocessor ){
+					response = preprocessor( response );
+				});
+			}
+
+			if( callback ) callback( null, fanclub.templates[widget]( response ) );
+
+		}
+
 		// Special cases that use the "account" endpoint
-		if( widget === 'customer' || widget === 'account'){
+		else if( widget === 'customer' || widget === 'account'){
 			this.get( 'account', function( err, response ){
 
 				if( err ) response = {};
@@ -484,8 +525,8 @@ this.sparkart = {};
 		parameters = $.extend( {}, parameters );
 		parameters.key = this.key;
 
-		// If this is IE, we'll try using JSONP instead
-		if( typeof XDomainRequest !== 'undefined' ){
+		// Use JSONP if this is IE or option is set
+		if( typeof XDomainRequest !== 'undefined' || parameters.jsonp === true ){
 			parameters._method = method;
 			method = 'GET';
 			dataType = 'jsonp';

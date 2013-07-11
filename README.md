@@ -115,6 +115,9 @@ var fanclub = new sparkart.Fanclub( API_KEY, {
 });
 ```
 
+**Note**: If a widget relies on the current customer for data, but the user is logged out, it will not make an API request to the Sparkart Services API.  These widgets include `account`, `customer`, `affiliates`, `order`, and `orders`.  These widgets will still be rendered but without receiving any data from the API.  This could be used, for example, in the `customer` widget to prompt the user to login.  Other widgets, such as `events` and `plans` will still request data from the Sparkart Services API, even if the user is logged out.
+
+
 #### Fanclub Methods
 
 ##### .deleteMixpanelCookie()
