@@ -18,7 +18,10 @@ var customer = {
 	last_name: 'User',
 	email: 'test@sparkart.com',
 	fanclub_id: 1,
-	subscription: {}
+	subscription: {
+		start_date: '2013-09-01T00:00:00Z',
+		end_date: '2013-09-01T00:00:00Z'
+	}
 };
 
 var mock_responses = {

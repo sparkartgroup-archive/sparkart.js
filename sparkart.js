@@ -1,5 +1,5 @@
 /* Sparkart.js v000.006.001
-   Generated on 2013-09-06 at 16:53:20 */
+   Generated on 2013-09-10 at 13:59:49 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -123,8 +123,10 @@ this.sparkart = {};
 				return data;
 			} ],
 			customer: [ function( data ){
-				data.customer.subscription.start_date = convertDate( data.customer.subscription.start_date );
-				data.customer.subscription.end_date = convertDate( data.customer.subscription.end_date );
+				if( data.customer) {
+					data.customer.subscription.start_date = convertDate( data.customer.subscription.start_date );
+					data.customer.subscription.end_date = convertDate( data.customer.subscription.end_date );
+				}
 				return data;
 			} ],
 			event: [ function( data ){
@@ -145,13 +147,17 @@ this.sparkart = {};
 			} ],
 			subscription: [ function( data ){
 				data.subscription.start_date = convertDate( data.subscription.start_date );
-				data.subscription.end_date = convertDate( data.subscription.end_date );
+				if( data.subscription.end_date ) {
+					data.subscription.end_date = convertDate( data.subscription.end_date );
+				}
 				return data;
 			} ],
 			subscriptions: [ function( data ){
 				$( data.subscriptions ).each( function( i, subscription ){
 					subscription.start_date = convertDate( subscription.start_date );
-					subscription.end_date = convertDate( subscription.end_date );
+					if( data.subscription.end_date ) {
+						subscription.end_date = convertDate( subscription.end_date );
+					}
 				});
 				return data;
 			} ],

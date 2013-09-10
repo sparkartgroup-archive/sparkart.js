@@ -120,8 +120,10 @@ this.sparkart = {};
 				return data;
 			} ],
 			customer: [ function( data ){
-				data.customer.subscription.start_date = convertDate( data.customer.subscription.start_date );
-				data.customer.subscription.end_date = convertDate( data.customer.subscription.end_date );
+				if( data.customer) {
+					data.customer.subscription.start_date = convertDate( data.customer.subscription.start_date );
+					data.customer.subscription.end_date = convertDate( data.customer.subscription.end_date );
+				}
 				return data;
 			} ],
 			event: [ function( data ){
@@ -142,13 +144,17 @@ this.sparkart = {};
 			} ],
 			subscription: [ function( data ){
 				data.subscription.start_date = convertDate( data.subscription.start_date );
-				data.subscription.end_date = convertDate( data.subscription.end_date );
+				if( data.subscription.end_date ) {
+					data.subscription.end_date = convertDate( data.subscription.end_date );
+				}
 				return data;
 			} ],
 			subscriptions: [ function( data ){
 				$( data.subscriptions ).each( function( i, subscription ){
 					subscription.start_date = convertDate( subscription.start_date );
-					subscription.end_date = convertDate( subscription.end_date );
+					if( data.subscription.end_date ) {
+						subscription.end_date = convertDate( subscription.end_date );
+					}
 				});
 				return data;
 			} ],
