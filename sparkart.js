@@ -1,5 +1,5 @@
 /* Sparkart.js v000.006.001
-   Generated on 2013-09-10 at 13:59:49 */
+   Generated on 2013-09-10 at 16:45:16 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -155,7 +155,7 @@ this.sparkart = {};
 			subscriptions: [ function( data ){
 				$( data.subscriptions ).each( function( i, subscription ){
 					subscription.start_date = convertDate( subscription.start_date );
-					if( data.subscription.end_date ) {
+					if( subscription.end_date ) {
 						subscription.end_date = convertDate( subscription.end_date );
 					}
 				});

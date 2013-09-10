@@ -152,7 +152,7 @@ this.sparkart = {};
 			subscriptions: [ function( data ){
 				$( data.subscriptions ).each( function( i, subscription ){
 					subscription.start_date = convertDate( subscription.start_date );
-					if( data.subscription.end_date ) {
+					if( subscription.end_date ) {
 						subscription.end_date = convertDate( subscription.end_date );
 					}
 				});
