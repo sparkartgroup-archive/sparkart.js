@@ -13,7 +13,7 @@ this.sparkart = {};
 	var API_URL = 'https://services.sparkart.net/api/v1/consumer';
 
 	// Use correct endpoints in fanclub.get()
-	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan'];
+	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan', 'subscription'];
 
 	// Widgets that require the user to be logged in to make an API request
 	var LOGGED_IN_WIDGETS = ['account', 'affiliates', 'customer', 'order', 'orders', 'receipt', 'subscriptions'];
@@ -27,7 +27,7 @@ this.sparkart = {};
 
 		if( !date_string ) return null;
 
-		var extract_regex = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})([-\+][0-9]{4})/;
+		var extract_regex = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})(Z|[-\+][0-9]{4})/;
 		var date_bits = extract_regex.exec( date_string );
 		var year = date_bits[1];
 		var month = parseInt( date_bits[2], 10 );
@@ -119,6 +119,13 @@ this.sparkart = {};
 				});
 				return data;
 			} ],
+			customer: [ function( data ){
+				if( data.customer) {
+					data.customer.subscription.start_date = convertDate( data.customer.subscription.start_date );
+					data.customer.subscription.end_date = convertDate( data.customer.subscription.end_date );
+				}
+				return data;
+			} ],
 			event: [ function( data ){
 				data.event.date = convertDate( data.event.date );
 				data.event.doors_open = convertDate( data.event.doors_open );
@@ -132,6 +139,22 @@ this.sparkart = {};
 					event.doors_open = convertDate( event.doors_open );
 					event.start = convertDate( event.start );
 					event.venue = convertAddress( event.venue );
+				});
+				return data;
+			} ],
+			subscription: [ function( data ){
+				data.subscription.start_date = convertDate( data.subscription.start_date );
+				if( data.subscription.end_date ) {
+					data.subscription.end_date = convertDate( data.subscription.end_date );
+				}
+				return data;
+			} ],
+			subscriptions: [ function( data ){
+				$( data.subscriptions ).each( function( i, subscription ){
+					subscription.start_date = convertDate( subscription.start_date );
+					if( subscription.end_date ) {
+						subscription.end_date = convertDate( subscription.end_date );
+					}
 				});
 				return data;
 			} ],
@@ -384,6 +407,7 @@ this.sparkart = {};
 		// Figure out which widget this is
 		var widget;
 		if( $widget.is('.subscriptions') ) widget = 'subscriptions';
+		else if( $widget.is('.subscription') ) widget = 'subscription';
 		else if( $widget.is('.plans') ) widget = 'plans';
 		else if( $widget.is('.events') ) widget = 'events';
 		else if( $widget.is('.event') ) widget = 'event';

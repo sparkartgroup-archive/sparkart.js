@@ -6,7 +6,20 @@
 	<strong class="name">{{first_name}} {{last_name}}</strong>
 	{{/if}}
 	{{#subscription}}
-	<span class="subscription">{{plan.name}}</span>
+  <div class="subscription {{status}}">
+
+    {{#lapsed}}
+      <p class="lapsed">
+        <p>We're still working on the next year of the fanclub. You'll continue to have access in the meantime. Once we're ready, we'll give you a couple weeks notice so that you can decide whether you'd like to renew. Stay tuned!</p>
+      </div>
+    {{/lapsed}}
+
+    <dl>
+      <dt class="name">Name</dt><dd>{{plan.name}}</dd>
+      <dt class="start">Start</dt><dd>{{start_date.month.abbr}} {{start_date.day.number}}, {{start_date.year.full}}</dd>
+      <dt class="end">End</dt><dd>{{end_date.month.abbr}} {{end_date.day.number}}, {{end_date.year.full}}</dd>
+    </dl>
+  </div>
 	{{/subscription}}
 </div>
 {{/customer}}

@@ -1,5 +1,5 @@
 /* Sparkart.js v000.006.001
-   Generated on 2013-07-10 at 18:42:18 */
+   Generated on 2013-09-10 at 16:45:16 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -16,7 +16,7 @@ this.sparkart = {};
 	var API_URL = 'https://services.sparkart.net/api/v1/consumer';
 
 	// Use correct endpoints in fanclub.get()
-	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan'];
+	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan', 'subscription'];
 
 	// Widgets that require the user to be logged in to make an API request
 	var LOGGED_IN_WIDGETS = ['account', 'affiliates', 'customer', 'order', 'orders', 'receipt', 'subscriptions'];
@@ -30,7 +30,7 @@ this.sparkart = {};
 
 		if( !date_string ) return null;
 
-		var extract_regex = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})([-\+][0-9]{4})/;
+		var extract_regex = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})(Z|[-\+][0-9]{4})/;
 		var date_bits = extract_regex.exec( date_string );
 		var year = date_bits[1];
 		var month = parseInt( date_bits[2], 10 );
@@ -122,6 +122,13 @@ this.sparkart = {};
 				});
 				return data;
 			} ],
+			customer: [ function( data ){
+				if( data.customer) {
+					data.customer.subscription.start_date = convertDate( data.customer.subscription.start_date );
+					data.customer.subscription.end_date = convertDate( data.customer.subscription.end_date );
+				}
+				return data;
+			} ],
 			event: [ function( data ){
 				data.event.date = convertDate( data.event.date );
 				data.event.doors_open = convertDate( data.event.doors_open );
@@ -135,6 +142,22 @@ this.sparkart = {};
 					event.doors_open = convertDate( event.doors_open );
 					event.start = convertDate( event.start );
 					event.venue = convertAddress( event.venue );
+				});
+				return data;
+			} ],
+			subscription: [ function( data ){
+				data.subscription.start_date = convertDate( data.subscription.start_date );
+				if( data.subscription.end_date ) {
+					data.subscription.end_date = convertDate( data.subscription.end_date );
+				}
+				return data;
+			} ],
+			subscriptions: [ function( data ){
+				$( data.subscriptions ).each( function( i, subscription ){
+					subscription.start_date = convertDate( subscription.start_date );
+					if( subscription.end_date ) {
+						subscription.end_date = convertDate( subscription.end_date );
+					}
 				});
 				return data;
 			} ],
@@ -387,6 +410,7 @@ this.sparkart = {};
 		// Figure out which widget this is
 		var widget;
 		if( $widget.is('.subscriptions') ) widget = 'subscriptions';
+		else if( $widget.is('.subscription') ) widget = 'subscription';
 		else if( $widget.is('.plans') ) widget = 'plans';
 		else if( $widget.is('.events') ) widget = 'events';
 		else if( $widget.is('.event') ) widget = 'event';
@@ -993,7 +1017,7 @@ Methods for interacting with facebook
 "affiliates": "{{#affiliates}}	<h2>{{name}}</h2>	<ul class=\"codes\">		{{#codes}}<li>{{.}}</li>{{/codes}}	</ul>{{/affiliates}}",
 "contest": "{{#contest}}<div class=\"{{status}}\">	<h2>{{{name}}}</h2>	{{#if minimum_age}}		<p class=\"minimum-age\">You must be <strong>{{minimum_age}}</strong> or older to enter this contest.</p>	{{/if}}	{{#if details}}	<div class=\"details\">		<h3>Contest Details</h3>		{{{details}}}	</div>	{{/if}}	{{#if rules}}	<div class=\"rules\">		<h3>Contest Rules</h3>		{{{rules}}}	</div>	{{/if}}	<dl>	{{#starts}}		<dt>Starts</dt>		<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span></dd>	{{/starts}}	{{#ends}}		<dt>{{#if ../ended}}Ended{{else}}End{{/if}}</dt>		<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span></dd>	{{/ends}}	</dl>	{{#if entered}}		<div class=\"success\">			<p>You have already entered into the {{{name}}} contest.</p>		</div>	{{else}}		{{#if running}}		<form class=\"contest\">			<div class=\"success\" style=\"display: none;\">				<ul class=\"success\">					<li>You have been entered into the {{{name}}} contest</li>					<li>If you are chosen as a winner you will be contacted via email for confirmation and further details</li>				</ul>			</div>			<div class=\"errors\" style=\"display: none;\">Error</div>			{{#if rules}}			<fieldset>				<label><input type=\"checkbox\" class=\"agree\" />I agree to the Contest Rules</label><br />			</fieldset>			{{/if}}			<ul class=\"actions\">				<li><button type=\"submit\">Enter Contest</button></li>			</ul>		</form>		{{/if}}	{{/if}}</div>{{/contest}}",
 "contests": "<ul>	{{#contests}}	<li class=\"{{status}}\">		<h2><a href=\"{{../parameters.url}}{{id}}\">{{name}}</a></h2>		<dl>		{{#starts}}			<dt>Starts</dt>			<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span> <span class=\"timezone\">{{timezone_offset}}</span></dd>		{{/starts}}		{{#ends}}			<dt>{{#if ../ended}}Ended{{else}}End{{/if}}</dt>			<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span> <span class=\"timezone\">{{timezone_offset}}</span></dd>	 	{{/ends}}		</dl>		{{#if details}}		<div class=\"details\">			<h3>Contest Details</h3>			{{{details}}}		</div>		{{/if}} 	</li>	{{/contests}}</ul>",
-"customer": "{{#customer}}<div class=\"info\">	{{#if username}}	<strong class=\"username\">{{username}}</strong>	{{else}}	<strong class=\"name\">{{first_name}} {{last_name}}</strong>	{{/if}}	{{#subscription}}	<span class=\"subscription\">{{plan.name}}</span>	{{/subscription}}</div>{{/customer}}",
+"customer": "{{#customer}}<div class=\"info\">	{{#if username}}	<strong class=\"username\">{{username}}</strong>	{{else}}	<strong class=\"name\">{{first_name}} {{last_name}}</strong>	{{/if}}	{{#subscription}}  <div class=\"subscription {{status}}\">    {{#lapsed}}      <p class=\"lapsed\">        <p>We\'re still working on the next year of the fanclub. You\'ll continue to have access in the meantime. Once we\'re ready, we\'ll give you a couple weeks notice so that you can decide whether you\'d like to renew. Stay tuned!</p>      </div>    {{/lapsed}}    <dl>      <dt class=\"name\">Name</dt><dd>{{plan.name}}</dd>      <dt class=\"start\">Start</dt><dd>{{start_date.month.abbr}} {{start_date.day.number}}, {{start_date.year.full}}</dd>      <dt class=\"end\">End</dt><dd>{{end_date.month.abbr}} {{end_date.day.number}}, {{end_date.year.full}}</dd>    </dl>  </div>	{{/subscription}}</div>{{/customer}}",
 "errors": "<ul class=\"errors\">{{#errors}}<li>{{.}}</li>{{/errors}}</ul>",
 "event": "{{#event}}<div class=\"event\">	<h2>{{date.month.abbr}} {{date.day.number}}</h2>	<h3>{{title}}</h3>	<div class=\"description\">{{description}}</div>	<dl>		{{#doors_open}}		<dt>Doors Open</dt>		<dd>{{hour.half}}:{{minute}} <span class=\"ampm\">{{ampm}}</span></dd>		{{/doors_open}}		{{#start}}		<dt>Start</dt>		<dd>{{hour.half}}:{{minute}} <span class=\"ampm\">{{ampm}}</span></dd>		{{/start}}	</dl>	{{#venue}}	<div class=\"venue\">		<h4>{{name}}</h4>		<strong class=\"city\">{{city}}</strong>, <em class=\"state\">{{state}}</em> <span class=\"country\">{{country}}</span>		<h5>Directions</h5>		<ul class=\"directions\">			{{#directions}}			<li><a href=\"{{google_maps}}\">Google Maps</a></li>			<li><a href=\"{{yahoo_maps}}\">Yahoo Maps</a></li>			<li><a href=\"{{mapquest}}\">Mapquest</a></li>			<li><a href=\"{{bing_maps}}\">Bing Maps</a></li>			{{/directions}}		</ul>	</div>	{{/venue}}	<ul class=\"links\">		{{#links}}		<li><a href=\"{{url}}\">{{name}}</a></li>		{{/links}}	</ul></div>{{/event}}",
 "events": "<ul class=\"events\">	{{#events}}	<li>		<h2><a href=\"{{../parameters.url}}{{id}}\">{{date.month.abbr}} {{date.day.number}}</a></h2>		<h3>{{title}}</h3>		<div class=\"description\">{{description}}</div>		{{#venue}}		<div class=\"venue\">			<h4>{{name}}</h4>			<strong>{{city}}</strong>, {{state}}		</div>		{{/venue}}		<ul class=\"links\">			{{#links}}			<li><a href=\"{{url}}\">{{name}}</a></li>			{{/links}}		</ul>	</li>	{{/events}}</ul>",
@@ -1003,5 +1027,5 @@ Methods for interacting with facebook
 "plan": "<div class=\"plan\">	<h2>{{name}}</h2>	<h3>{{price}}</h3>	<div class=\"description\">{{description}}</div>	{{#package}}		<h3>{{name}}</h3>		<ul class=\"items\">			{{#items}}			<li>				<img src=\"{{thumbnail}}\" />				<strong>{{name}}</strong>			</li>			{{/items}}		</ul>	{{/package}}	<ul class=\"actions\">		<li class=\"join\"><a href=\"{{checkout}}\">Join Now</a></li>	</ul>	{{#annotations}}<sub class=\"annotations\">{{.}}</sub>{{/annotations}}	</div>",
 "plans": "<ul class=\"plans\">	{{#plans}}	<li>		<h2>{{name}}</h2>		<h3>{{price}}</h3>		<div class=\"description\">{{description}}</div>		{{#package}}			<h3>{{name}}</h3>			<ul class=\"items\">				{{#items}}				<li>					<img src=\"{{thumbnail}}\" />					<strong>{{name}}</strong>				</li>				{{/items}}			</ul>		{{/package}}		<ul class=\"actions\">			<li class=\"join\"><a href=\"{{checkout}}\">Join Now</a></li>		</ul>		{{#annotations}}<sub class=\"annotations\">{{.}}</sub>{{/annotations}}	</li>	{{/plans}}</ul>",
 "receipt": "<ul class=\"receipt\">{{#items}}<li>{{name}}</li>{{/items}}</ul>",
-"subscription": "<div class=\"subscription\">{{name}}</div>",
-"subscriptions": "<ul class=\"subscriptions\">	{{#subscriptions}}	<li>{{name}}</li>	{{/subscriptions}}</ul>"};
+"subscription": "{{#subscription}}  <div class=\"subscription {{status}}\">    <h2>Subscription</h2>    {{#lapsed}}      <p class=\"lapsed\">        <p>We\'re still working on the next year of the fanclub. You\'ll continue to have access in the meantime. Once we\'re ready, we\'ll give you a couple weeks notice so that you can decide whether you\'d like to renew. Stay tuned!</p>      </div>    {{/lapsed}}    <dl>      <dt class=\"name\">Name</dt><dd>{{name}}</dd>      <dt class=\"start\">Start</dt><dd>{{start_date.month.abbr}} {{start_date.day.number}}, {{start_date.year.full}}</dd>      <dt class=\"end\">End</dt><dd>{{end_date.month.abbr}} {{end_date.day.number}}, {{end_date.year.full}}</dd>    </dl>  </div>{{/subscription}}",
+"subscriptions": "<ul class=\"subscriptions\">	{{#subscriptions}}	<li class=\"{{status}}\"><a href=\"{{../parameters.url}}{{id}}\">{{name}}</a></li>	{{/subscriptions}}</ul>"};
