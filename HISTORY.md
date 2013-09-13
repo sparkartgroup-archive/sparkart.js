@@ -1,5 +1,13 @@
+### 000.007.001
+*September 12, 2013*
+
+- [Feature] Add Subscription and Subscription widgets
+- [Feature] Add subscription start/expiration date and "lapsed" status to Customer widget
+
+---
+
 ### 000.006.001
-*TBA*
+*July 10, 2013*
 
 - [Feature] Check login status before sending API requests
 
