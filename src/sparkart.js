@@ -223,7 +223,7 @@ this.sparkart = {};
 			fanclub.customer = ( account_response )? account_response.customer: null;
 			fanclub.authentications = ( fanclub_response )? fanclub_response.fanclub.authentications: null;
 			fanclub.name = ( fanclub_response )? fanclub_response.fanclub.name: null;
-            fanclub.links = ( fanclub_response )? fanclub_response.fanclub.links: null;
+			fanclub.links = ( fanclub_response )? fanclub_response.fanclub.links: null;
 
 			if(fanclub.parameters.environment === "production") {
 				fanclub.tracking = fanclub_response.fanclub.tracking.production;
