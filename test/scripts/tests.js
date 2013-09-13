@@ -213,7 +213,7 @@ describe( 'Fanclub', function(){
 		$('#test').empty();
 		fanclub = new sparkart.Fanclub( FAKE_KEY, { api_url: FAKE_API_URL });
 		fanclub.on( 'load', function(){
-			done();	
+			done();
 		});
 
 	});
@@ -497,7 +497,23 @@ describe( 'Fanclub', function(){
 			it( 'does render the events widget' , function( done ){
 
 				fanclub.logged_in = false;
-				fanclub.renderWidget( 'events', {}, function( err, html ){
+				fanclub.renderWidget( 'events', {}, function( err, html, response ){
+					assert( response.events[0].date.ampm === "AM", 'Accurate preprocessed ampm' );
+					assert( response.events[0].date.day.text === "Sunday", 'Accurate preprocessed day.text' );
+					assert( response.events[0].date.day.abbr === "Sun", 'Accurate preprocessed day.abbr' );
+					assert( response.events[0].date.day.number === 10, 'Accurate preprocessed day.number' );
+					assert( response.events[0].date.hour.full === 0, 'Accurate preprocessed hour.full' );
+					assert( response.events[0].date.hour.half === 12, 'Accurate preprocessed hour.half' );
+					assert( response.events[0].date.minute === "00", 'Accurate preprocessed minute' );
+					assert( response.events[0].date.month.abbr === "Feb", 'Accurate preprocessed month.abbr' );
+					assert( response.events[0].date.month.text === "February", 'Accurate preprocessed month.text' );
+					assert( response.events[0].date.month.number === 2, 'Accurate preprocessed month.number' );
+					assert( response.events[0].date.original === "2013-02-10T00:00:00-0500", 'Accurate preprocessed original' );
+					assert( response.events[0].date.second === "00", 'Accurate preprocessed second' );
+					assert( response.events[0].date.timezone_offset === "-0500", 'Accurate preprocessed timezone_offset' );
+					assert( response.events[0].date.year.full === "2013", 'Accurate preprocessed year.full' );
+					assert( response.events[0].date.year.half === "13", 'Accurate preprocessed year.half' );
+
 					assert( !!html, 'HTML is not blank' );
 					assert( !err, 'There are no errors' );
 					done();

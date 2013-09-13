@@ -32,7 +32,7 @@ this.sparkart = {};
 		var year = date_bits[1];
 		var month = parseInt( date_bits[2], 10 );
 		var day = parseInt( date_bits[3], 10 );
-		var day_of_week = new Date( year, month, day ).getDay();
+		var day_of_week = new Date( year, month - 1, day ).getDay();
 		var hour = parseInt( date_bits[4], 10 );
 		var minute = date_bits[5];
 		var second = date_bits[6];
@@ -465,7 +465,7 @@ this.sparkart = {};
 				});
 			}
 
-			if( callback ) callback( null, fanclub.templates[widget]( response ) );
+			if( callback ) callback( null, fanclub.templates[widget]( response ), response );
 
 		}
 
@@ -501,7 +501,7 @@ this.sparkart = {};
 
 				var html = fanclub.templates[widget]( response );
 
-				if( callback ) callback( null, html );
+				if( callback ) callback( null, html, response );
 
 			});
 
@@ -513,7 +513,7 @@ this.sparkart = {};
 				token: true
 			});
 
-			if( callback ) callback( null, html );
+			if( callback ) callback( null, html, response );
 
 		}
 
@@ -534,7 +534,7 @@ this.sparkart = {};
 					});
 				}
 
-				if( callback ) callback( null, fanclub.templates[widget]( response ) );
+				if( callback ) callback( null, fanclub.templates[widget]( response ), response );
 
 			});
 
