@@ -129,6 +129,11 @@ this.sparkart = {};
 			event: [ function( data ){
 				data.event.date = convertDate( data.event.date );
 				data.event.doors_open = convertDate( data.event.doors_open );
+                $( data.event.links ).each( function( i, link ){
+                    link.publish_start = convertDate( link.publish_start );
+                    link.publish_end = convertDate( link.publish_end );
+                    link.soldout = link.status === "Sold Out" ? true : false;
+                });
 				data.event.start = convertDate( data.event.start );
 				data.event.venue = convertAddress( data.event.venue );
 				return data;
@@ -137,6 +142,11 @@ this.sparkart = {};
 				$( data.events ).each( function( i, event ){
 					event.date = convertDate( event.date );
 					event.doors_open = convertDate( event.doors_open );
+                    $( event.links ).each( function( i, link ){
+                        link.publish_start = convertDate( link.publish_start );
+                        link.publish_end = convertDate( link.publish_end );
+                        link.soldout = link.status === "Sold Out" ? true : false;
+                    });
 					event.start = convertDate( event.start );
 					event.venue = convertAddress( event.venue );
 				});
