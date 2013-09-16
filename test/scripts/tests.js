@@ -106,7 +106,17 @@ var mock_responses = {
 					description: '',
 					doors_open: null,
 					id: 2,
-					links: null,
+					links: [
+						{
+							name: "Public Tickets",
+							status: "Show",
+							url: "http://www.ticketmaster.com",
+							host: "Ticketmaster",
+							password: null,
+							publish_start: "2013-04-05T00:00:00-0400",
+							publish_end: "2013-08-09T07:00:00-0400"
+						}
+					],
 					start: null,
 					timezone: 'America/New_York',
 					title: '',
@@ -498,24 +508,33 @@ describe( 'Fanclub', function(){
 
 				fanclub.logged_in = false;
 				fanclub.renderWidget( 'events', {}, function( err, html, response ){
-					assert( response.events[0].date.ampm === "AM", 'Accurate preprocessed ampm' );
-					assert( response.events[0].date.day.text === "Sunday", 'Accurate preprocessed day.text' );
-					assert( response.events[0].date.day.abbr === "Sun", 'Accurate preprocessed day.abbr' );
-					assert( response.events[0].date.day.number === 10, 'Accurate preprocessed day.number' );
-					assert( response.events[0].date.hour.full === 0, 'Accurate preprocessed hour.full' );
-					assert( response.events[0].date.hour.half === 12, 'Accurate preprocessed hour.half' );
-					assert( response.events[0].date.minute === "00", 'Accurate preprocessed minute' );
-					assert( response.events[0].date.month.abbr === "Feb", 'Accurate preprocessed month.abbr' );
-					assert( response.events[0].date.month.text === "February", 'Accurate preprocessed month.text' );
-					assert( response.events[0].date.month.number === 2, 'Accurate preprocessed month.number' );
-					assert( response.events[0].date.original === "2013-02-10T00:00:00-0500", 'Accurate preprocessed original' );
-					assert( response.events[0].date.second === "00", 'Accurate preprocessed second' );
-					assert( response.events[0].date.timezone_offset === "-0500", 'Accurate preprocessed timezone_offset' );
-					assert( response.events[0].date.year.full === "2013", 'Accurate preprocessed year.full' );
-					assert( response.events[0].date.year.half === "13", 'Accurate preprocessed year.half' );
-
 					assert( !!html, 'HTML is not blank' );
 					assert( !err, 'There are no errors' );
+
+					// Testing ALL fields for #convertDate()
+					var response_date = response.events[0].date;
+					assert( response_date.ampm === "AM", 'Accurate preprocessed ampm' );
+					assert( response_date.day.text === "Sunday", 'Accurate preprocessed day.text' );
+					assert( response_date.day.abbr === "Sun", 'Accurate preprocessed day.abbr' );
+					assert( response_date.day.number === 10, 'Accurate preprocessed day.number' );
+					assert( response_date.hour.full === 0, 'Accurate preprocessed hour.full' );
+					assert( response_date.hour.half === 12, 'Accurate preprocessed hour.half' );
+					assert( response_date.minute === "00", 'Accurate preprocessed minute' );
+					assert( response_date.month.abbr === "Feb", 'Accurate preprocessed month.abbr' );
+					assert( response_date.month.text === "February", 'Accurate preprocessed month.text' );
+					assert( response_date.month.number === 2, 'Accurate preprocessed month.number' );
+					assert( response_date.original === "2013-02-10T00:00:00-0500", 'Accurate preprocessed original' );
+					assert( response_date.second === "00", 'Accurate preprocessed second' );
+					assert( response_date.timezone_offset === "-0500", 'Accurate preprocessed timezone_offset' );
+					assert( response_date.year.full === "2013", 'Accurate preprocessed year.full' );
+					assert( response_date.year.half === "13", 'Accurate preprocessed year.half' );
+
+					// Event Links
+					var response_event_link = response.events[0].links[0];
+					assert( response_event_link.publish_start.original === "2013-04-05T00:00:00-0400", 'Event link publish date exists')
+					assert( response_event_link.publish_end.original === "2013-08-09T07:00:00-0400", 'Event link publish date exists')
+					assert( html.indexOf('<li><a href="http://www.ticketmaster.com">Public Tickets</a></li>') >= 0, 'Event link in template')
+
 					done();
 				});
 
