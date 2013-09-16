@@ -1,5 +1,5 @@
-/* Sparkart.js v000.007.001
-   Generated on 2013-09-12 at 19:22:27 */
+/* Sparkart.js v000.008.001
+   Generated on 2013-09-16 at 14:09:33 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -35,7 +35,7 @@ this.sparkart = {};
 		var year = date_bits[1];
 		var month = parseInt( date_bits[2], 10 );
 		var day = parseInt( date_bits[3], 10 );
-		var day_of_week = new Date( year, month, day ).getDay();
+		var day_of_week = new Date( year, month - 1, day ).getDay();
 		var hour = parseInt( date_bits[4], 10 );
 		var minute = date_bits[5];
 		var second = date_bits[6];
@@ -132,6 +132,11 @@ this.sparkart = {};
 			event: [ function( data ){
 				data.event.date = convertDate( data.event.date );
 				data.event.doors_open = convertDate( data.event.doors_open );
+				$( data.event.links ).each( function( i, link ){
+					link.publish_start = convertDate( link.publish_start );
+					link.publish_end = convertDate( link.publish_end );
+					link.soldout = link.status === "Sold Out" ? true : false;
+				});
 				data.event.start = convertDate( data.event.start );
 				data.event.venue = convertAddress( data.event.venue );
 				return data;
@@ -140,6 +145,11 @@ this.sparkart = {};
 				$( data.events ).each( function( i, event ){
 					event.date = convertDate( event.date );
 					event.doors_open = convertDate( event.doors_open );
+					$( event.links ).each( function( i, link ){
+						link.publish_start = convertDate( link.publish_start );
+						link.publish_end = convertDate( link.publish_end );
+						link.soldout = link.status === "Sold Out" ? true : false;
+				});
 					event.start = convertDate( event.start );
 					event.venue = convertAddress( event.venue );
 				});
@@ -226,6 +236,7 @@ this.sparkart = {};
 			fanclub.customer = ( account_response )? account_response.customer: null;
 			fanclub.authentications = ( fanclub_response )? fanclub_response.fanclub.authentications: null;
 			fanclub.name = ( fanclub_response )? fanclub_response.fanclub.name: null;
+			fanclub.links = ( fanclub_response )? fanclub_response.fanclub.links: null;
 
 			if(fanclub.parameters.environment === "production") {
 				fanclub.tracking = fanclub_response.fanclub.tracking.production;
@@ -467,7 +478,7 @@ this.sparkart = {};
 				});
 			}
 
-			if( callback ) callback( null, fanclub.templates[widget]( response ) );
+			if( callback ) callback( null, fanclub.templates[widget]( response ), response );
 
 		}
 
@@ -503,7 +514,7 @@ this.sparkart = {};
 
 				var html = fanclub.templates[widget]( response );
 
-				if( callback ) callback( null, html );
+				if( callback ) callback( null, html, response );
 
 			});
 
@@ -515,7 +526,7 @@ this.sparkart = {};
 				token: true
 			});
 
-			if( callback ) callback( null, html );
+			if( callback ) callback( null, html, response );
 
 		}
 
@@ -536,7 +547,7 @@ this.sparkart = {};
 					});
 				}
 
-				if( callback ) callback( null, fanclub.templates[widget]( response ) );
+				if( callback ) callback( null, fanclub.templates[widget]( response ), response );
 
 			});
 
