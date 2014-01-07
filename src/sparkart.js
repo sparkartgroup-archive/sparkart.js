@@ -293,9 +293,12 @@ this.sparkart = {};
 			}
 
 			// draw all widgets
-			fanclub.draw( function(){
-				fanclub.trigger('load');
-				fanclub.loaded = true;
+			// wait for DOM load
+			$(function(){
+				fanclub.draw( function(){
+					fanclub.trigger('load');
+					fanclub.loaded = true;
+				});
 			});
 		};
 

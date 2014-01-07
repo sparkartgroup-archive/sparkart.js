@@ -1,5 +1,5 @@
 /* Sparkart.js v000.008.001
-   Generated on 2013-09-16 at 14:09:33 */
+   Generated on 2014-01-06 at 17:28:21 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -296,9 +296,12 @@ this.sparkart = {};
 			}
 
 			// draw all widgets
-			fanclub.draw( function(){
-				fanclub.trigger('load');
-				fanclub.loaded = true;
+			// wait for DOM load
+			$(function(){
+				fanclub.draw( function(){
+					fanclub.trigger('load');
+					fanclub.loaded = true;
+				});
 			});
 		};
 
