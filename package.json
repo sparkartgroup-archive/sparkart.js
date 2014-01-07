@@ -1,6 +1,6 @@
 {
   "name": "sparkart.js",
-  "version": "000.008.001",
+  "version": "000.008.002",
   "devDependencies": {
     "grunt": "0.4.x",
     "grunt-contrib-handlebars": "~0.5.7",

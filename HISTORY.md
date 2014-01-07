@@ -1,3 +1,8 @@
+### 000.008.002
+*January 6, 2014*
+
+- [Bug Fix] First `fanclub.draw` call now waits for DOM load
+
 ### 000.007.001
 *September 12, 2013*
 
