@@ -10,7 +10,7 @@ this.sparkart = {};
 //
 
 	// The API url we will look to by default
-	var API_URL = 'https://services.sparkart.net/api/v1/consumer';
+	var API_URL = 'https://services.sparkart.net/api/v1';
 
 	// Use correct endpoints in fanclub.get()
 	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan', 'subscription'];
