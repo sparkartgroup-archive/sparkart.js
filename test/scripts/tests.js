@@ -138,7 +138,7 @@ var mock_responses = {
 				    display_price: 'Free',
 				    upgrade_price: null,
 				    price: 0,
-				    checkout: 'http://services.sparkart.net/consumer/checkout/1',
+				    checkout: 'http://services.sparkart.net/checkout/1',
 				    annotations: '',
 				    current: false,
 				    upgrade: false,

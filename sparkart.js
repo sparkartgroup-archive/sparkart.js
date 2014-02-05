@@ -1,5 +1,5 @@
 /* Sparkart.js v000.008.002
-   Generated on 2014-01-06 at 17:37:12 */
+   Generated on 2014-02-01 at 20:16:03 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -13,7 +13,7 @@ this.sparkart = {};
 //
 
 	// The API url we will look to by default
-	var API_URL = 'https://services.sparkart.net/api/v1/consumer';
+	var API_URL = 'https://services.sparkart.net/api/v1';
 
 	// Use correct endpoints in fanclub.get()
 	var PLURALIZED_ENDPOINTS = ['contest', 'event', 'order', 'plan', 'subscription'];

@@ -1,3 +1,8 @@
+### 000.009.001
+*TBA*
+
+- [Enhancement] Universe API's was updated to remove the consumer namespace from the route
+
 ### 000.008.002
 *January 6, 2014*
 
