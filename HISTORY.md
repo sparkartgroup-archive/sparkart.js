@@ -1,3 +1,10 @@
+### 000.009.002
+*February 19, 2014*
+
+- [Bug Fix] Don't attemp to preprocess user subsciption if they don't have one
+
+-----
+
 ### 000.009.001
 *February 4, 2014*
 

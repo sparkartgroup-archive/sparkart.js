@@ -1,5 +1,5 @@
-/* Sparkart.js v000.009.001
-   Generated on 2014-02-04 at 22:20:36 */
+/* Sparkart.js v000.009.002
+   Generated on 2014-02-19 at 11:30:11 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -123,9 +123,12 @@ this.sparkart = {};
 				return data;
 			} ],
 			customer: [ function( data ){
-				if( data.customer) {
-					data.customer.subscription.start_date = convertDate( data.customer.subscription.start_date );
-					data.customer.subscription.end_date = convertDate( data.customer.subscription.end_date );
+				if( data.customer ) {
+					// if customer is expired they won't have a subscription
+					if( data.customer.subscription ){
+						data.customer.subscription.start_date = convertDate( data.customer.subscription.start_date );
+						data.customer.subscription.end_date = convertDate( data.customer.subscription.end_date );
+					}
 				}
 				return data;
 			} ],
