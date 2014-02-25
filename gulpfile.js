@@ -12,7 +12,8 @@ var header = '/* Sparkart.js v'+ pkg.version +'\n'+
 gulp.task( 'compile', function(){
 	gulp.src('./src/sparkart.js')
 		.pipe( gulp_browserify({
-			transform: ['hbsfy']
+			transform: ['hbsfy'],
+			standalone: 'sparkart'
 		}))
 		.pipe( gulp_header( header, {
 			datetime: ( new Date ).toGMTString()
