@@ -694,11 +694,24 @@ this.sparkart = {};
 						$this.addClass('error');
 						var $err = $( fanclub.templates.errors({ errors: errors }) );
 						$errors.html( $err ).show();
-						return;
+					} else {
+						$this.addClass('success');
+						var $success = $this.find('div.success p');
+						var $current_email = $('div.current_email');
+						var $email = $('input[name="email"]');
+
+						if( fanclub.customer.email === data.email ){
+							$success.html("Account Successfully Updated!");
+							$current_email.hide();
+							$email.nextAll().hide();
+						} else {
+							$success.html("<strong>You must confirm your new email address.</strong><br />Please check your email for confirmation instructions.");
+							$current_email.show();
+							$email.nextAll().show();
+						}
+
+						$success.closest("div.success").show();
 					}
-					$this.addClass('success');
-					var $success = $this.find('div.success');
-					$success.show();
 
 				});
 

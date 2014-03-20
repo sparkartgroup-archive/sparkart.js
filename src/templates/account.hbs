@@ -18,8 +18,24 @@
 		<input name="first_name" type="text" value="{{first_name}}" /></label><br />
 		<label>Last Name<br />
 		<input name="last_name" type="text" value="{{last_name}}" /></label><br />
-		<label>Email Address<br />
-		<input name="email" type="text" value="{{email}}" /></label><br />
+
+		<label>
+			Email Address<br />
+			{{#unless new_email}}
+				<input name="email" type="text" value="{{email}}" /><br style="display: none;"/>
+				<span style="display: none;">Pending Confirmation</span>
+			{{else}}
+				<input name="email" type="text" value="{{new_email}}" /><br />
+				<span>Pending Confirmation</span>
+			{{/unless}}
+		</label><br />
+
+		<div class="current_email" {{#unless new_email}}style="display: none;"{{/unless}}>
+			<label>Current Email<br />
+				<input name="current_email" type="text" value="{{email}}" disabled="disabled" />
+			</label><br />
+		</div>
+
 		<div class="password">
 			<label>Current Password<br />
 			<input name="current_password" type="password" /></label>
