@@ -1,3 +1,10 @@
+### 000.010.001
+*April 2, 2014*
+
+- [Feature] Validate customer emails when updated
+
+-----
+
 ### 000.009.002
 *February 19, 2014*
 

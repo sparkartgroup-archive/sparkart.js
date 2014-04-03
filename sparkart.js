@@ -1,5 +1,5 @@
 /* Sparkart.js v000.009.002
-   Generated on 2014-02-19 at 11:30:11 */
+   Generated on 2014-04-02 at 19:00:09 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -697,11 +697,24 @@ this.sparkart = {};
 						$this.addClass('error');
 						var $err = $( fanclub.templates.errors({ errors: errors }) );
 						$errors.html( $err ).show();
-						return;
+					} else {
+						$this.addClass('success');
+						var $success = $this.find('div.success p');
+						var $current_email = $('div.current_email');
+						var $email = $('input[name="email"]');
+
+						if( fanclub.customer.email === data.email ){
+							$success.html("Account Successfully Updated!");
+							$current_email.hide();
+							$email.nextAll().hide();
+						} else {
+							$success.html("<strong>You must confirm your new email address.</strong><br />Please check your email for confirmation instructions.");
+							$current_email.show();
+							$email.nextAll().show();
+						}
+
+						$success.closest("div.success").show();
 					}
-					$this.addClass('success');
-					var $success = $this.find('div.success');
-					$success.show();
 
 				});
 
@@ -1030,7 +1043,7 @@ Methods for interacting with facebook
 // Pass jQuery and Handlebars to the closure
 })( jQuery, Handlebars );
 ;this.sparkart.Fanclub.templates = {
-"account": "{{#if customer}}<ul class=\"authentications\">	{{#authentications}}	<li><button class=\"{{name}}_connect {{#if connected}}connected{{/if}}\" type=\"button\" {{#if connected}}disabled=\"true\"{{/if}}>{{#if connected}}Connected{{else}}Connect{{/if}} with {{name}}</button></li>	{{/authentications}}</ul>{{/if}}{{#customer}}<form class=\"account\">	<div class=\"success\" style=\"display: none;\">		<p>Account Successfully Updated!</p>	</div>	<div class=\"errors\" style=\"display: none;\"></div>	<fieldset>		<label>Username<br />		<input name=\"username\" type=\"text\" value=\"{{username}}\" /></label><br />		<label>First Name<br />		<input name=\"first_name\" type=\"text\" value=\"{{first_name}}\" /></label><br />		<label>Last Name<br />		<input name=\"last_name\" type=\"text\" value=\"{{last_name}}\" /></label><br />		<label>Email Address<br />		<input name=\"email\" type=\"text\" value=\"{{email}}\" /></label><br />		<div class=\"password\">			<label>Current Password<br />			<input name=\"current_password\" type=\"password\" /></label>			<hr />			<label>New Password<br />			<input name=\"password\" type=\"password\" /></label><br />			<label>Repeat New Password<br />			<input name=\"password_confirmation\" type=\"password\" /></label>		</div>	</fieldset>	<button type=\"submit\">Update Account</button></form>{{/customer}}",
+"account": "{{#if customer}}<ul class=\"authentications\">	{{#authentications}}	<li><button class=\"{{name}}_connect {{#if connected}}connected{{/if}}\" type=\"button\" {{#if connected}}disabled=\"true\"{{/if}}>{{#if connected}}Connected{{else}}Connect{{/if}} with {{name}}</button></li>	{{/authentications}}</ul>{{/if}}{{#customer}}<form class=\"account\">	<div class=\"success\" style=\"display: none;\">		<p>Account Successfully Updated!</p>	</div>	<div class=\"errors\" style=\"display: none;\"></div>	<fieldset>		<label>Username<br />		<input name=\"username\" type=\"text\" value=\"{{username}}\" /></label><br />		<label>First Name<br />		<input name=\"first_name\" type=\"text\" value=\"{{first_name}}\" /></label><br />		<label>Last Name<br />		<input name=\"last_name\" type=\"text\" value=\"{{last_name}}\" /></label><br />		<label>			Email Address<br />			{{#unless new_email}}				<input name=\"email\" type=\"text\" value=\"{{email}}\" /><br style=\"display: none;\"/>				<span style=\"display: none;\">Pending Confirmation</span>			{{else}}				<input name=\"email\" type=\"text\" value=\"{{new_email}}\" /><br />				<span>Pending Confirmation</span>			{{/unless}}		</label><br />		<div class=\"current_email\" {{#unless new_email}}style=\"display: none;\"{{/unless}}>			<label>Current Email<br />				<input name=\"current_email\" type=\"text\" value=\"{{email}}\" disabled=\"disabled\" />			</label><br />		</div>		<div class=\"password\">			<label>Current Password<br />			<input name=\"current_password\" type=\"password\" /></label>			<hr />			<label>New Password<br />			<input name=\"password\" type=\"password\" /></label><br />			<label>Repeat New Password<br />			<input name=\"password_confirmation\" type=\"password\" /></label>		</div>	</fieldset>	<button type=\"submit\">Update Account</button></form>{{/customer}}",
 "affiliates": "{{#affiliates}}	<h2>{{name}}</h2>	<ul class=\"codes\">		{{#codes}}<li>{{.}}</li>{{/codes}}	</ul>{{/affiliates}}",
 "contest": "{{#contest}}<div class=\"{{status}}\">	<h2>{{{name}}}</h2>	{{#if minimum_age}}		<p class=\"minimum-age\">You must be <strong>{{minimum_age}}</strong> or older to enter this contest.</p>	{{/if}}	{{#if details}}	<div class=\"details\">		<h3>Contest Details</h3>		{{{details}}}	</div>	{{/if}}	{{#if rules}}	<div class=\"rules\">		<h3>Contest Rules</h3>		{{{rules}}}	</div>	{{/if}}	<dl>	{{#starts}}		<dt>Starts</dt>		<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span></dd>	{{/starts}}	{{#ends}}		<dt>{{#if ../ended}}Ended{{else}}End{{/if}}</dt>		<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span></dd>	{{/ends}}	</dl>	{{#if entered}}		<div class=\"success\">			<p>You have already entered into the {{{name}}} contest.</p>		</div>	{{else}}		{{#if running}}		<form class=\"contest\">			<div class=\"success\" style=\"display: none;\">				<ul class=\"success\">					<li>You have been entered into the {{{name}}} contest</li>					<li>If you are chosen as a winner you will be contacted via email for confirmation and further details</li>				</ul>			</div>			<div class=\"errors\" style=\"display: none;\">Error</div>			{{#if rules}}			<fieldset>				<label><input type=\"checkbox\" class=\"agree\" />I agree to the Contest Rules</label><br />			</fieldset>			{{/if}}			<ul class=\"actions\">				<li><button type=\"submit\">Enter Contest</button></li>			</ul>		</form>		{{/if}}	{{/if}}</div>{{/contest}}",
 "contests": "<ul>	{{#contests}}	<li class=\"{{status}}\">		<h2><a href=\"{{../parameters.url}}{{id}}\">{{name}}</a></h2>		<dl>		{{#starts}}			<dt>Starts</dt>			<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span> <span class=\"timezone\">{{timezone_offset}}</span></dd>		{{/starts}}		{{#ends}}			<dt>{{#if ../ended}}Ended{{else}}End{{/if}}</dt>			<dd><span class=\"date\">{{month.number}}/{{day.number}}/{{year.full}}</span> <span class=\"time\">at {{hour.half}}:{{minute}}</span> <span class=\"ampm\">{{ampm}}</span> <span class=\"timezone\">{{timezone_offset}}</span></dd>	 	{{/ends}}		</dl>		{{#if details}}		<div class=\"details\">			<h3>Contest Details</h3>			{{{details}}}		</div>		{{/if}} 	</li>	{{/contests}}</ul>",
