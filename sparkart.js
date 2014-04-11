@@ -1,5 +1,5 @@
-/* Sparkart.js v000.009.002
-   Generated on 2014-04-02 at 19:00:09 */
+/* Sparkart.js v000.010.001
+   Generated on 2014-04-11 at 01:14:05 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -434,7 +434,6 @@ this.sparkart = {};
 		else if( $widget.is('.receipt') ) widget = 'receipt';
 		else if( $widget.is('.account') ) widget = 'account';
 		else if( $widget.is('.customer') ) widget = 'customer';
-		else if( $widget.is('.password_reset') ) widget = 'password_reset';
 		else if( $widget.is('.order') ) widget = 'order';
 		else if( $widget.is('.orders') ) widget = 'orders';
 		else if( $widget.is('.affiliates') ) widget = 'affiliates';
@@ -523,16 +522,6 @@ this.sparkart = {};
 				if( callback ) callback( null, html, response );
 
 			});
-
-		}
-
-		else if( widget === 'password_reset' ){
-
-			var html = fanclub.templates[widget]({
-				token: true
-			});
-
-			if( callback ) callback( null, html, response );
 
 		}
 
@@ -750,67 +739,6 @@ this.sparkart = {};
 						});
 
 					});
-
-				});
-
-			});
-
-		}
-
-		else if( widget === 'password_reset' ){
-
-			$widget
-			.off( '.sparkart' )
-			.on( 'submit.sparkart', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				data = $.extend( data, {
-					password: $this.find('input[name="password"]').val(),
-					password_confirmation: $this.find('input[name="password_confirmation"]').val()
-				});
-
-				// extract password reset key
-				var query_bits = location.search.substr(1).split('&');
-				var query = {};
-				for( var i = query_bits.length - 1; i >= 0; i-- ){
-					var bits = query_bits[i].split('=');
-					var key = bits[0];
-					var value = bits[1];
-					query[key] = value;
-				};
-
-				$this
-					.removeClass('error success')
-					.find('div.errors, div.success').hide();
-
-				// deactivate the form
-				var $submit = $this.find('button[type="submit"]');
-				$submit.prop( 'disabled', true );
-
-				fanclub.post( 'password_reset/'+ query.token, data, function( errors ){
-
-					// reactivate the form
-					$submit.prop( 'disabled', false );
-
-					// remove old error message
-					var $errors = $this.find('div.errors');
-					$errors.empty().hide();
-
-					if( errors ){
-						$this.addClass('error');
-						var $err = $( fanclub.templates.errors({ errors: errors }) );
-						$errors.html( $err ).show();
-						return;
-					}
-
-					$this.addClass('success');
-					var $success = $this.find('div.success');
-					$success.show();
-
-					var redirect = fanclub.parameters.redirect.password_reset || data.redirect;
-					if( redirect ) window.location = redirect;
 
 				});
 
@@ -1053,7 +981,6 @@ Methods for interacting with facebook
 "events": "<ul class=\"events\">	{{#events}}	<li>		<h2><a href=\"{{../parameters.url}}{{id}}\">{{date.month.abbr}} {{date.day.number}}</a></h2>		<h3>{{title}}</h3>		<div class=\"description\">{{description}}</div>		{{#venue}}		<div class=\"venue\">			<h4>{{name}}</h4>			<strong>{{city}}</strong>, {{state}}		</div>		{{/venue}}		<ul class=\"links\">			{{#links}}			<li><a href=\"{{url}}\">{{name}}</a></li>			{{/links}}		</ul>	</li>	{{/events}}</ul>",
 "order": "{{#order}}<div class=\"order\">	<h4>Order {{id}}</h4>	<div class=\"details\">		<h5 class=\"name\">{{plan.name}}</h5>		<span class=\"customer\">Customer ID: <var>{{customer_id}}</var></span>		<ul class=\"dates\">			{{#paid_at}}			<li class=\"paid\">Paid on <var class=\"date\">{{.}}</var></li>			{{/paid_at}}			{{#refunded_at}}			<li class=\"refunded\">Refunded <var class=\"refunded\">{{.}}</var></li>			{{/refunded_at}}		</ul>	</div>	{{#billing_address}}	<div class=\"billing\">		<h6>Billed To</h6>		<p class=\"address\">			{{first_name}} {{last_name}}<br/>			{{address}}<br/>			{{city}}, {{state}}, {{postal_code}}, {{country}}		</p>	</div>	{{/billing_address}}	<ul class=\"shipments\">	{{#shipment}}		<li>			{{#status}}<span class=\"status\">{{.}}</span>{{/status}}			{{#tracking_url}}<var class=\"tracking\"><a href=\"{{.}}\">Track Your Package</a></var>{{/tracking_url}}			<div class=\"shipping\">				<h6>Shipped To</h6>				{{#shipping_address}}				<p class=\"address\">					{{first_name}} {{last_name}}<br/>					{{address}}<br/>					{{city}}, {{state}}, {{postal_code}}, {{country}}				</p>				{{/shipping_address}}			</div>			<ul class=\"items\">			{{#items}}				<li>					{{#thumbnail}}<img class=\"thumbnail\" src=\"{{.}}\" />{{/thumbnail}}					<strong class=\"name\">{{name}}</strong>					{{#option}}<span class=\"option\">{{.}}</span>{{/option}}				</li>			{{/items}}			</ul>		</li>	{{/shipment}}	</ul>	{{#totals}}	<dl class=\"totals\">		<dt class=\"subtotal\">Subtotal</dt>		<dd class=\"subtotal\">${{subtotal}}</dd>		{{#shipping}}		<dt class=\"shipping\">Shipping</dt>		<dd class=\"shipping\">${{.}}</dd>		{{/shipping}}		{{#discount}}		<dt class=\"discount\">Discount</dt>		<dd class=\"discount\">${{.}}</dd>		{{/discount}}		<dt class=\"total\">Total</dt>		<dd class=\"total\">${{total}}</dd>	</dl>	{{/totals}}</div>{{/order}}",
 "orders": "<ul class=\"orders\">	{{#orders}}	<li>		<a href=\"{{../parameters.url}}{{id}}\"><h4>Order {{id}}</h4></a>		<div class=\"details\">			<h5 class=\"name\">{{plan.name}}</h5>			<span class=\"customer\">Customer ID: <var>{{customer_id}}</var></span>			<ul class=\"dates\">				{{#paid_at}}				<li class=\"paid\">Paid on <var class=\"date\">{{.}}</var></li>				{{/paid_at}}				{{#refunded_at}}				<li class=\"refunded\">Refunded <var class=\"refunded\">{{.}}</var></li>				{{/refunded_at}}			</ul>		</div>		{{#shipment}}		<ul class=\"shipments\">			<li>				{{#status}}<span class=\"status\">{{.}}</span>{{/status}}				{{#tracking_url}}<var class=\"tracking\"><a href=\"{{.}}\">Track Your Package</a></var>{{/tracking_url}}			</li>		</ul>		{{/shipment}}		{{#totals}}		<dl class=\"totals\">			<dt class=\"subtotal\">Subtotal</dt>			<dd class=\"subtotal\">${{subtotal}}</dd>			{{#shipping}}			<dt class=\"shipping\">Shipping</dt>			<dd class=\"shipping\">${{.}}</dd>			{{/shipping}}			{{#discount}}			<dt class=\"discount\">Discount</dt>			<dd class=\"discount\">${{.}}</dd>			{{/discount}}			<dt class=\"total\">Total</dt>			<dd class=\"total\">${{total}}</dd>		</dl>		{{/totals}}	</li>	{{/orders}}</ul>",
-"password_reset": "{{#token}}<form class=\"password_reset\">	<div class=\"success\" style=\"display: none;\">		<p>Password Successfully Updated!</p>	</div>	<div class=\"errors\" style=\"display: none;\"></div>	<fieldset>		<div class=\"password\">			<label>New Password<br />			<input name=\"password\" type=\"password\" /></label><br />			<label>Repeat New Password<br />			<input name=\"password_confirmation\" type=\"password\" /></label>		</div>	</fieldset>	<button type=\"submit\">Update Password</button></form>{{/token}}",
 "plan": "<div class=\"plan\">	<h2>{{name}}</h2>	<h3>{{price}}</h3>	<div class=\"description\">{{description}}</div>	{{#package}}		<h3>{{name}}</h3>		<ul class=\"items\">			{{#items}}			<li>				<img src=\"{{thumbnail}}\" />				<strong>{{name}}</strong>			</li>			{{/items}}		</ul>	{{/package}}	<ul class=\"actions\">		<li class=\"join\"><a href=\"{{checkout}}\">Join Now</a></li>	</ul>	{{#annotations}}<sub class=\"annotations\">{{.}}</sub>{{/annotations}}	</div>",
 "plans": "<ul class=\"plans\">	{{#plans}}	<li>		<h2>{{name}}</h2>		<h3>{{price}}</h3>		<div class=\"description\">{{description}}</div>		{{#package}}			<h3>{{name}}</h3>			<ul class=\"items\">				{{#items}}				<li>					<img src=\"{{thumbnail}}\" />					<strong>{{name}}</strong>				</li>				{{/items}}			</ul>		{{/package}}		<ul class=\"actions\">			<li class=\"join\"><a href=\"{{checkout}}\">Join Now</a></li>		</ul>		{{#annotations}}<sub class=\"annotations\">{{.}}</sub>{{/annotations}}	</li>	{{/plans}}</ul>",
 "receipt": "<ul class=\"receipt\">{{#items}}<li>{{name}}</li>{{/items}}</ul>",

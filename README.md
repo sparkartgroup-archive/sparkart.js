@@ -75,7 +75,6 @@ Most of these properties are not set until after the fanclub finishes loading. I
 
 In order to make generating fanclub markup easier, sparkart.js has a widget system which automatically renders fanclub html. The following widgets are available by default:
 
-- **[password_reset](https://github.com/SparkartGroupInc/sparkart.js/wiki/Password-reset-widget)** - The password reset form.
 - **[account](https://github.com/SparkartGroupInc/sparkart.js/wiki/Account-widget)** - A form for editing the current customer's account.
 - **[customer](https://github.com/SparkartGroupInc/sparkart.js/wiki/Customer-widget)** - The current customer's information.
 - **[affiliates](https://github.com/SparkartGroupInc/sparkart.js/wiki/Affiliates-Widget)** - The current customer's affiliates information.

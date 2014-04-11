@@ -1,3 +1,10 @@
+### 000.010.002
+*TBD*
+
+- [Clean Up] Remove references to password reset
+
+-----
+
 ### 000.010.001
 *April 2, 2014*
 
