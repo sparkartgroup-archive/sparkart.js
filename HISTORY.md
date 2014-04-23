@@ -1,3 +1,10 @@
+### 000.011.001
+*April 23, 2014*
+
+- [Clean Up] Remove references to password reset
+
+-----
+
 ### 000.010.001
 *April 2, 2014*
 

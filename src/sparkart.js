@@ -431,7 +431,6 @@ this.sparkart = {};
 		else if( $widget.is('.receipt') ) widget = 'receipt';
 		else if( $widget.is('.account') ) widget = 'account';
 		else if( $widget.is('.customer') ) widget = 'customer';
-		else if( $widget.is('.password_reset') ) widget = 'password_reset';
 		else if( $widget.is('.order') ) widget = 'order';
 		else if( $widget.is('.orders') ) widget = 'orders';
 		else if( $widget.is('.affiliates') ) widget = 'affiliates';
@@ -520,16 +519,6 @@ this.sparkart = {};
 				if( callback ) callback( null, html, response );
 
 			});
-
-		}
-
-		else if( widget === 'password_reset' ){
-
-			var html = fanclub.templates[widget]({
-				token: true
-			});
-
-			if( callback ) callback( null, html, response );
 
 		}
 
@@ -747,67 +736,6 @@ this.sparkart = {};
 						});
 
 					});
-
-				});
-
-			});
-
-		}
-
-		else if( widget === 'password_reset' ){
-
-			$widget
-			.off( '.sparkart' )
-			.on( 'submit.sparkart', function( e ){
-
-				e.preventDefault();
-
-				var $this = $(this);
-				data = $.extend( data, {
-					password: $this.find('input[name="password"]').val(),
-					password_confirmation: $this.find('input[name="password_confirmation"]').val()
-				});
-
-				// extract password reset key
-				var query_bits = location.search.substr(1).split('&');
-				var query = {};
-				for( var i = query_bits.length - 1; i >= 0; i-- ){
-					var bits = query_bits[i].split('=');
-					var key = bits[0];
-					var value = bits[1];
-					query[key] = value;
-				};
-
-				$this
-					.removeClass('error success')
-					.find('div.errors, div.success').hide();
-
-				// deactivate the form
-				var $submit = $this.find('button[type="submit"]');
-				$submit.prop( 'disabled', true );
-
-				fanclub.post( 'password_reset/'+ query.token, data, function( errors ){
-
-					// reactivate the form
-					$submit.prop( 'disabled', false );
-
-					// remove old error message
-					var $errors = $this.find('div.errors');
-					$errors.empty().hide();
-
-					if( errors ){
-						$this.addClass('error');
-						var $err = $( fanclub.templates.errors({ errors: errors }) );
-						$errors.html( $err ).show();
-						return;
-					}
-
-					$this.addClass('success');
-					var $success = $this.find('div.success');
-					$success.show();
-
-					var redirect = fanclub.parameters.redirect.password_reset || data.redirect;
-					if( redirect ) window.location = redirect;
 
 				});
 
