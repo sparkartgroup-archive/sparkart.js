@@ -1,5 +1,5 @@
 /* Sparkart.js v000.011.001
-   Generated on 2014-04-23 at 12:48:35 */
+   Generated on 2014-06-12 at 21:07:46 */
 
 // Add sparkart to the global namespace
 this.sparkart = {};
@@ -588,13 +588,17 @@ this.sparkart = {};
 				}
 			})
 			.fail( function( request ){
-				try {
-					var responseObj = JSON.parse( request.responseText );
+				var responseObj;
+
+				if ( request.responseText ) {
+					try {
+						responseObj = JSON.parse( request.responseText );
+					} catch ( err ) {
+						console.error( err );
+					}
 				}
-				catch( err ){
-					console.error( err );
-				}
-				var errors = ( responseObj )? responseObj.messages: [];
+
+				var errors = responseObj ? responseObj.messages: [];
 				if( callback ) callback( errors );
 			});
 
