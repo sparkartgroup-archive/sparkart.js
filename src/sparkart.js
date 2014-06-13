@@ -585,18 +585,18 @@ this.sparkart = {};
 				}
 			})
 			.fail( function( request ){
-                var responseObj;
+				var responseObj;
 
-                if ( request.responseText ) {
-                    try {
-                        responseObj = JSON.parse( request.responseText );
-                    } catch ( err ) {
-                        console.error( err );
-                    }
-                }
+				if ( request.responseText ) {
+					try {
+						responseObj = JSON.parse( request.responseText );
+					} catch ( err ) {
+						console.error( err );
+					}
+				}
 
-                var errors = responseObj ? responseObj.messages: [];
-                if( callback ) callback( errors );
+				var errors = responseObj ? responseObj.messages: [];
+				if( callback ) callback( errors );
 			});
 
 		return request;
